@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/widgets/form.dart';
+import 'package:flutter_application_tfg/widgets/form%20register.dart';
 
 class RegisterScreen extends StatelessWidget {
   @override

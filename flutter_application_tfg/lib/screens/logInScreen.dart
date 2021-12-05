@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/widgets/form.dart';
+import 'package:flutter_application_tfg/widgets/form%20login.dart';
 
 class LogInScreen extends StatelessWidget {
   @override
@@ -8,7 +8,7 @@ class LogInScreen extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text('Registro'),
+          title: Text('Login'),
           elevation: 0,
         ),
         body: SingleChildScrollView(child: MyStatefulWidget()));
