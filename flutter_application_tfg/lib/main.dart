@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
-import 'package:flutter_application_tfg/widgets/form.dart';
 
 void main() {
   runApp(const MyApp());
@@ -28,7 +27,7 @@ class MyApplication extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Nombre app',
-      initialRoute: 'home',
+      initialRoute: 'logIn',
       routes: {
         'home': (_) => HomeScreen(),
         'register': (_) => RegisterScreen(),

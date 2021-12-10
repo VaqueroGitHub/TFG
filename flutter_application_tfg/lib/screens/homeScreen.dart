@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
-import 'package:flutter_application_tfg/widgets/form.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -25,7 +24,9 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(
               child: const Text('Log In'),
               onPressed: () {
-                  void _navigateToLogInScreen(BuildContext context) {(context);
+                void _navigateToLogInScreen(BuildContext context) {
+                  (context);
+                }
               },
             ),
             // Pagina de log in
