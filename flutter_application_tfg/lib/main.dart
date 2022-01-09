@@ -2,31 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
 
 void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
-  // This widget is the root of your application.
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Home Screen',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: MyApplication(),
-    );
-  }
+  runApp(const MyApplication());
 }
 
 class MyApplication extends StatelessWidget {
+  const MyApplication({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Nombre app',
+      title: 'Nombre App',
       initialRoute: 'home',
       routes: {
         'home': (_) => HomeScreen(),
@@ -34,7 +19,7 @@ class MyApplication extends StatelessWidget {
         'logIn': (_) => LogInScreen(),
       },
       theme: ThemeData.light()
-          .copyWith(appBarTheme: AppBarTheme(color: Colors.indigo)),
+          .copyWith(appBarTheme: const AppBarTheme(color: Colors.red)),
     );
   }
 }
