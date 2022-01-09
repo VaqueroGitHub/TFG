@@ -24,9 +24,7 @@ class HomeScreen extends StatelessWidget {
             ElevatedButton(
               child: const Text('Log In'),
               onPressed: () {
-                void _navigateToLogInScreen(BuildContext context) {
-                  (context);
-                }
+                _navigateToLogInScreen(context);
               },
             ),
             // Pagina de log in
