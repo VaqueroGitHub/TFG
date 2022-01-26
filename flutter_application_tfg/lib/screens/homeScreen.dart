@@ -6,44 +6,65 @@ import 'package:flutter_application_tfg/screens/screens.dart';
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //  final moviesProvider = Provider.of<MoviesProvider>(context);
-
     return Scaffold(
-        appBar: AppBar(
-          title: const Text('UCM TFG'),
-          elevation: 0,
-        ),
-        body: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            // Tarjetas principales
-            ElevatedButton(
-              child: const Text('Register'),
+      appBar: AppBar(
+        title: const Text('UCM TFG'),
+        elevation: 0,
+      ),
+      body: Container(
+        width: double.infinity,
+        color: Colors.white,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Image.asset('assets/imgs/vaquero.png'),
+            Column(
+              children: <Widget>[
+                Text(
+                  'Conecta estudiantes',
+                  style: Theme.of(context).textTheme.headline1,
+                ),
+                Text(
+                  'de forma facil',
+                  style: Theme.of(context).textTheme.headline2,
+                ),
+              ],
+            ),
+            MaterialButton(
+              elevation: 10.0,
+              minWidth: 170.0,
+              height: 50.0,
+              color: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: const Text(
+                'Iniciar sesión',
+                style: TextStyle(color: Colors.white, fontSize: 20.0),
+              ),
               onPressed: () {
-                _navigateToRegisterScreen(context);
+                Navigator.pushNamed(context, 'logIn');
               },
             ),
-            ElevatedButton(
-              child: const Text('Log In'),
+            MaterialButton(
+              elevation: 10.0,
+              minWidth: 170.0,
+              height: 50.0,
+              color: Theme.of(context).primaryColor,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8.0),
+              ),
+              child: const Text(
+                'Registrarse',
+                style: TextStyle(color: Colors.white, fontSize: 20.0),
+              ),
               onPressed: () {
-                _navigateToLogInScreen(context);
+                Navigator.pushNamed(context, 'register');
               },
             ),
-            // Pagina de log in
           ],
-        )));
-  }
-
-  void _navigateToLogInScreen(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => LogInScreen()));
-  }
-
-  //Navigator.pushNamed(context, routeName) con las rutas definidas en el main
-  // onGenerateRoute para  rutas  dinamicas
-  void _navigateToRegisterScreen(BuildContext context) {
-    Navigator.of(context)
-        .push(MaterialPageRoute(builder: (context) => RegisterScreen()));
+        ),
+      ),
+    );
   }
 }
