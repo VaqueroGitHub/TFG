@@ -1,2 +1,1 @@
-// export 'package:flutter_application_tfg/widgets/form login.dart';
-// export 'package:flutter_application_tfg/widgets/form register.dart';
+export 'package:flutter_application_tfg/widgets/nav_bar.dart';

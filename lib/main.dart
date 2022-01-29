@@ -18,6 +18,7 @@ class MyApplication extends StatelessWidget {
         'home': (_) => HomeScreen(),
         'register': (_) => RegisterScreen(),
         'logIn': (_) => LogInScreen(),
+        'profile': (_) => ProfileScreen(),
       },
       theme: tfgTheme.copyWith(
           appBarTheme: const AppBarTheme(color: Colors.transparent)),

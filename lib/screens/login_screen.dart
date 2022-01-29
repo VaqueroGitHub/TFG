@@ -83,7 +83,7 @@ class _LoginForm extends StatelessWidget {
                   style: TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
                 onPressed: () {
-                  Navigator.pushNamed(context, 'home');
+                  Navigator.pushNamed(context, 'profile');
                 },
               ),
             ],
