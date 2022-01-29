@@ -59,6 +59,21 @@ class LogInScreen extends StatelessWidget {
                       ),
                     ],
                   ),
+                  SizedBox(height: height * 0.02),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      TextButton(
+                        child: const Text(
+                          '¿Aún sin cuenta? Regístrate 😏',
+                          style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                        ),
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'register');
+                        },
+                      ),
+                    ],
+                  ),
                 ],
               ),
             )));
