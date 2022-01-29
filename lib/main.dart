@@ -6,7 +6,7 @@ import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:provider/provider.dart';
 
 void main() {
-  runApp(MyApplication());
+  runApp(AppState());
 }
 
 class AppState extends StatelessWidget {
@@ -14,8 +14,8 @@ class AppState extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (context) => UserLoginProvider()),
-        ChangeNotifierProvider(create: (context) => UserRegisterProvider()),
+        ChangeNotifierProvider(create: (_) => UserLoginProvider()),
+        ChangeNotifierProvider(create: (_) => UserRegisterProvider()),
       ],
       child: MyApplication(),
     );
