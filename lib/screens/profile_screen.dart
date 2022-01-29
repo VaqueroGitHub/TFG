@@ -19,7 +19,7 @@ class ProfileScreen extends StatelessWidget {
         child: Column(
           children: [
             _ProfilePic(),
-            SizedBox(height: 20),
+            SizedBox(height: 40),
             _ProfileMenu(
               text: "Mi cuenta",
               icon: "assets/icons/User Icon.svg",
