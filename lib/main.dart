@@ -1,9 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/user_login_provider.dart';
+import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
+import 'package:provider/provider.dart';
 
 void main() {
-  runApp(const MyApplication());
+  runApp(MyApplication());
+}
+
+class AppState extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => UserLoginProvider()),
+        ChangeNotifierProvider(create: (_) => UserRegisterProvider()),
+      ],
+      child: MyApplication(),
+    );
+  }
 }
 
 class MyApplication extends StatelessWidget {
