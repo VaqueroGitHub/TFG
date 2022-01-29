@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/user_login_provider.dart';
+import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:provider/provider.dart';
 
 class LogInScreen extends StatelessWidget {
   @override
@@ -42,7 +45,10 @@ class _LoginForm extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final userLoginProvider = Provider.of<UserLoginProvider>(context);
+
     return Form(
+      key: userLoginProvider.formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -82,9 +88,25 @@ class _LoginForm extends StatelessWidget {
                   'Iniciar sesión',
                   style: TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
-                onPressed: () {
-                  Navigator.pushNamed(context, 'profile');
-                },
+                onPressed: userLoginProvider.isLoading
+                    ? null
+                    : () async {
+                        // if (!userLoginProvider.isValidForm()) return;
+
+                        userLoginProvider.isLoading = true;
+                        final String? errorMessage = await AuthService()
+                            .signInUser(userLoginProvider.email,
+                                userLoginProvider.password);
+
+                        if (errorMessage == null) {
+                          Navigator.pushNamed(context, 'home');
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text("ERROR LOGIN: $errorMessage")));
+                        }
+
+                        userLoginProvider.isLoading = false;
+                      },
               ),
             ],
           ),
