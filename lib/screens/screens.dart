@@ -1,3 +1,3 @@
-export 'package:flutter_application_tfg/screens/registerScreen.dart';
-export 'package:flutter_application_tfg/screens/homeScreen.dart';
-export 'package:flutter_application_tfg/screens/logInScreen.dart';
+export 'package:flutter_application_tfg/screens/register_screen.dart';
+export 'package:flutter_application_tfg/screens/home_screen.dart';
+export 'package:flutter_application_tfg/screens/login_screen.dart';

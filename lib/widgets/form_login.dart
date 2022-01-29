@@ -1,5 +1,3 @@
-// ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 
 /// This is the stateful widget that the main application instantiates.
@@ -39,17 +37,6 @@ class _MyStatefulWidgetState extends State<MyStatefulWidget> {
             validator: (String? value) {
               if (value == null || value.isEmpty) {
                 return 'Por favor, introduce tu contraseña';
-              }
-              return null;
-            },
-          ),
-          TextFormField(
-            decoration: const InputDecoration(
-              hintText: 'Introduce tu nombre de usuario',
-            ),
-            validator: (String? value) {
-              if (value == null || value.isEmpty) {
-                return 'Por favor, introduce tus nombre de usuario';
               }
               return null;
             },
