@@ -11,7 +11,8 @@ class LogInScreen extends StatelessWidget {
           elevation: 0,
         ),
         backgroundColor: Color(0xFFffffff),
-        body: Container(
+        body: SingleChildScrollView(
+            child: Container(
             padding: const EdgeInsets.only(left: 40, right: 40),
             child: Form(
               child: Column(
@@ -51,7 +52,8 @@ class LogInScreen extends StatelessWidget {
                         ),
                         child: const Text(
                           'Iniciar sesión',
-                          style: TextStyle(color: Colors.white, fontSize: 20.0),
+                              style: TextStyle(
+                                  color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, 'home');
@@ -66,7 +68,8 @@ class LogInScreen extends StatelessWidget {
                       TextButton(
                         child: const Text(
                           '¿Aún sin cuenta? Regístrate 😏',
-                          style: TextStyle(color: Colors.grey, fontSize: 12.0),
+                              style:
+                                  TextStyle(color: Colors.grey, fontSize: 12.0),
                         ),
                         onPressed: () {
                           Navigator.pushNamed(context, 'register');
@@ -76,6 +79,6 @@ class LogInScreen extends StatelessWidget {
                   ),
                 ],
               ),
-            )));
+                ))));
   }
 }
