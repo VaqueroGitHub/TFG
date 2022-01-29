@@ -1,14 +1,15 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/screens/screens.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Color(0xFFffffff),
       appBar: AppBar(
-        title: const Text('UCM TFG'),
+        backgroundColor: Colors.transparent,
         elevation: 0,
       ),
       body: Container(
@@ -17,19 +18,24 @@ class HomeScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            Image.asset('assets/imgs/vaquero.png'),
+            Container(
+              padding: const EdgeInsets.only(left: 35, right: 35),
+              child: Image.asset('assets/imgs/vaquero.png'),
+            ),
+            SizedBox(height: height * 0.04),
             Column(
               children: <Widget>[
                 Text(
                   'Conecta estudiantes',
-                  style: Theme.of(context).textTheme.headline1,
+                  style: Theme.of(context).textTheme.headline2,
                 ),
                 Text(
                   'de forma facil',
-                  style: Theme.of(context).textTheme.headline2,
+                  style: Theme.of(context).textTheme.headline3,
                 ),
               ],
             ),
+            SizedBox(height: height * 0.04),
             MaterialButton(
               elevation: 10.0,
               minWidth: 170.0,
@@ -62,6 +68,7 @@ class HomeScreen extends StatelessWidget {
                 Navigator.pushNamed(context, 'register');
               },
             ),
+            SizedBox(height: height * 0.04),
           ],
         ),
       ),

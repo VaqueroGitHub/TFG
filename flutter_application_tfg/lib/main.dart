@@ -19,23 +19,24 @@ class MyApplication extends StatelessWidget {
         'logIn': (_) => LogInScreen(),
       },
       theme: ThemeData(
+        backgroundColor: Color(0xFFffffff),
         primaryColor: Color(0xFF5F5FFF),
         highlightColor: Color(0XFFB7B7D2),
         textTheme: const TextTheme(
           headline1: TextStyle(
-            fontSize: 36.0,
+            fontSize: 40.0,
             fontWeight: FontWeight.bold,
-            color: Color(0XFF030047),
+            color: Color(0XFF283593),
           ),
           headline2: TextStyle(
             fontSize: 36.0,
             fontWeight: FontWeight.bold,
-            color: Color(0xFF5F5FFF),
+            color: Color(0XFF030047),
           ),
           headline3: TextStyle(
-            fontSize: 20.0,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
+            fontSize: 36.0,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF5F5FFF),
           ),
           headline4: TextStyle(
             fontSize: 20.0,
@@ -57,7 +58,7 @@ class MyApplication extends StatelessWidget {
             color: Color(0XFFB7B7D2),
           ),
         ),
-      ).copyWith(appBarTheme: const AppBarTheme(color: Color(0xFF5F5FFF))),
+      ).copyWith(appBarTheme: const AppBarTheme(color: Colors.transparent)),
     );
   }
 }
