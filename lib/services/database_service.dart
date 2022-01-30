@@ -7,14 +7,16 @@ class DatabaseService {
 
   DatabaseService({required this.uuid});
 
-  Future<bool> getUserData() async {
+  Future<Map<String, dynamic?>?> getUserData() async {
     await Firebase.initializeApp();
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection("users");
-    print(uuid);
+
     final resp = await userCollection.doc(uuid).get();
-    final Map<String, dynamic?> doc = resp.data() as Map<String, dynamic?>;
-    return doc['isAdmin'] ?? false;
+    final data = resp.data();
+    if (data == null) return null;
+    final Map<String, dynamic?>? doc = data as Map<String, dynamic?>;
+    return doc;
   }
 
   Future updateUserData(User user) async {
@@ -38,5 +40,27 @@ class DatabaseService {
         'isAdmin': false,
       });
     }
+  }
+
+  Future<List<Map<dynamic, dynamic>>> getAllUsersAdmin() async {
+    await Firebase.initializeApp();
+    final QuerySnapshot userCollection = await FirebaseFirestore.instance
+        .collection("users")
+        .where('isAdmin', isEqualTo: false)
+        .get();
+
+    List<Map<dynamic, dynamic>> list =
+        userCollection.docs.map((doc) => doc.data()).cast<Map>().toList();
+
+    return list;
+  }
+
+  Future deleteUser(String uid) async {
+    await Firebase.initializeApp();
+    final CollectionReference userCollection =
+        FirebaseFirestore.instance.collection("users");
+
+    DocumentReference user = await userCollection.doc(uuid);
+    await user.delete();
   }
 }

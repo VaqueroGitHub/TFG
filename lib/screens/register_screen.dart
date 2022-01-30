@@ -69,14 +69,15 @@ class _RegisterBody extends StatelessWidget {
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    onChanged: (val) => userRegisterProvider.email = val,
+                    onChanged: (val) => userRegisterProvider.password = val,
                     decoration: const InputDecoration(
                         labelText: "Introduce tu contraseña"),
                     obscureText: true,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    onChanged: (val) => userRegisterProvider.password = val,
+                    onChanged: (val) =>
+                        userRegisterProvider.confirmPassword = val,
                     decoration: const InputDecoration(
                         labelText: "Confirma tu contraseña"),
                     obscureText: true,
