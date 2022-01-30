@@ -63,11 +63,13 @@ class _LoginForm extends StatelessWidget {
           ),
           SizedBox(height: height * 0.08),
           TextFormField(
+            onChanged: (val) => userLoginProvider.email = val,
             decoration: const InputDecoration(
                 labelText: "Introduce tu correo universitario"),
           ),
           SizedBox(height: height * 0.04),
           TextFormField(
+            onChanged: (val) => userLoginProvider.password = val,
             decoration:
                 const InputDecoration(labelText: "Introduce tu contraseña"),
             obscureText: true,
@@ -99,7 +101,7 @@ class _LoginForm extends StatelessWidget {
                                 userLoginProvider.password);
 
                         if (errorMessage == null) {
-                          Navigator.pushNamed(context, 'home');
+                          Navigator.pushNamed(context, 'profile');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text("ERROR LOGIN: $errorMessage")));

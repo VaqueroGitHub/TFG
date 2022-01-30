@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/services/database_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -19,9 +20,9 @@ class AuthService {
 
   Future<String?> signUpUser(User user) async {
     final authData = {
-      'email': user.email,
-      'password': user.password,
-      'returnSecureToken': true
+      "email": user.email,
+      "password": user.password,
+      "returnSecureToken": true
     };
 
     final url = Uri.https(_baseUrl, '/v1/accounts:signUp', {'key': _apiKey});
@@ -32,7 +33,7 @@ class AuthService {
     if (decodedResp.containsKey('idToken')) {
       //Registro realizado con exito
       //Guardar informacion usuario con su uid auto generado
-      // DatabaseService(uuid: decodedResp['localId']).updateUserData(user);
+      DatabaseService(uuid: decodedResp['localId']).updateUserData(user);
       return null;
     } else {
       if (decodedResp.containsKey('error')) {
@@ -59,11 +60,17 @@ class AuthService {
     final Map<String, dynamic> decodedResp = jsonDecode(resp.body);
 
     if (decodedResp.containsKey('idToken')) {
-      //Token hay que guardarlo en lugar seguro
-      await storage.write(key: 'token', value: decodedResp['idToken']);
+      var userInfo =
+          await DatabaseService(uuid: decodedResp['localId']).getUserData();
+      if (userInfo == null) return 'no user info found';
 
-      // bool isAdmin =await DatabaseService(uuid: decodedResp['localId']).getUserData();
-      // await storage.write(key: 'isAdmin', value: isAdmin.toString());
+      //Token e info relativa a usuario hay que guardarlo en lugar seguro para el uso de la app
+      await storage.write(key: 'token', value: decodedResp['idToken']);
+      await storage.write(key: 'userId', value: decodedResp['localId']);
+      await storage.write(key: 'userInfo', value: userInfo.toString());
+
+      this.isAdmin();
+
       return null;
     } else {
       if (decodedResp.containsKey('error')) {
@@ -86,7 +93,8 @@ class AuthService {
     return await storage.read(key: 'token') ?? '';
   }
 
-  // Future<String> isAdmin() async {
-  //   return await storage.read(key: 'isAdmin') ?? 'false';
-  // }
+  Future<String> isAdmin() async {
+    final user = await storage.read(key: 'userInfo');
+    return jsonDecode(user!)['isAdmin'] ?? false;
+  }
 }
