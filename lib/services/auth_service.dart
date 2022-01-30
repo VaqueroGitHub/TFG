@@ -69,8 +69,6 @@ class AuthService {
       await storage.write(key: 'userId', value: decodedResp['localId']);
       await storage.write(key: 'userInfo', value: userInfo.toString());
 
-      this.isAdmin();
-
       return null;
     } else {
       if (decodedResp.containsKey('error')) {
