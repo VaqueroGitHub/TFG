@@ -2,10 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_tfg/models/user.dart';
 
-class DatabaseService {
+class UserDatabaseService {
   final String uuid;
 
-  DatabaseService({required this.uuid});
+  UserDatabaseService({required this.uuid});
 
   Future<Map<String, dynamic?>?> getUserData() async {
     await Firebase.initializeApp();
