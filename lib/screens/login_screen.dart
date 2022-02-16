@@ -101,7 +101,7 @@ class _LoginForm extends StatelessWidget {
                                 userLoginProvider.password);
 
                         if (errorMessage == null) {
-                          Navigator.pushNamed(context, 'profile');
+                          Navigator.pushReplacementNamed(context, 'profile');
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text("ERROR LOGIN: $errorMessage")));
