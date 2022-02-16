@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -40,10 +41,14 @@ class ProfileScreen extends StatelessWidget {
               icon: "assets/icons/Delete.svg",
               press: () {},
             ),
-            _ProfileMenu(
-              text: "Cerrar sesión",
-              icon: "assets/icons/Log out.svg",
-              press: () {},
+            IconButton(
+              icon: SvgPicture.asset("assets/icons/Log out.svg",
+                  color: Colors.yellow),
+              onPressed: () {
+                AuthService().logout();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, 'home', (Route<dynamic> route) => false);
+              },
             ),
           ],
         ),

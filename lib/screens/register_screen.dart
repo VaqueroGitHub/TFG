@@ -108,7 +108,8 @@ class _RegisterBody extends StatelessWidget {
                                     .signUpUser(userRegisterProvider.user());
 
                                 if (errorMessage == null) {
-                                  Navigator.pushNamed(context, 'home');
+                                  Navigator.pushNamedAndRemoveUntil(context,
+                                      'home', (Route<dynamic> route) => false);
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
