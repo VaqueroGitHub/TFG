@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/database_service.dart';
+import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -33,7 +33,7 @@ class AuthService {
     if (decodedResp.containsKey('idToken')) {
       //Registro realizado con exito
       //Guardar informacion usuario con su uid auto generado
-      DatabaseService(uuid: decodedResp['localId']).updateUserData(user);
+      UserDatabaseService(uuid: decodedResp['localId']).updateUserData(user);
       return null;
     } else {
       if (decodedResp.containsKey('error')) {
@@ -61,7 +61,7 @@ class AuthService {
 
     if (decodedResp.containsKey('idToken')) {
       var userInfo =
-          await DatabaseService(uuid: decodedResp['localId']).getUserData();
+          await UserDatabaseService(uuid: decodedResp['localId']).getUserData();
       if (userInfo == null) return 'no user info found';
 
       //Token e info relativa a usuario hay que guardarlo en lugar seguro para el uso de la app
