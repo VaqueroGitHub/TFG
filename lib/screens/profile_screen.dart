@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,39 +13,80 @@ class ProfileScreen extends StatelessWidget {
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
-      appBar: AppBar(
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            _ProfilePic(),
             SizedBox(height: 40),
+            _ProfilePic(),
+            SizedBox(height: 20),
+            Text(
+              'Joaquin',
+              style: Theme.of(context).textTheme.headline3,
+            ),
+            SizedBox(height: 20),
             _ProfileMenu(
               text: "Mi cuenta",
-              icon: "assets/icons/User Icon.svg",
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/User Icon.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {
+                  AuthService().logout();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, 'home', (Route<dynamic> route) => false);
+                },
+              ),
               press: () => {},
             ),
             _ProfileMenu(
               text: "Notifications",
-              icon: "assets/icons/Bell.svg",
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/Bell.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {
+                  AuthService().logout();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, 'home', (Route<dynamic> route) => false);
+                },
+              ),
               press: () {},
             ),
             _ProfileMenu(
               text: "Modificar datos",
-              icon: "assets/icons/Settings.svg",
-              press: () {},
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/Settings.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {},
+              ),
+              press: () {
+                Navigator.pushNamed(context, 'editProfile');
+              },
             ),
             _ProfileMenu(
               text: "Eliminar cuenta",
-              icon: "assets/icons/Delete.svg",
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/Delete.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {
+                  AuthService().logout();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, 'home', (Route<dynamic> route) => false);
+                },
+              ),
               press: () {},
             ),
-            IconButton(
-              icon: SvgPicture.asset("assets/icons/Log out.svg",
-                  color: Colors.yellow),
-              onPressed: () {
+            _ProfileMenu(
+              text: "Log Out",
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/Log out.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {
+                  AuthService().logout();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, 'home', (Route<dynamic> route) => false);
+                },
+              ),
+              press: () {
                 AuthService().logout();
                 Navigator.pushNamedAndRemoveUntil(
                     context, 'home', (Route<dynamic> route) => false);
@@ -66,7 +108,8 @@ class _ProfileMenu extends StatelessWidget {
     this.press,
   }) : super(key: key);
 
-  final String text, icon;
+  final String text;
+  final IconButton icon;
   final VoidCallback? press;
 
   @override
@@ -83,13 +126,14 @@ class _ProfileMenu extends StatelessWidget {
         onPressed: press,
         child: Row(
           children: [
-            SvgPicture.asset(
-              icon,
-              width: 22,
-            ),
+            icon,
             SizedBox(width: 20),
-            Expanded(child: Text(text)),
-            Icon(Icons.arrow_forward_ios),
+            Expanded(
+                child: Text(text, style: TextStyle(color: Color(0XFF283593)))),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Color(0XFF283593),
+            ),
           ],
         ),
       ),
