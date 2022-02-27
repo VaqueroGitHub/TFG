@@ -31,170 +31,71 @@ class EditProfilePage extends StatelessWidget {
         padding: EdgeInsets.symmetric(horizontal: 32),
         physics: BouncingScrollPhysics(),
         children: [
+          Center(
+            child: Text(
+              'Modifica tus datos',
+              style: Theme.of(context).textTheme.headline2,
+            ),
+          ),
+          SizedBox(height: height * 0.02),
           ProfileWidget(
-            imagePath: 'assets/imgs/profile.png',
+            imagePath:
+                'https://www.freeiconspng.com/thumbs/profile-icon-png/profile-icon-9.png',
             isEdit: true,
             onClicked: () async {},
           ),
-          const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Full Name',
-            text: user.fullName,
-            onChanged: (name) {},
+          SizedBox(height: height * 0.05),
+          TextFormField(
+            initialValue: user.fullName,
+            onChanged: (val) => user.fullName = val,
+            decoration: const InputDecoration(labelText: "Nombre completo"),
+            minLines: 1,
           ),
-          const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Email',
-            text: user.email,
-            onChanged: (email) {},
+          SizedBox(height: height * 0.05),
+          TextFormField(
+            initialValue: user.nick,
+            onChanged: (val) => user.nick = val,
+            decoration: const InputDecoration(labelText: "Nick"),
           ),
-          const SizedBox(height: 24),
-          TextFieldWidget(
-            label: 'Nick',
-            text: user.nick,
-            maxLines: 5,
-            onChanged: (about) {},
+          SizedBox(height: height * 0.05),
+          TextFormField(
+            initialValue: user.email,
+            onChanged: (val) => user.email = val,
+            decoration:
+                const InputDecoration(labelText: "Correo universitario"),
           ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  State<StatefulWidget> createState() {
-    // TODO: implement createState
-    throw UnimplementedError();
-  }
-}
-
-class ProfileWidget extends StatelessWidget {
-  final String imagePath;
-  final bool isEdit;
-  final VoidCallback onClicked;
-
-  const ProfileWidget({
-    Key? key,
-    required this.imagePath,
-    this.isEdit = false,
-    required this.onClicked,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final color = Theme.of(context).colorScheme.primary;
-
-    return Center(
-      child: Stack(
-        children: [
-          buildImage(),
-          Positioned(
-            bottom: 0,
-            right: 4,
-            child: buildEditIcon(color),
+          SizedBox(height: height * 0.05),
+          TextFormField(
+            initialValue: user.password,
+            onChanged: (val) => user.password = val,
+            decoration: const InputDecoration(labelText: "Contraseña"),
+            obscureText: true,
+          ),
+          SizedBox(height: height * 0.07),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              MaterialButton(
+                elevation: 10.0,
+                minWidth: 170.0,
+                height: 50.0,
+                color: Theme.of(context).primaryColor,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                ),
+                child: const Text(
+                  'Guardar cambios',
+                  style: TextStyle(color: Colors.white, fontSize: 20.0),
+                ),
+                onPressed: () {
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, 'profile', (Route<dynamic> route) => false);
+                },
+              )
+            ],
           ),
         ],
       ),
     );
   }
-
-  Widget buildImage() {
-    final image = NetworkImage(imagePath);
-
-    return ClipOval(
-      child: Material(
-        color: Colors.transparent,
-        child: Ink.image(
-          image: image,
-          fit: BoxFit.cover,
-          width: 128,
-          height: 128,
-          child: InkWell(onTap: onClicked),
-        ),
-      ),
-    );
-  }
-
-  Widget buildEditIcon(Color color) => buildCircle(
-        color: Colors.white,
-        all: 3,
-        child: buildCircle(
-          color: color,
-          all: 8,
-          child: Icon(
-            isEdit ? Icons.add_a_photo : Icons.edit,
-            color: Colors.white,
-            size: 20,
-          ),
-        ),
-      );
-
-  Widget buildCircle({
-    required Widget child,
-    required double all,
-    required Color color,
-  }) =>
-      ClipOval(
-        child: Container(
-          padding: EdgeInsets.all(all),
-          color: color,
-          child: child,
-        ),
-      );
-}
-
-class TextFieldWidget extends StatefulWidget {
-  final int maxLines;
-  final String label;
-  final String text;
-  final ValueChanged<String> onChanged;
-
-  const TextFieldWidget({
-    Key? key,
-    this.maxLines = 1,
-    required this.label,
-    required this.text,
-    required this.onChanged,
-  }) : super(key: key);
-
-  @override
-  _TextFieldWidgetState createState() => _TextFieldWidgetState();
-}
-
-class _TextFieldWidgetState extends State<TextFieldWidget> {
-  late final TextEditingController controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    controller = TextEditingController(text: widget.text);
-  }
-
-  @override
-  void dispose() {
-    controller.dispose();
-
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            widget.label,
-            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-          ),
-          const SizedBox(height: 8),
-          TextField(
-            controller: controller,
-            decoration: InputDecoration(
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            maxLines: widget.maxLines,
-          ),
-        ],
-      );
 }

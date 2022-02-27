@@ -35,7 +35,9 @@ class MyApplication extends StatelessWidget {
         'register': (_) => RegisterScreen(),
         'logIn': (_) => LogInScreen(),
         'profile': (_) => ProfileScreen(),
+        'aboutProfile': (_) => AboutProfilePage(),
         'editProfile': (_) => EditProfilePage(),
+        'manageUsers': (_) => ManageUsersScreen(),
       },
       theme: tfgTheme.copyWith(
           appBarTheme: const AppBarTheme(color: Colors.transparent)),

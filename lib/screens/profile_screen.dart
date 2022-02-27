@@ -31,12 +31,10 @@ class ProfileScreen extends StatelessWidget {
                 icon: SvgPicture.asset("assets/icons/User Icon.svg",
                     color: Color(0XFF283593)),
                 onPressed: () {
-                  AuthService().logout();
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, 'home', (Route<dynamic> route) => false);
+                  Navigator.pushNamed(context, 'aboutProfile');
                 },
               ),
-              press: () => {},
+              press: () => {Navigator.pushNamed(context, 'aboutProfile')},
             ),
             _ProfileMenu(
               text: "Notifications",
@@ -44,19 +42,19 @@ class ProfileScreen extends StatelessWidget {
                 icon: SvgPicture.asset("assets/icons/Bell.svg",
                     color: Color(0XFF283593)),
                 onPressed: () {
-                  AuthService().logout();
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, 'home', (Route<dynamic> route) => false);
+                  Navigator.pushNamed(context, 'manageUsers');
                 },
               ),
-              press: () {},
+              press: () => {Navigator.pushNamed(context, 'manageUsers')},
             ),
             _ProfileMenu(
               text: "Modificar datos",
               icon: IconButton(
                 icon: SvgPicture.asset("assets/icons/Settings.svg",
                     color: Color(0XFF283593)),
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, 'editProfile');
+                },
               ),
               press: () {
                 Navigator.pushNamed(context, 'editProfile');
