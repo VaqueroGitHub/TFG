@@ -98,6 +98,6 @@ class AuthService {
 
   Future<User> getUser() async {
     final json = await storage.read(key: 'userInfo');
-    return jsonDecode(json!);
+    return User.fromJson(jsonDecode(json!));
   }
 }
