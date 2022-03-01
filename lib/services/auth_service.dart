@@ -67,7 +67,7 @@ class AuthService {
       //Token e info relativa a usuario hay que guardarlo en lugar seguro para el uso de la app
       await storage.write(key: 'token', value: decodedResp['idToken']);
       await storage.write(key: 'userId', value: decodedResp['localId']);
-      await storage.write(key: 'userInfo', value: userInfo.toString());
+      await storage.write(key: 'userInfo', value: jsonEncode(userInfo));
 
       return null;
     } else {
@@ -94,5 +94,10 @@ class AuthService {
   Future<String> isAdmin() async {
     final user = await storage.read(key: 'userInfo');
     return jsonDecode(user!)['isAdmin'] ?? false;
+  }
+
+  Future<User> getUser() async {
+    final json = await storage.read(key: 'userInfo');
+    return jsonDecode(json!);
   }
 }
