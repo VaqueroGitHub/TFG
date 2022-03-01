@@ -17,6 +17,11 @@ class UserRegisterProvider extends ChangeNotifier {
   }
 
   User user() {
-    return User(nick, fullName, email, password, false);
+    return User(
+        nick: nick,
+        fullName: fullName,
+        email: email,
+        password: password,
+        isAdmin: false);
   }
 }
