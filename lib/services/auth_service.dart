@@ -83,6 +83,13 @@ class AuthService {
     }
   }
 
+  Future<String?> deleteAccount() async {
+    final authData = {'idToken': await storage.read(key: 'token')};
+
+    final url = Uri.https(_baseUrl, '/v1/accounts:delete', {'key': _apiKey});
+    final resp = await http.post(url, body: jsonEncode(authData));
+  }
+
   Future logout() async {
     await storage.delete(key: 'token');
   }
