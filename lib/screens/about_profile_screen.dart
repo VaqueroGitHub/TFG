@@ -1,18 +1,46 @@
 // ignore_for_file: file_names
 
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 
-class AboutProfilePage extends StatelessWidget {
-  Widget build(BuildContext context) {
-    User user = User(
-        nick: 'Joaquin',
-        fullName: 'Joaquin Asensio Manzanas',
-        email: 'joasexi@gmail.com',
-        password: 'joasexi',
-        isAdmin: true);
+class AboutProfilePage extends StatefulWidget {
+  @override
+  State<AboutProfilePage> createState() => _AboutProfilePageState();
+}
 
+class _AboutProfilePageState extends State<AboutProfilePage> {
+  late User user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = User(
+        fullName: 'hola',
+        password: 'ee',
+        isAdmin: true,
+        email: 'pepe',
+        nick: 'papo');
+  }
+
+  void setUser(user) {
+    setState(() {
+      this.user = user;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    //User user = User(
+    //    nick: 'Joaquin',
+    //    fullName: 'Joaquin Asensio Manzanas',
+    //    email: 'joasexi@gmail.com',
+    //    password: 'joasexi',
+    //    isAdmin: true);
+    AuthService().getUser().then((value) => setUser(value));
     return Builder(
       builder: (context) => Scaffold(
         body: ListView(

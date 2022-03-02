@@ -1,20 +1,39 @@
 // ignore_for_file: file_names
-
+import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 
-class EditProfilePage extends StatelessWidget {
-  User user = User(
-      nick: 'Joaquin',
-      fullName: 'Joaquin Asensio Manzanas',
-      email: 'joasexi@gmail.com',
-      password: 'joasexi',
-      isAdmin: true);
-  //User user = UserDatabaseService.getUserData();
+class EditProfilePage extends StatefulWidget {
+  @override
+  State<EditProfilePage> createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+  late User user;
+
+  @override
+  void initState() {
+    super.initState();
+    user = User(
+        fullName: 'hola',
+        password: 'ee',
+        isAdmin: true,
+        email: 'pepe',
+        nick: 'papo');
+  }
+
+  void setUser(user) {
+    setState(() {
+      this.user = user;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
+    AuthService().getUser().then((value) => setUser(value));
+
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
@@ -28,7 +47,7 @@ class EditProfilePage extends StatelessWidget {
         children: [
           Center(
             child: Text(
-              'Modifica tus datos',
+              'Modifica tus datos,' + user.nick,
               style: Theme.of(context).textTheme.headline2,
             ),
           ),

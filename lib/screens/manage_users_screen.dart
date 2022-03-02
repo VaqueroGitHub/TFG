@@ -3,7 +3,12 @@ import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
-class ManageUsersScreen extends StatelessWidget {
+class ManageUsersScreen extends StatefulWidget {
+  @override
+  State<ManageUsersScreen> createState() => _ManageUsersScreenState();
+}
+
+class _ManageUsersScreenState extends State<ManageUsersScreen> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;

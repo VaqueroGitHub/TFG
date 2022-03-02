@@ -1,6 +1,7 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -12,11 +13,18 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late bool isAdmin;
+  late User user;
 
   @override
   void initState() {
     super.initState();
     isAdmin = false;
+    user = User(
+        fullName: 'hola',
+        password: 'ee',
+        isAdmin: true,
+        email: 'pepe',
+        nick: 'papo');
   }
 
   void setAdmin(isAdmin) {
@@ -25,9 +33,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     });
   }
 
+  void setUser(user) {
+    setState(() {
+      this.user = user;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthService().isAdmin().then((value) => setAdmin(value));
+    AuthService().getUser().then((value) => setUser(value));
+
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
@@ -39,7 +55,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _ProfilePic(),
             SizedBox(height: 20),
             Text(
-              'Joaquin',
+              user.nick,
               style: Theme.of(context).textTheme.headline3,
             ),
             SizedBox(height: 20),
@@ -57,7 +73,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             !isAdmin
                 ? Container()
                 : _ProfileMenu(
-                    text: "Notifications",
+                    text: "Modo administrador",
                     icon: IconButton(
                       icon: SvgPicture.asset("assets/icons/Bell.svg",
                           color: Color(0XFF283593)),
