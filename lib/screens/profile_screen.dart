@@ -2,14 +2,32 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
-import 'package:flutter_application_tfg/services/user_database_service.dart';
-import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  late bool isAdmin;
+
+  @override
+  void initState() {
+    super.initState();
+    isAdmin = false;
+  }
+
+  void setAdmin(isAdmin) {
+    setState(() {
+      this.isAdmin = isAdmin;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    AuthService().isAdmin().then((value) => setAdmin(value));
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
@@ -36,17 +54,19 @@ class ProfileScreen extends StatelessWidget {
               ),
               press: () => {Navigator.pushNamed(context, 'aboutProfile')},
             ),
-            _ProfileMenu(
-              text: "Notifications",
-              icon: IconButton(
-                icon: SvgPicture.asset("assets/icons/Bell.svg",
-                    color: Color(0XFF283593)),
-                onPressed: () {
-                  Navigator.pushNamed(context, 'manageUsers');
-                },
-              ),
-              press: () => {Navigator.pushNamed(context, 'manageUsers')},
-            ),
+            !isAdmin
+                ? Container()
+                : _ProfileMenu(
+                    text: "Notifications",
+                    icon: IconButton(
+                      icon: SvgPicture.asset("assets/icons/Bell.svg",
+                          color: Color(0XFF283593)),
+                      onPressed: () {
+                        Navigator.pushNamed(context, 'manageUsers');
+                      },
+                    ),
+                    press: () => {Navigator.pushNamed(context, 'manageUsers')},
+                  ),
             _ProfileMenu(
               text: "Modificar datos",
               icon: IconButton(
@@ -65,10 +85,15 @@ class ProfileScreen extends StatelessWidget {
               icon: IconButton(
                 icon: SvgPicture.asset("assets/icons/Delete.svg",
                     color: Color(0XFF283593)),
-                onPressed: () {
-                  AuthService().logout();
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, 'home', (Route<dynamic> route) => false);
+                onPressed: () async {
+                  final resp = await AuthService().deleteAccount();
+                  if (resp != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("ERROR LOGIN: $resp")));
+                  } else {
+                    Navigator.pushNamedAndRemoveUntil(
+                        context, 'home', (Route<dynamic> route) => false);
+                  }
                 },
               ),
               press: () {},

@@ -2,21 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
-import 'package:flutter_application_tfg/services/user_database_service.dart';
-import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class AboutProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     User user = User(
-      'Joaquin',
-      'Joaquin Asensio Manzanas',
-      'joasexi@gmail.com',
-      'joasexi',
-      true,
-    );
+        nick: 'Joaquin',
+        fullName: 'Joaquin Asensio Manzanas',
+        email: 'joasexi@gmail.com',
+        password: 'joasexi',
+        isAdmin: true);
 
     return Builder(
       builder: (context) => Scaffold(

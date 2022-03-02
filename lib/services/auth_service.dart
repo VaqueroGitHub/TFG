@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:http/http.dart' as http;
@@ -88,6 +89,10 @@ class AuthService {
 
     final url = Uri.https(_baseUrl, '/v1/accounts:delete', {'key': _apiKey});
     final resp = await http.post(url, body: jsonEncode(authData));
+    if (resp.body.contains("error")) return resp.body;
+    final userId = await storage.read(key: 'userId');
+    UserDatabaseService(uuid: userId!).deleteUser();
+    return null;
   }
 
   Future logout() async {
@@ -98,9 +103,10 @@ class AuthService {
     return await storage.read(key: 'token') ?? '';
   }
 
-  Future<String> isAdmin() async {
-    final user = await storage.read(key: 'userInfo');
-    return jsonDecode(user!)['isAdmin'] ?? false;
+  Future<bool> isAdmin() async {
+    final json = await storage.read(key: 'userInfo');
+    User user = User.fromJson(jsonDecode(json!));
+    return user.isAdmin;
   }
 
   Future<User> getUser() async {

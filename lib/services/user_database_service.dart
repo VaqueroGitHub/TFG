@@ -55,7 +55,7 @@ class UserDatabaseService {
     return list;
   }
 
-  Future deleteUser(String uid) async {
+  Future deleteUser() async {
     await Firebase.initializeApp();
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection("users");
