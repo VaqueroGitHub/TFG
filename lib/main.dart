@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/user_login_provider.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
+import 'package:flutter_application_tfg/screens/new_group_screen.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:provider/provider.dart';
@@ -38,6 +39,10 @@ class MyApplication extends StatelessWidget {
         'aboutProfile': (_) => AboutProfilePage(),
         'editProfile': (_) => EditProfilePage(),
         'manageUsers': (_) => ManageUsersScreen(),
+        'groupsMainPage': (_) => GroupsMainPage(),
+        'newGroupPage': (_) => NewGroupPage(),
+        'manageGroups': (_) => ManageGroupsScreen(),
+        'editGroup': (_) => EditGroupPage(),
       },
       theme: tfgTheme.copyWith(
           appBarTheme: const AppBarTheme(color: Colors.transparent)),

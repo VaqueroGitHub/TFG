@@ -10,7 +10,7 @@ class navBar extends StatelessWidget {
     return NavigationBarTheme(
         data: const NavigationBarThemeData(indicatorColor: Colors.transparent),
         child: NavigationBar(
-          selectedIndex: 3,
+          selectedIndex: 2,
           labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
           backgroundColor: Colors.transparent,
           destinations: const [

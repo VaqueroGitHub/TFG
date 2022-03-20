@@ -5,3 +5,7 @@ export 'package:flutter_application_tfg/screens/profile_screen.dart';
 export 'package:flutter_application_tfg/screens/about_profile_screen.dart';
 export 'package:flutter_application_tfg/screens/edit_profile_screen.dart';
 export 'package:flutter_application_tfg/screens/manage_users_screen.dart';
+export 'package:flutter_application_tfg/screens/groups_main_page_screen.dart';
+export 'package:flutter_application_tfg/screens/new_group_screen.dart';
+export 'package:flutter_application_tfg/screens/manage_groups_screen.dart';
+export 'package:flutter_application_tfg/screens/edit_group_screen.dart';
