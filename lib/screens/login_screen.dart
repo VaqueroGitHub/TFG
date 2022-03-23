@@ -101,10 +101,8 @@ class _LoginForm extends StatelessWidget {
                                 userLoginProvider.password);
 
                         if (errorMessage == null) {
-                          Navigator.pushNamedAndRemoveUntil(
-                              context,
-                              'groupsMainPage',
-                              (Route<dynamic> route) => false);
+                          Navigator.pushNamedAndRemoveUntil(context,
+                              'forumMainPage', (Route<dynamic> route) => false);
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                               content: Text("ERROR LOGIN: $errorMessage")));

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/user_login_provider.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
-import 'package:flutter_application_tfg/screens/new_group_screen.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:provider/provider.dart';
@@ -43,6 +42,14 @@ class MyApplication extends StatelessWidget {
         'newGroupPage': (_) => NewGroupPage(),
         'manageGroups': (_) => ManageGroupsScreen(),
         'editGroup': (_) => EditGroupPage(),
+        'forumMainPage': (_) => ForumMainPage(),
+        'subforumMainPage': (_) => SubforumMainPage(),
+        'newSubforumPage': (_) => NewSubforumPage(),
+        'newPostPage': (_) => NewPostPage(),
+        'postMainPage': (_) => PostMainPage(),
+        'newAnswerPage': (_) => NewAnswerPage(),
+        'managePosts': (_) => ManagePostsScreen(),
+        'manageSubforums': (_) => ManageSubforumsScreen(),
       },
       theme: tfgTheme.copyWith(
           appBarTheme: const AppBarTheme(color: Colors.transparent)),
