@@ -17,3 +17,4 @@ export 'package:flutter_application_tfg/screens/new_subforum_screen.dart';
 export 'package:flutter_application_tfg/screens/new_answer_screen.dart';
 export 'package:flutter_application_tfg/screens/manage_posts_screen.dart';
 export 'package:flutter_application_tfg/screens/manage_subforums_screen.dart';
+export 'package:flutter_application_tfg/screens/group_details_screen.dart';
