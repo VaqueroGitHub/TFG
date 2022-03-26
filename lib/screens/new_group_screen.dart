@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/group.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_application_tfg/services/group_database_service.dart';
+
+import '../providers/user_session_provider.dart';
 
 class NewGroupPage extends StatelessWidget {
   @override
@@ -28,13 +32,21 @@ class _NewGroupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userRegisterProvider = Provider.of<UserRegisterProvider>(context);
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
+
+    //creo un objeto grupo
+    Group grupo = new Group(
+        asignatura: '',
+        year: -1,
+        description: '',
+        nMembersRequired: -1,
+        idMembers: [userSessionProvider.id],
+        idUser: userSessionProvider.id);
 
     return SingleChildScrollView(
         child: Container(
             padding: EdgeInsets.only(left: 35, right: 35),
             child: Form(
-              key: userRegisterProvider.formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -49,30 +61,36 @@ class _NewGroupPage extends StatelessWidget {
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    // onChanged: (val) => userRegisterProvider.fullName = val,
+                    onChanged: (val) => grupo.asignatura = val,
                     decoration: const InputDecoration(
                         labelText: "Introduce el codigo de la asignatura"),
                     minLines: 1,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    // onChanged: (val) => userRegisterProvider.nick = val,
+                    onChanged: (val) => val != ''
+                        ? grupo.nMembersRequired = int.parse(val)
+                        : grupo.nMembersRequired = -1,
                     decoration: const InputDecoration(
                         labelText: "Introduce el tamaño del grupo"),
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    //  onChanged: (val) => userRegisterProvider.email = val,
+                    onChanged: (val) => val != ''
+                        ? grupo.year = int.parse(val)
+                        : grupo.year = -1,
                     decoration: const InputDecoration(
                         labelText:
                             "Introduce el curso al que pertenece la asignatura"),
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    onChanged: (val) => userRegisterProvider.password = val,
+                    // any number you need (It works as the rows for the textarea)
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    onChanged: (val) => grupo.description = val,
                     decoration: const InputDecoration(
                         labelText: "¿Qué esperas de los miembros del grupo?"),
-                    obscureText: true,
                   ),
                   SizedBox(height: height * 0.04),
                   Row(
@@ -90,27 +108,22 @@ class _NewGroupPage extends StatelessWidget {
                           'Crear grupo',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
-                        onPressed: userRegisterProvider.isLoading
-                            ? null
-                            : () async {
-                                // if (!userRegisterProvider.isValidForm()) return;
-
-                                userRegisterProvider.isLoading = true;
-                                final String? errorMessage = await AuthService()
-                                    .signUpUser(userRegisterProvider.user());
-
-                                if (errorMessage == null) {
-                                  Navigator.pushNamedAndRemoveUntil(context,
-                                      'home', (Route<dynamic> route) => false);
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              "ERROR LOGIN: $errorMessage")));
-                                }
-
-                                userRegisterProvider.isLoading = false;
-                              },
+                        onPressed: () async {
+                          if (grupo.asignatura != '' &&
+                              grupo.description != '' &&
+                              grupo.year != -1 &&
+                              grupo.nMembersRequired != -1) {
+                            GroupDatabaseService()
+                                .updateGroup(grupo, userSessionProvider.id);
+                            Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                'groupsMainPage',
+                                (Route<dynamic> route) => false);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("RELLENA TODOS LOS CAMPOS")));
+                          }
+                        },
                       ),
                     ],
                   ),

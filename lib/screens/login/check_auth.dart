@@ -18,7 +18,7 @@ class CheckAuthScreen extends StatelessWidget {
           Future.microtask(() {
             if (snapshot.data == '') {
               Navigator.pushNamedAndRemoveUntil(
-                  context, 'logIn', (Route<dynamic> route) => false);
+                  context, 'home', (Route<dynamic> route) => false);
             } else {
               final userSessionProvider =
                   Provider.of<UserSessionProvider>(context, listen: false);

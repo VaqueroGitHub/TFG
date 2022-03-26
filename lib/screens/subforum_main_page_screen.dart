@@ -184,10 +184,6 @@ class _GroupButtons extends StatelessWidget {
           IconButton(
               icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
               onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
-          SizedBox(width: 20),
-          IconButton(
-              icon: Icon(Icons.checklist_sharp, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'managePosts')}),
         ],
       ),
     );

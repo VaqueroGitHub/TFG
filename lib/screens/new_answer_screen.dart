@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import '../models/answer.dart';
+import '../providers/user_session_provider.dart';
+import '../services/answer_database_service.dart';
 
 class NewAnswerPage extends StatelessWidget {
   @override
@@ -28,13 +32,19 @@ class _NewAnswerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userRegisterProvider = Provider.of<UserRegisterProvider>(context);
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
+
+    //creo un objeto grupo
+    Answer answer = new Answer(
+      answer: '',
+      idPost: '',
+      idUser: userSessionProvider.id,
+    );
 
     return SingleChildScrollView(
         child: Container(
             padding: EdgeInsets.only(left: 35, right: 35),
             child: Form(
-              key: userRegisterProvider.formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -50,37 +60,44 @@ class _NewAnswerPage extends StatelessWidget {
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    // onChanged: (val) => userRegisterProvider.fullName = val,
+                    // any number you need (It works as the rows for the textarea)
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    onChanged: (val) => answer.answer = val,
+                    maxLength: 500,
                     decoration:
                         const InputDecoration(labelText: "Introduce el texto"),
-                    maxLength: 500,
-                    minLines: 1,
                   ),
-                  SizedBox(height: height * 0.08),
+                  SizedBox(height: height * 0.04),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       MaterialButton(
-                          elevation: 10.0,
-                          minWidth: 170.0,
-                          height: 50.0,
-                          color: Theme.of(context).primaryColor,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8.0),
-                          ),
-                          child: const Text(
-                            'Responder',
-                            style:
-                                TextStyle(color: Colors.white, fontSize: 20.0),
-                          ),
-                          onPressed: userRegisterProvider.isLoading
-                              ? null
-                              : () async {
-                                  Navigator.pushNamedAndRemoveUntil(
-                                      context,
-                                      'postMainPage',
-                                      (Route<dynamic> route) => false);
-                                }),
+                        elevation: 10.0,
+                        minWidth: 170.0,
+                        height: 50.0,
+                        color: Theme.of(context).primaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: const Text(
+                          'Responder',
+                          style: TextStyle(color: Colors.white, fontSize: 20.0),
+                        ),
+                        onPressed: () async {
+                          if (answer.answer != '') {
+                            AnswerDatabaseService()
+                                .updateAnswer(answer, userSessionProvider.id);
+                            Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                'forumMainPage',
+                                (Route<dynamic> route) => false);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("RELLENA TODOS LOS CAMPOS")));
+                          }
+                        },
+                      ),
                     ],
                   ),
                 ],

@@ -8,13 +8,13 @@ class PostMainPage extends StatefulWidget {
 
 // ignore: non_constant_identifier_names
 var ForumPostArr = [
-  ForumPostEntry("Joaquín Sexi", "Hace 2 días", 0, 0,
+  ForumPostEntry("Joaquín Sexi",
       "Hola,\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
-  ForumPostEntry("Javier Vaquero", "Hace 15 horas", 1, 0,
+  ForumPostEntry("Javier Vaquero",
       "Pellentesque justo metus, finibus porttitor consequat vitae, tincidunt vitae quam. Vestibulum molestie sem diam. Nullam pretium semper tempus. Maecenas lobortis lacus nunc, id lacinia nunc imperdiet tempor. Mauris mi ipsum, finibus consectetur eleifend a, maximus eget lorem. Praesent a magna nibh. In congue sapien sed velit mattis sodales. Nam tempus pulvinar metus, in gravida elit tincidunt in. Curabitur sed sapien commodo, fringilla tortor eu, accumsan est. Proin tincidunt convallis dolor, a faucibus sapien auctor sodales. Duis vitae dapibus metus. Nulla sit amet porta ipsum, posuere tempor tortor.\n\nCurabitur mauris dolor, cursus et mi id, mattis sagittis velit. Duis eleifend mi et ante aliquam elementum. Ut feugiat diam enim, at placerat elit semper vitae. Phasellus vulputate quis ex eu dictum. Cras sapien magna, faucibus at lacus vel, faucibus viverra lorem. Phasellus quis dui tristique, ultricies velit non, cursus lectus. Suspendisse neque nisl, vestibulum non dui in, vulputate placerat elit. Sed at convallis mauris, eu blandit dolor. Vivamus suscipit iaculis erat eu condimentum. Aliquam erat volutpat. Curabitur posuere commodo arcu vel consectetur."),
-  ForumPostEntry("Carlos Luengo", "Hace 7 horas", 5, 0,
+  ForumPostEntry("Carlos Luengo",
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
-  ForumPostEntry("Donald Trump", "Hace 58 minutos", 0, 0,
+  ForumPostEntry("Donald Trump",
       "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
 ];
 
@@ -107,13 +107,9 @@ class _PostMainPageState extends State<PostMainPage> {
 
 class ForumPostEntry {
   final String username;
-  final String hours;
-  final int likes;
-  final int dislikes;
   final String text;
 
-  ForumPostEntry(
-      this.username, this.hours, this.likes, this.dislikes, this.text);
+  ForumPostEntry(this.username, this.text);
 }
 
 class ForumPost extends StatelessWidget {
@@ -149,30 +145,9 @@ class ForumPost extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
                       Text(entry.username),
-                      Text(entry.hours),
                     ],
                   ),
                 ),
-                Row(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Icon(Icons.thumb_up),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Text(entry.likes.toString()),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(2.0),
-                      child: Icon(Icons.thumb_down),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 8.0, left: 2.0),
-                      child: Text(entry.dislikes.toString()),
-                    ),
-                  ],
-                )
               ],
             ),
           ),

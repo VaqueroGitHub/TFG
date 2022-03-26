@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
+import '../providers/user_session_provider.dart';
+import '../services/post_database_service.dart';
 
 class NewPostPage extends StatelessWidget {
   @override
@@ -14,12 +17,12 @@ class NewPostPage extends StatelessWidget {
           elevation: 0,
         ),
         backgroundColor: Color(0xFFffffff),
-        body: _NewGroupPage(height: height));
+        body: _NewPostPage(height: height));
   }
 }
 
-class _NewGroupPage extends StatelessWidget {
-  const _NewGroupPage({
+class _NewPostPage extends StatelessWidget {
+  const _NewPostPage({
     Key? key,
     required this.height,
   }) : super(key: key);
@@ -28,13 +31,20 @@ class _NewGroupPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final userRegisterProvider = Provider.of<UserRegisterProvider>(context);
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
+
+    //creo un objeto grupo
+    Post post = new Post(
+      title: '',
+      body: '',
+      idUser: userSessionProvider.id,
+      idForumSection: '3SdhCUiAg1j2Ae5RBZBB',
+    );
 
     return SingleChildScrollView(
         child: Container(
             padding: EdgeInsets.only(left: 35, right: 35),
             child: Form(
-              key: userRegisterProvider.formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -50,7 +60,7 @@ class _NewGroupPage extends StatelessWidget {
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    // onChanged: (val) => userRegisterProvider.fullName = val,
+                    onChanged: (val) => post.title = val,
                     maxLength: 20,
                     decoration:
                         const InputDecoration(labelText: "Introduce el título"),
@@ -58,7 +68,10 @@ class _NewGroupPage extends StatelessWidget {
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    // onChanged: (val) => userRegisterProvider.nick = val,
+                    // any number you need (It works as the rows for the textarea)
+                    keyboardType: TextInputType.multiline,
+                    maxLines: null,
+                    onChanged: (val) => post.body = val,
                     maxLength: 500,
                     decoration:
                         const InputDecoration(labelText: "Introduce el texto"),
@@ -79,27 +92,19 @@ class _NewGroupPage extends StatelessWidget {
                           'Crear post',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
-                        onPressed: userRegisterProvider.isLoading
-                            ? null
-                            : () async {
-                                // if (!userRegisterProvider.isValidForm()) return;
-
-                                userRegisterProvider.isLoading = true;
-                                final String? errorMessage = await AuthService()
-                                    .signUpUser(userRegisterProvider.user());
-
-                                if (errorMessage == null) {
-                                  Navigator.pushNamedAndRemoveUntil(context,
-                                      'home', (Route<dynamic> route) => false);
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                          content: Text(
-                                              "ERROR LOGIN: $errorMessage")));
-                                }
-
-                                userRegisterProvider.isLoading = false;
-                              },
+                        onPressed: () async {
+                          if (post.title != '' && post.body != '') {
+                            PostDatabaseService()
+                                .updatePost(post, userSessionProvider.id);
+                            Navigator.pushNamedAndRemoveUntil(
+                                context,
+                                'groupsPostPage',
+                                (Route<dynamic> route) => false);
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                                content: Text("RELLENA TODOS LOS CAMPOS")));
+                          }
+                        },
                       ),
                     ],
                   ),

@@ -153,18 +153,12 @@ class _GroupButtons extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           IconButton(
-              icon: Icon(Icons.add, color: Color(0XFF283593)),
-              onPressed: () =>
-                  {Navigator.pushNamed(context, 'newSubforumPage')}),
-          SizedBox(width: 20),
-          IconButton(
               icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
               onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
           SizedBox(width: 20),
           IconButton(
               icon: Icon(Icons.checklist_sharp, color: Color(0XFF283593)),
-              onPressed: () =>
-                  {Navigator.pushNamed(context, 'manageSubforums')}),
+              onPressed: () => {Navigator.pushNamed(context, 'managePosts')}),
         ],
       ),
     );

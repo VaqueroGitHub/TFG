@@ -57,6 +57,7 @@ class MyApplication extends StatelessWidget {
         'managePosts': (_) => ManagePostsScreen(),
         'manageSubforums': (_) => ManageSubforumsScreen(),
         'groupDetails': (_) => GroupDetailsScreen(),
+        'userGroupScreen': (_) => UserGroupsPage(),
       },
       theme: tfgTheme.copyWith(
           appBarTheme: const AppBarTheme(color: Colors.transparent)),

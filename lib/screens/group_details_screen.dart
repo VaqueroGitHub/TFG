@@ -58,19 +58,24 @@ class _GroupDetailsScreen extends State<GroupDetailsScreen> {
             const SizedBox(height: 48),
             buildAbout(context, user),
             const SizedBox(height: 48),
-            MaterialButton(
-              elevation: 10.0,
-              minWidth: 150.0,
-              height: 50.0,
-              color: Theme.of(context).primaryColor,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8.0),
-              ),
-              child: const Text(
-                'Únete',
-                style: TextStyle(color: Colors.white, fontSize: 20.0),
-              ),
-              onPressed: () => {Navigator.pushNamed(context, 'groupsMainPage')},
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MaterialButton(
+                  elevation: 10.0,
+                  minWidth: 200.0,
+                  height: 50.0,
+                  color: Theme.of(context).primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: const Text(
+                    'Únete',
+                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  ),
+                  onPressed: () async {},
+                ),
+              ],
             ),
           ],
         ),
