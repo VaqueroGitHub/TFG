@@ -20,7 +20,11 @@ class AnswerDatabaseService {
     final CollectionReference answerCollection =
         FirebaseFirestore.instance.collection("answer");
 
-    return await answerCollection.doc(uuid).set({'answer': answer.answer});
+    return await answerCollection.doc(uuid).set({
+      'answer': answer.answer,
+      'idPost': answer.idPost,
+      'idUser': answer.idUser
+    });
   }
 
   Future deletePost(String uuid) async {

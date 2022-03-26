@@ -20,9 +20,12 @@ class PostDatabaseService {
     final CollectionReference postCollection =
         FirebaseFirestore.instance.collection("post");
 
-    return await postCollection
-        .doc(uuid)
-        .set({'title': post.title, 'body': post.body});
+    return await postCollection.doc(uuid).set({
+      'title': post.title,
+      'body': post.body,
+      'idUser': post.idUser,
+      'idForumSection': post.idForumSection
+    });
   }
 
   Future deletePost(String uuid) async {
