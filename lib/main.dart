@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/ui_provider.dart';
 import 'package:flutter_application_tfg/providers/user_login_provider.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
+import 'package:flutter_application_tfg/screens/login/check_auth.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +19,8 @@ class AppState extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => UserLoginProvider()),
         ChangeNotifierProvider(create: (_) => UserRegisterProvider()),
+        ChangeNotifierProvider(create: (_) => UserSessionProvider()),
+        ChangeNotifierProvider(create: (_) => UiProvider()),
       ],
       child: MyApplication(),
     );
@@ -29,11 +34,12 @@ class MyApplication extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Nombre App',
-      initialRoute: 'home',
+      initialRoute: 'checkAuth',
       routes: {
         'home': (_) => HomeScreen(),
         'register': (_) => RegisterScreen(),
         'logIn': (_) => LogInScreen(),
+        'checkAuth': (_) => CheckAuthScreen(),
         'profile': (_) => ProfileScreen(),
         'aboutProfile': (_) => AboutProfilePage(),
         'editProfile': (_) => EditProfilePage(),

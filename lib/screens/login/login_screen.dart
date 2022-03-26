@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/user_login_provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -98,9 +99,13 @@ class _LoginForm extends StatelessWidget {
                         userLoginProvider.isLoading = true;
                         final String? errorMessage = await AuthService()
                             .signInUser(userLoginProvider.email,
-                                userLoginProvider.password);
+                                userLoginProvider.password, context);
 
                         if (errorMessage == null) {
+                          final userSessionProvider =
+                              Provider.of<UserSessionProvider>(context,
+                                  listen: false);
+                          userSessionProvider.loadUserInfo();
                           Navigator.pushNamedAndRemoveUntil(
                               context,
                               'groupsMainPage',

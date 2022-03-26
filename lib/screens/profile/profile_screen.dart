@@ -2,47 +2,16 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
-class ProfileScreen extends StatefulWidget {
-  @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
-}
-
-class _ProfileScreenState extends State<ProfileScreen> {
-  late bool isAdmin;
-  late User user;
-
-  @override
-  void initState() {
-    super.initState();
-    isAdmin = false;
-    user = User(
-        fullName: 'hola',
-        password: 'ee',
-        isAdmin: true,
-        email: 'pepe',
-        nick: 'papo');
-  }
-
-  void setAdmin(isAdmin) {
-    setState(() {
-      this.isAdmin = isAdmin;
-    });
-  }
-
-  void setUser(user) {
-    setState(() {
-      this.user = user;
-    });
-  }
-
+class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AuthService().isAdmin().then((value) => setAdmin(value));
-    AuthService().getUser().then((value) => setUser(value));
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
 
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -55,7 +24,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             _ProfilePic(),
             SizedBox(height: 20),
             Text(
-              user.nick,
+              userSessionProvider.user.nick,
               style: Theme.of(context).textTheme.headline3,
             ),
             SizedBox(height: 20),
@@ -70,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               press: () => {Navigator.pushNamed(context, 'aboutProfile')},
             ),
-            !isAdmin
+            !userSessionProvider.user.isAdmin
                 ? Container()
                 : _ProfileMenu(
                     text: "Modo administrador",

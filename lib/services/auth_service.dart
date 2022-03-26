@@ -1,9 +1,12 @@
 import 'dart:convert';
-import 'dart:ffi';
+import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:http/http.dart' as http;
+import 'dart:ffi';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 
 class AuthService {
   //Singleton class
@@ -47,7 +50,8 @@ class AuthService {
     }
   }
 
-  Future<String?> signInUser(String email, String password) async {
+  Future<String?> signInUser(
+      String email, String password, BuildContext context) async {
     final authData = {
       'email': email,
       'password': password,
@@ -112,5 +116,10 @@ class AuthService {
   Future<User> getUser() async {
     final json = await storage.read(key: 'userInfo');
     return User.fromJson(jsonDecode(json!));
+  }
+
+  Future<String> getUserId() async {
+    final userId = await storage.read(key: 'userId');
+    return userId!;
   }
 }
