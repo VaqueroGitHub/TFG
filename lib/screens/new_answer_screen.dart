@@ -38,7 +38,7 @@ class _NewAnswerPage extends StatelessWidget {
     Answer answer = new Answer(
       answer: '',
       idPost: '',
-      idUser: userSessionProvider.id,
+      idUser: userSessionProvider.user.id!,
     );
 
     return SingleChildScrollView(
@@ -86,8 +86,8 @@ class _NewAnswerPage extends StatelessWidget {
                         ),
                         onPressed: () async {
                           if (answer.answer != '') {
-                            AnswerDatabaseService()
-                                .updateAnswer(answer, userSessionProvider.id);
+                            AnswerDatabaseService().updateAnswer(
+                                answer, userSessionProvider.user.id!);
                             Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 'forumMainPage',

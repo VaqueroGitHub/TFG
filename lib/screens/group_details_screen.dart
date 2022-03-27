@@ -7,40 +7,9 @@ import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 
-class GroupDetailsScreen extends StatefulWidget {
-  @override
-  State<GroupDetailsScreen> createState() => _GroupDetailsScreen();
-}
-
-class _GroupDetailsScreen extends State<GroupDetailsScreen> {
-  late User user;
-
-  @override
-  void initState() {
-    super.initState();
-    user = User(
-        fullName: 'hola',
-        password: 'ee',
-        isAdmin: true,
-        email: 'pepe',
-        nick: 'papo');
-  }
-
-  void setUser(user) {
-    setState(() {
-      this.user = user;
-    });
-  }
-
+class GroupDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //User user = User(
-    //    nick: 'Joaquin',
-    //    fullName: 'Joaquin Asensio Manzanas',
-    //    email: 'joasexi@gmail.com',
-    //    password: 'joasexi',
-    //    isAdmin: true);
-    AuthService().getUser().then((value) => setUser(value));
     return Builder(
       builder: (context) => Scaffold(
         body: ListView(
@@ -56,7 +25,15 @@ class _GroupDetailsScreen extends State<GroupDetailsScreen> {
             const SizedBox(height: 24),
             GroupNumbersWidget(),
             const SizedBox(height: 48),
-            buildAbout(context, user),
+            buildAbout(
+                context,
+                User(
+                    nick: "nick",
+                    fullName: "fullName",
+                    email: "email",
+                    password: "password",
+                    isAdmin: false,
+                    bio: "bio")),
             const SizedBox(height: 48),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,

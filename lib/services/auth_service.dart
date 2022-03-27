@@ -1,12 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:http/http.dart' as http;
-import 'dart:ffi';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
 
 class AuthService {
   //Singleton class
@@ -52,17 +49,8 @@ class AuthService {
 
   Future<String?> signInUser(
       String email, String password, BuildContext context) async {
-    final authData = {
-      'email': email,
-      'password': password,
-      'returnSecureToken': true
-    };
-
-    final url = Uri.https(
-        _baseUrl, '/v1/accounts:signInWithPassword', {'key': _apiKey});
-    final resp = await http.post(url, body: jsonEncode(authData));
-
-    final Map<String, dynamic> decodedResp = jsonDecode(resp.body);
+    final Map<String, dynamic> decodedResp =
+        await singInUserInfo(email, password);
 
     if (decodedResp.containsKey('idToken')) {
       var userInfo =
@@ -72,7 +60,6 @@ class AuthService {
       //Token e info relativa a usuario hay que guardarlo en lugar seguro para el uso de la app
       await storage.write(key: 'token', value: decodedResp['idToken']);
       await storage.write(key: 'userId', value: decodedResp['localId']);
-      await storage.write(key: 'userInfo', value: jsonEncode(userInfo));
 
       return null;
     } else {
@@ -88,14 +75,31 @@ class AuthService {
     }
   }
 
-  Future<String?> deleteAccount() async {
-    final authData = {'idToken': await storage.read(key: 'token')};
+  Future<Map<String, dynamic>> singInUserInfo(
+      String email, String password) async {
+    final authData = {
+      'email': email,
+      'password': password,
+      'returnSecureToken': true
+    };
+
+    final url = Uri.https(
+        _baseUrl, '/v1/accounts:signInWithPassword', {'key': _apiKey});
+    final resp = await http.post(url, body: jsonEncode(authData));
+
+    return jsonDecode(resp.body);
+  }
+
+  Future<String?> deleteAccount(User user) async {
+    final Map<String, dynamic> decodedResp =
+        await singInUserInfo(user.email, user.password);
+
+    final authData = {'idToken': decodedResp['idToken']};
 
     final url = Uri.https(_baseUrl, '/v1/accounts:delete', {'key': _apiKey});
     final resp = await http.post(url, body: jsonEncode(authData));
     if (resp.body.contains("error")) return resp.body;
-    final userId = await storage.read(key: 'userId');
-    UserDatabaseService(uuid: userId!).deleteUser();
+    UserDatabaseService(uuid: user.id!).deleteUser();
     return null;
   }
 
@@ -111,11 +115,6 @@ class AuthService {
     final json = await storage.read(key: 'userInfo');
     User user = User.fromJson(jsonDecode(json!));
     return user.isAdmin;
-  }
-
-  Future<User> getUser() async {
-    final json = await storage.read(key: 'userInfo');
-    return User.fromJson(jsonDecode(json!));
   }
 
   Future<String> getUserId() async {

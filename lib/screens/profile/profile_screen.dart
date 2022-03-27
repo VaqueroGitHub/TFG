@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -33,10 +34,12 @@ class ProfileScreen extends StatelessWidget {
                 icon: SvgPicture.asset("assets/icons/User Icon.svg",
                     color: Color(0XFF283593)),
                 onPressed: () {
-                  Navigator.pushNamed(context, 'aboutProfile');
+                  Navigator.pushNamed(context, 'aboutProfile',
+                      arguments: UserArguments(
+                          user: userSessionProvider.user,
+                          id: userSessionProvider.user.id!));
                 },
               ),
-              press: () => {Navigator.pushNamed(context, 'aboutProfile')},
             ),
             !userSessionProvider.user.isAdmin
                 ? Container()
@@ -57,12 +60,12 @@ class ProfileScreen extends StatelessWidget {
                 icon: SvgPicture.asset("assets/icons/Settings.svg",
                     color: Color(0XFF283593)),
                 onPressed: () {
-                  Navigator.pushNamed(context, 'editProfile');
+                  Navigator.pushNamed(context, 'editProfile',
+                      arguments: UserArguments(
+                          user: userSessionProvider.user,
+                          id: userSessionProvider.user.id!));
                 },
               ),
-              press: () {
-                Navigator.pushNamed(context, 'editProfile');
-              },
             ),
             _ProfileMenu(
               text: "Eliminar cuenta",
@@ -70,10 +73,11 @@ class ProfileScreen extends StatelessWidget {
                 icon: SvgPicture.asset("assets/icons/Delete.svg",
                     color: Color(0XFF283593)),
                 onPressed: () async {
-                  final resp = await AuthService().deleteAccount();
+                  final resp = await AuthService()
+                      .deleteAccount(userSessionProvider.user);
                   if (resp != null) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text("ERROR LOGIN: $resp")));
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text("ERROR: $resp")));
                   } else {
                     Navigator.pushNamedAndRemoveUntil(
                         context, 'home', (Route<dynamic> route) => false);

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:flutter_application_tfg/services/user_database_service.dart';
 
 class UserSessionProvider extends ChangeNotifier {
-  late String id;
   late User userSession;
 
   User get user {
@@ -14,16 +14,8 @@ class UserSessionProvider extends ChangeNotifier {
     userSession = user;
   }
 
-  String get userId {
-    return id;
-  }
-
-  void set userId(String userId) {
-    id = userId;
-  }
-
   void loadUserInfo() async {
-    userSession = await AuthService().getUser();
-    id = await AuthService().getUserId();
+    var userId = await AuthService().getUserId();
+    userSession = (await UserDatabaseService(uuid: userId).getUserData())!;
   }
 }

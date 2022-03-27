@@ -7,6 +7,7 @@ class UserRegisterProvider extends ChangeNotifier {
   String email = '';
   String password = '';
   String confirmPassword = '';
+  String bio = 'Insert here your bio..';
 
   GlobalKey<FormState> formKey = GlobalKey();
 
@@ -22,6 +23,7 @@ class UserRegisterProvider extends ChangeNotifier {
         fullName: fullName,
         email: email,
         password: password,
-        isAdmin: false);
+        isAdmin: false,
+        bio: bio);
   }
 }

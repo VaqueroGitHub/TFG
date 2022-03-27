@@ -6,44 +6,9 @@ import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class GroupsMainPage extends StatefulWidget {
-  @override
-  State<GroupsMainPage> createState() => _GroupsMainPage();
-}
-
-class _GroupsMainPage extends State<GroupsMainPage> {
-  late bool isAdmin;
-  late User user;
-
-  @override
-  void initState() {
-    super.initState();
-    isAdmin = false;
-    user = User(
-        fullName: 'hola',
-        password: 'ee',
-        isAdmin: true,
-        email: 'pepe',
-        nick: 'papo');
-  }
-
-  void setAdmin(isAdmin) {
-    setState(() {
-      this.isAdmin = isAdmin;
-    });
-  }
-
-  void setUser(user) {
-    setState(() {
-      this.user = user;
-    });
-  }
-
+class GroupsMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AuthService().isAdmin().then((value) => setAdmin(value));
-    AuthService().getUser().then((value) => setUser(value));
-
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),

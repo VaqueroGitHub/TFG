@@ -82,6 +82,14 @@ class _RegisterBody extends StatelessWidget {
                         labelText: "Confirma tu contraseña"),
                     obscureText: true,
                   ),
+                  SizedBox(height: height * 0.05),
+                  TextFormField(
+                    initialValue: userRegisterProvider.bio,
+                    onChanged: (val) => userRegisterProvider.bio = val,
+                    decoration: const InputDecoration(labelText: "Bio"),
+                    minLines: 1,
+                    maxLines: 6,
+                  ),
                   SizedBox(height: height * 0.04),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

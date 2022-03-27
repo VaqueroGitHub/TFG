@@ -40,8 +40,8 @@ class _NewGroupPage extends StatelessWidget {
         year: -1,
         description: '',
         nMembersRequired: -1,
-        idMembers: [userSessionProvider.id],
-        idUser: userSessionProvider.id);
+        idMembers: [userSessionProvider.user.id!],
+        idUser: userSessionProvider.user.id!);
 
     return SingleChildScrollView(
         child: Container(
@@ -113,8 +113,8 @@ class _NewGroupPage extends StatelessWidget {
                               grupo.description != '' &&
                               grupo.year != -1 &&
                               grupo.nMembersRequired != -1) {
-                            GroupDatabaseService()
-                                .updateGroup(grupo, userSessionProvider.id);
+                            GroupDatabaseService().updateGroup(
+                                grupo, userSessionProvider.user.id!);
                             Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 'groupsMainPage',

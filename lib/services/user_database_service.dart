@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_tfg/models/user.dart';
@@ -7,16 +9,24 @@ class UserDatabaseService {
 
   UserDatabaseService({required this.uuid});
 
-  Future<Map<String, dynamic?>?> getUserData() async {
+  Future<User?> getUserData() async {
     await Firebase.initializeApp();
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection("users");
 
     final resp = await userCollection.doc(uuid).get();
-    final data = resp.data();
+    Map<dynamic, dynamic> data = resp.data() as Map<dynamic, dynamic>;
     if (data == null) return null;
-    final Map<String, dynamic?>? doc = data as Map<String, dynamic?>;
-    return doc;
+    User user = User(
+        nick: data["nick"],
+        fullName: data["name"],
+        email: data["email"],
+        password: data["password"],
+        isAdmin: data["isAdmin"],
+        bio: data["bio"],
+        id: resp.id);
+
+    return user;
   }
 
   Future updateUserData(User user) async {
@@ -30,6 +40,7 @@ class UserDatabaseService {
         'password': user.password,
         'nick': user.nick,
         'isAdmin': true,
+        "bio": user.bio,
       });
     } else {
       return await userCollection.doc(uuid).set({
@@ -38,21 +49,33 @@ class UserDatabaseService {
         'password': user.password,
         'nick': user.nick,
         'isAdmin': false,
+        "bio": user.bio,
       });
     }
   }
 
-  Future<List<Map<dynamic, dynamic>>> getAllUsersAdmin() async {
+  Future<List<User>> getAllUsersAdmin() async {
     await Firebase.initializeApp();
     final QuerySnapshot userCollection = await FirebaseFirestore.instance
         .collection("users")
         .where('isAdmin', isEqualTo: false)
         .get();
 
-    List<Map<dynamic, dynamic>> list =
-        userCollection.docs.map((doc) => doc.data()).cast<Map>().toList();
+    List<User> listUser = [];
+    userCollection.docs.forEach((element) {
+      Map<dynamic, dynamic> userMap = element.data() as Map;
+      User user = User(
+          nick: userMap["nick"],
+          fullName: userMap["name"],
+          email: userMap["email"],
+          password: userMap["password"],
+          isAdmin: userMap["isAdmin"],
+          bio: userMap["bio"],
+          id: element.id);
+      listUser.add(user);
+    });
 
-    return list;
+    return listUser;
   }
 
   Future deleteUser() async {

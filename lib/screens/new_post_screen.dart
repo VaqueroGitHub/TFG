@@ -37,7 +37,7 @@ class _NewPostPage extends StatelessWidget {
     Post post = new Post(
       title: '',
       body: '',
-      idUser: userSessionProvider.id,
+      idUser: userSessionProvider.user.id!,
       idForumSection: '3SdhCUiAg1j2Ae5RBZBB',
     );
 
@@ -95,7 +95,7 @@ class _NewPostPage extends StatelessWidget {
                         onPressed: () async {
                           if (post.title != '' && post.body != '') {
                             PostDatabaseService()
-                                .updatePost(post, userSessionProvider.id);
+                                .updatePost(post, userSessionProvider.user.id!);
                             Navigator.pushNamedAndRemoveUntil(
                                 context,
                                 'groupsPostPage',

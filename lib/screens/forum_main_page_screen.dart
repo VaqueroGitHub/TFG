@@ -1,49 +1,12 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ForumMainPage extends StatefulWidget {
-  @override
-  State<ForumMainPage> createState() => _ForumMainPage();
-}
-
-class _ForumMainPage extends State<ForumMainPage> {
-  late bool isAdmin;
-  late User user;
-
-  @override
-  void initState() {
-    super.initState();
-    isAdmin = false;
-    user = User(
-        fullName: 'hola',
-        password: 'ee',
-        isAdmin: true,
-        email: 'pepe',
-        nick: 'papo');
-  }
-
-  void setAdmin(isAdmin) {
-    setState(() {
-      this.isAdmin = isAdmin;
-    });
-  }
-
-  void setUser(user) {
-    setState(() {
-      this.user = user;
-    });
-  }
-
+class ForumMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AuthService().isAdmin().then((value) => setAdmin(value));
-    AuthService().getUser().then((value) => setUser(value));
-
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),

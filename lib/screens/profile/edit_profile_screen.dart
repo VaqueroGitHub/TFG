@@ -1,38 +1,12 @@
-// ignore_for_file: file_names
-import 'dart:ffi';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 
-class EditProfilePage extends StatefulWidget {
-  @override
-  State<EditProfilePage> createState() => _EditProfilePageState();
-}
-
-class _EditProfilePageState extends State<EditProfilePage> {
-  late User user;
-
-  @override
-  void initState() {
-    super.initState();
-    user = User(
-        fullName: 'hola',
-        password: 'ee',
-        isAdmin: true,
-        email: 'pepe',
-        nick: 'papo');
-  }
-
-  void setUser(user) {
-    setState(() {
-      this.user = user;
-    });
-  }
-
+class EditProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    AuthService().getUser().then((value) => setUser(value));
+    //final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final args = ModalRoute.of(context)!.settings.arguments as UserArguments;
 
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
@@ -47,7 +21,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         children: [
           Center(
             child: Text(
-              'Modifica tus datos,' + user.nick,
+              'Modifica tus datos,' + args.user.nick,
               style: Theme.of(context).textTheme.headline2,
             ),
           ),
@@ -60,30 +34,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
           SizedBox(height: height * 0.05),
           TextFormField(
-            initialValue: user.fullName,
-            onChanged: (val) => user.fullName = val,
+            initialValue: args.user.fullName,
+            onChanged: (val) => args.user.fullName = val,
             decoration: const InputDecoration(labelText: "Nombre completo"),
             minLines: 1,
           ),
           SizedBox(height: height * 0.05),
           TextFormField(
-            initialValue: user.nick,
-            onChanged: (val) => user.nick = val,
+            initialValue: args.user.nick,
+            onChanged: (val) => args.user.nick = val,
             decoration: const InputDecoration(labelText: "Nick"),
           ),
           SizedBox(height: height * 0.05),
           TextFormField(
-            initialValue: user.email,
-            onChanged: (val) => user.email = val,
+            initialValue: args.user.email,
+            onChanged: (val) => args.user.email = val,
             decoration:
                 const InputDecoration(labelText: "Correo universitario"),
           ),
           SizedBox(height: height * 0.05),
           TextFormField(
-            initialValue: user.password,
-            onChanged: (val) => user.password = val,
+            initialValue: args.user.password,
+            onChanged: (val) => args.user.password = val,
             decoration: const InputDecoration(labelText: "Contraseña"),
             obscureText: true,
+          ),
+          SizedBox(height: height * 0.05),
+          TextFormField(
+            initialValue: args.user.bio,
+            onChanged: (val) => args.user.bio = val,
+            decoration: const InputDecoration(labelText: "Bio"),
+            minLines: 1,
+            maxLines: 6,
           ),
           SizedBox(height: height * 0.07),
           Row(

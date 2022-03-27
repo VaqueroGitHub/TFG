@@ -7,6 +7,8 @@ class User {
     required this.email,
     required this.password,
     required this.isAdmin,
+    required this.bio,
+    this.id,
   });
 
   String nick;
@@ -14,6 +16,8 @@ class User {
   String email;
   String password;
   bool isAdmin;
+  String bio;
+  String? id;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
         nick: json["nick"],
@@ -21,6 +25,8 @@ class User {
         email: json["email"],
         password: json["password"],
         isAdmin: json["isAdmin"],
+        bio: json["bio"],
+        id: json["id"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -29,5 +35,6 @@ class User {
         "email": email,
         "password": password,
         "isAdmin": isAdmin,
+        "bio": bio,
       };
 }
