@@ -47,4 +47,17 @@ class PostDatabaseService {
 
     return list;
   }
+
+  Future<List<Map<dynamic, dynamic>>> getUserPosts(String idUser) async {
+    await Firebase.initializeApp();
+    final QuerySnapshot userPosts = await FirebaseFirestore.instance
+        .collection("post")
+        .where('idUser', isEqualTo: idUser)
+        .get();
+
+    List<Map<dynamic, dynamic>> listUserPosts =
+        userPosts.docs.map((doc) => doc.data()).cast<Map>().toList();
+
+    return listUserPosts;
+  }
 }
