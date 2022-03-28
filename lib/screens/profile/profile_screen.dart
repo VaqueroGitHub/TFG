@@ -20,14 +20,12 @@ class ProfileScreen extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            SizedBox(height: 40),
-            _ProfilePic(),
-            SizedBox(height: 20),
+            SizedBox(height: height * 0.07),
             Text(
               userSessionProvider.user.nick,
               style: Theme.of(context).textTheme.headline3,
             ),
-            SizedBox(height: 20),
+            SizedBox(height: height * 0.1),
             _ProfileMenu(
               text: "Mi cuenta",
               icon: IconButton(
