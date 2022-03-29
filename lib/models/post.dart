@@ -10,18 +10,21 @@ class Post {
     required this.body,
     required this.idUser,
     required this.idForumSection,
+    this.id,
   });
 
   String title;
   String body;
   String idUser;
   String idForumSection;
+  String? id;
 
   factory Post.fromJson(Map<String, dynamic> json) => Post(
         title: json["title"],
         body: json["body"],
         idUser: json["idUser"],
         idForumSection: json["idForumSection"],
+        id: json["id"],
       );
 
   Map<String, dynamic> toJson() => {

@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_application_tfg/models/forum_section.dart';
 import 'package:flutter_application_tfg/models/post.dart';
 
 class PostDatabaseService {
@@ -37,27 +38,124 @@ class PostDatabaseService {
     await post.delete();
   }
 
-  Future<List<Map<dynamic, dynamic>>> getAllPosts() async {
+  Future<List<Post>> getAllPosts() async {
     await Firebase.initializeApp();
     final QuerySnapshot postCollection =
         await FirebaseFirestore.instance.collection("post").get();
 
-    List<Map<dynamic, dynamic>> list =
-        postCollection.docs.map((doc) => doc.data()).cast<Map>().toList();
+    List<Post> listPost = [];
+    postCollection.docs.forEach((element) {
+      Map<dynamic, dynamic> postMap = element.data() as Map;
+      Post post = Post(
+          title: postMap['title'],
+          body: postMap['body'],
+          idUser: postMap['idUser'],
+          idForumSection: postMap['idForumSection'],
+          id: element.id);
 
-    return list;
+      listPost.add(post);
+    });
+
+    return listPost;
   }
 
-  Future<List<Map<dynamic, dynamic>>> getUserPosts(String idUser) async {
+  Future<Post?> getPostData(String idPost) async {
     await Firebase.initializeApp();
-    final QuerySnapshot userPosts = await FirebaseFirestore.instance
+    final resp =
+        await FirebaseFirestore.instance.collection("post").doc(idPost).get();
+
+    Map<dynamic, dynamic> postMap = resp.data() as Map<dynamic, dynamic>;
+    if (postMap == null) return null;
+    Post post = Post(
+        title: postMap['title'],
+        body: postMap['body'],
+        idUser: postMap['idUser'],
+        idForumSection: postMap['idForumSection'],
+        id: resp.id);
+
+    return post;
+  }
+
+  Future<List<Post>> getUserPosts(String idUser) async {
+    await Firebase.initializeApp();
+    final QuerySnapshot postCollection = await FirebaseFirestore.instance
         .collection("post")
         .where('idUser', isEqualTo: idUser)
         .get();
 
-    List<Map<dynamic, dynamic>> listUserPosts =
-        userPosts.docs.map((doc) => doc.data()).cast<Map>().toList();
+    List<Post> listPost = [];
+    postCollection.docs.forEach((element) {
+      Map<dynamic, dynamic> postMap = element.data() as Map;
+      Post post = Post(
+          title: postMap['title'],
+          body: postMap['body'],
+          idUser: postMap['idUser'],
+          idForumSection: postMap['idForumSection'],
+          id: element.id);
 
-    return listUserPosts;
+      listPost.add(post);
+    });
+
+    return listPost;
+  }
+
+  Future<List<Post>> getPostsFromTopic(String idForumSection) async {
+    await Firebase.initializeApp();
+    final QuerySnapshot postCollection = await FirebaseFirestore.instance
+        .collection("post")
+        .where('idForumSection', isEqualTo: idForumSection)
+        .get();
+
+    List<Post> listPost = [];
+    postCollection.docs.forEach((element) {
+      Map<dynamic, dynamic> postMap = element.data() as Map;
+      Post post = Post(
+          title: postMap['title'],
+          body: postMap['body'],
+          idUser: postMap['idUser'],
+          idForumSection: postMap['idForumSection'],
+          id: element.id);
+
+      listPost.add(post);
+    });
+
+    return listPost;
+  }
+
+  Future<List<ForumSection>> getForumSections(String idForumSection) async {
+    await Firebase.initializeApp();
+    final QuerySnapshot forumSections =
+        await FirebaseFirestore.instance.collection("ForumSection").get();
+
+    List<ForumSection> forumSectionList = [];
+    forumSections.docs.forEach((element) {
+      Map<dynamic, dynamic> forumSectionMap = element.data() as Map;
+      ForumSection forumSection =
+          ForumSection(title: forumSectionMap['title'], id: element.id);
+      forumSectionList.add(forumSection);
+    });
+
+    return forumSectionList;
+  }
+
+  Future<List<Post>> getAllUsersAdmin() async {
+    await Firebase.initializeApp();
+    final QuerySnapshot postCollection =
+        await FirebaseFirestore.instance.collection("post").get();
+
+    List<Post> listPost = [];
+    postCollection.docs.forEach((element) {
+      Map<dynamic, dynamic> postMap = element.data() as Map;
+      Post post = Post(
+          title: postMap['title'],
+          body: postMap['body'],
+          idUser: postMap['idUser'],
+          idForumSection: postMap['idForumSection'],
+          id: element.id);
+
+      listPost.add(post);
+    });
+
+    return listPost;
   }
 }
