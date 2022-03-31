@@ -1,10 +1,6 @@
 // ignore_for_file: file_names
-import 'dart:ffi';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
-import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
 class EditGroupPage extends StatelessWidget {

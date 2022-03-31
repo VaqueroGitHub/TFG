@@ -22,9 +22,9 @@ class CheckAuthScreen extends StatelessWidget {
             } else {
               final userSessionProvider =
                   Provider.of<UserSessionProvider>(context, listen: false);
-              userSessionProvider.loadUserInfo();
-              Navigator.pushNamedAndRemoveUntil(
-                  context, 'groupsMainPage', (Route<dynamic> route) => false);
+              userSessionProvider.loadUserInfo().then((value) =>
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, 'profile', (Route<dynamic> route) => false));
             }
           });
 

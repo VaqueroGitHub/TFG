@@ -13,6 +13,7 @@ class AboutProfilePage extends StatelessWidget {
         body: ListView(
           physics: BouncingScrollPhysics(),
           children: [
+            const SizedBox(height: 24),
             ProfileWidget(
               imagePath:
                   'https://www.freeiconspng.com/thumbs/profile-icon-png/profile-icon-9.png',

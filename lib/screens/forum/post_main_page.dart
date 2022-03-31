@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 
 class PostMainPage extends StatefulWidget {
@@ -8,7 +9,7 @@ class PostMainPage extends StatefulWidget {
 
 // ignore: non_constant_identifier_names
 var ForumPostArr = [
-  ForumPostEntry("Joaquín Sexi",
+  ForumPostEntry("Joaquín ",
       "Hola,\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
   ForumPostEntry("Javier Vaquero",
       "Pellentesque justo metus, finibus porttitor consequat vitae, tincidunt vitae quam. Vestibulum molestie sem diam. Nullam pretium semper tempus. Maecenas lobortis lacus nunc, id lacinia nunc imperdiet tempor. Mauris mi ipsum, finibus consectetur eleifend a, maximus eget lorem. Praesent a magna nibh. In congue sapien sed velit mattis sodales. Nam tempus pulvinar metus, in gravida elit tincidunt in. Curabitur sed sapien commodo, fringilla tortor eu, accumsan est. Proin tincidunt convallis dolor, a faucibus sapien auctor sodales. Duis vitae dapibus metus. Nulla sit amet porta ipsum, posuere tempor tortor.\n\nCurabitur mauris dolor, cursus et mi id, mattis sagittis velit. Duis eleifend mi et ante aliquam elementum. Ut feugiat diam enim, at placerat elit semper vitae. Phasellus vulputate quis ex eu dictum. Cras sapien magna, faucibus at lacus vel, faucibus viverra lorem. Phasellus quis dui tristique, ultricies velit non, cursus lectus. Suspendisse neque nisl, vestibulum non dui in, vulputate placerat elit. Sed at convallis mauris, eu blandit dolor. Vivamus suscipit iaculis erat eu condimentum. Aliquam erat volutpat. Curabitur posuere commodo arcu vel consectetur."),
@@ -22,19 +23,20 @@ class _PostMainPageState extends State<PostMainPage> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final args = ModalRoute.of(context)!.settings.arguments as ForumArguments;
 
     var questionSection = Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Quiero aprobar MDL',
-            style: Theme.of(context).textTheme.headline2,
-          ),
+          // Text(
+          //   args.forumSection.title,
+          //   style: Theme.of(context).textTheme.headline2,
+          // ),
           SizedBox(height: height * 0.01),
           Text(
-            'Estoy harto no puedo más, estoy muerto vivo, joder macho, he ido a academias, he sacado el libro de la biblioteca, me he ido de erasmus con la asignatura, he pagado a una por internet para que me hiciera el examen pero me ha dicho que le pague por delante para darle animos.',
+            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
             style: Theme.of(context).textTheme.subtitle2,
           ),
           Padding(
@@ -67,7 +69,18 @@ class _PostMainPageState extends State<PostMainPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("General"),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back,
+            color: Colors.black,
+          ),
+          onPressed: () => Navigator.pop(context),
+        ),
+        elevation: 0,
+        title: Text(
+          args.forumSection.title,
+          style: Theme.of(context).textTheme.headline3,
+        ),
       ),
       body: Column(
         children: <Widget>[

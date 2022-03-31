@@ -1,59 +1,117 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/widgets/widgets.dart';
+import 'package:flutter_application_tfg/models/forum_section.dart';
+import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
+import 'package:flutter_application_tfg/widgets/my_search_delegate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class ForumMainPage extends StatelessWidget {
+class SubforumMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final args = ModalRoute.of(context)!.settings.arguments as ForumArguments;
     return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Color(0xFFffffff),
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.pop(context)),
+          actions: [
+            IconButton(
+              onPressed: () => MySearchDelegate(),
+              icon: Icon(Icons.search),
+              color: Colors.black,
+            )
+          ],
+          title: Text(
+            args.forumSection.title,
+            style: Theme.of(context).textTheme.headline3,
+          )),
       backgroundColor: Color(0xFFffffff),
       body: SingleChildScrollView(
         padding: EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            SizedBox(height: 40),
-            Text(
-              'Foros',
-              style: Theme.of(context).textTheme.headline3,
-            ),
+            // SizedBox(height: 40),
+            // Text(
+            //   args.forumSection.title,
+            //   style: Theme.of(context).textTheme.headline3,
+            // ),
             _GroupButtons(),
             SizedBox(height: 10),
             _GroupLabel(
-              etiqueta: 'General',
+              etiqueta: 'Quiero aprobar MDL',
               text: "",
-              press: () => {Navigator.pushNamed(context, 'subforumMainPage')},
+              press: () => {
+                Navigator.pushNamed(context, 'postMainPage',
+                    arguments: ForumArguments(
+                        forumSection: ForumSection(title: 'Quiero aprobar MDL'),
+                        userSession: false))
+              },
             ),
             SizedBox(height: 10),
             _GroupLabel(
-              etiqueta: 'Asignaturas',
+              etiqueta: 'Nuevo carnet universitario',
               text: "",
-              press: () => {Navigator.pushNamed(context, 'subforumMainPage')},
+              press: () => {
+                Navigator.pushNamed(context, 'postMainPage',
+                    arguments: ForumArguments(
+                        forumSection:
+                            ForumSection(title: 'Nuevo carnet universitario'),
+                        userSession: false))
+              },
             ),
-            SizedBox(height: 10),
             _GroupLabel(
-              etiqueta: 'Erasmus',
+              etiqueta: 'Código descuento burguer...',
               text: "",
-              press: () => {Navigator.pushNamed(context, 'subforumMainPage')},
+              press: () => {
+                Navigator.pushNamed(context, 'postMainPage',
+                    arguments: ForumArguments(
+                        forumSection:
+                            ForumSection(title: 'Código descuento burguer...'),
+                        userSession: false))
+              },
             ),
-            SizedBox(height: 10),
             _GroupLabel(
-              etiqueta: 'Cafeteria',
+              etiqueta: 'Código decepcion Flutter',
               text: "",
-              press: () => {Navigator.pushNamed(context, 'subforumMainPage')},
+              press: () => {
+                Navigator.pushNamed(context, 'postMainPage',
+                    arguments: ForumArguments(
+                        forumSection:
+                            ForumSection(title: 'Código decepcion Flutter'),
+                        userSession: false))
+              },
             ),
-            SizedBox(height: 10),
             _GroupLabel(
-              etiqueta: 'Biblioteca',
+              etiqueta: 'Parking gratis CIU',
               text: "",
-              press: () => {Navigator.pushNamed(context, 'subforumMainPage')},
+              press: () => {
+                Navigator.pushNamed(context, 'postMainPage',
+                    arguments: ForumArguments(
+                        forumSection: ForumSection(title: 'Parking gratis CIU'),
+                        userSession: false))
+              },
+            ),
+            _GroupLabel(
+              etiqueta: 'Es superman',
+              text: "",
+              press: () => {
+                Navigator.pushNamed(context, 'postMainPage',
+                    arguments: ForumArguments(
+                        forumSection: ForumSection(title: 'Es superman'),
+                        userSession: false))
+              },
             ),
           ],
         ),
       ),
-      bottomNavigationBar: navBar(),
     );
   }
 }
@@ -111,17 +169,17 @@ class _GroupButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.end,
         children: [
           IconButton(
-              icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
-          SizedBox(width: 20),
-          IconButton(
-              icon: Icon(Icons.checklist_sharp, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'managePosts')}),
+              icon: Icon(Icons.add, color: Color(0XFF283593)),
+              onPressed: () => {Navigator.pushNamed(context, 'newPostPage')}),
+          // SizedBox(width: 20),
+          // IconButton(
+          //     icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
+          //     onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
         ],
       ),
     );

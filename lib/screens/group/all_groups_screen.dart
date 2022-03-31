@@ -1,60 +1,83 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
-import 'package:flutter_application_tfg/widgets/widgets.dart';
+import 'package:flutter_application_tfg/models/group.dart';
+import 'package:flutter_application_tfg/providers/group_list_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
+import 'package:flutter_application_tfg/widgets/my_search_delegate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 
-class GroupsMainPage extends StatelessWidget {
+class AllGroupsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
+
     return Scaffold(
+      appBar: AppBar(
+          backgroundColor: Color(0xFFffffff),
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.pop(context)),
+          actions: [
+            IconButton(
+              onPressed: () => MySearchDelegate(),
+              icon: Icon(Icons.search),
+              color: Colors.black,
+            )
+          ],
+          title: Text(
+            'Todos los grupos',
+            style: Theme.of(context).textTheme.headline4,
+          )),
       backgroundColor: Color(0xFFffffff),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 20),
+      body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: 40),
-            Text(
-              'Grupos',
-              style: Theme.of(context).textTheme.headline3,
-            ),
             SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'MDL',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'AW',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'TFG',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'IS',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'BD',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
+            Container(
+              height: height * 0.8,
+              child: Consumer<GroupListProvider>(
+                  builder: (context, providerData, _) => FutureBuilder<
+                          List<Group>>(
+                      future: providerData.loadAllGroupList(),
+                      builder: (context, AsyncSnapshot<List<Group>> snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(child: Text("Loading..."));
+                        }
+
+                        List<Group> groupList = snapshot.data!;
+
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: groupList.length,
+                            itemBuilder: (context, index) {
+                              return Material(
+                                child: _GroupLabel(
+                                  etiqueta: groupList[index].asignatura,
+                                  text: groupList[index].description,
+                                  press: () => {
+                                    Navigator.pushNamed(context, 'groupDetails',
+                                        arguments: GroupArguments(
+                                            group: groupList[index],
+                                            userSession: true))
+                                  },
+                                ),
+                              );
+                            });
+                      })),
             ),
           ],
         ),
       ),
-      bottomNavigationBar: navBar(),
     );
   }
 }
@@ -99,35 +122,6 @@ class _GroupLabel extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _GroupButtons extends StatelessWidget {
-  const _GroupButtons({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-              icon: Icon(Icons.add, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'newGroupPage')}),
-          SizedBox(width: 20),
-          IconButton(
-              icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
-          SizedBox(width: 20),
-          IconButton(
-              icon: Icon(Icons.checklist_sharp, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
-        ],
       ),
     );
   }

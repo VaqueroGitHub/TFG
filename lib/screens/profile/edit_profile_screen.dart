@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 class EditProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
     final args = ModalRoute.of(context)!.settings.arguments as UserArguments;
 
     final double height = MediaQuery.of(context).size.height;
@@ -34,7 +36,6 @@ class EditProfilePage extends StatelessWidget {
               isEdit: true,
               onClicked: () async {},
             ),
-
             TextFormField(
               initialValue: args.user.fullName,
               onChanged: (val) => args.user.fullName = val,
@@ -47,20 +48,6 @@ class EditProfilePage extends StatelessWidget {
               onChanged: (val) => args.user.nick = val,
               decoration: const InputDecoration(labelText: "Nick"),
             ),
-            // SizedBox(height: height * 0.05),
-            // TextFormField(
-            //   initialValue: args.user.email,
-            //   onChanged: (val) => args.user.email = val,
-            //   decoration:
-            //       const InputDecoration(labelText: "Correo universitario"),
-            // ),
-            // SizedBox(height: height * 0.05),
-            // TextFormField(
-            //   initialValue: args.user.password,
-            //   onChanged: (val) => args.user.password = val,
-            //   decoration: const InputDecoration(labelText: "Contraseña"),
-            //   obscureText: true,
-            // ),
             SizedBox(height: height * 0.05),
             TextFormField(
               initialValue: args.user.bio,
@@ -70,27 +57,31 @@ class EditProfilePage extends StatelessWidget {
               maxLines: 6,
             ),
             SizedBox(height: height * 0.07),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                MaterialButton(
-                  elevation: 10.0,
-                  minWidth: 170.0,
-                  height: 50.0,
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    side: BorderSide(color: Colors.indigo, width: 1.0),
-                    borderRadius: BorderRadius.circular(8.0),
+            args.user.id != userSessionProvider.user.id
+                ? Container()
+                : Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      MaterialButton(
+                          elevation: 10.0,
+                          minWidth: 170.0,
+                          height: 50.0,
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(color: Colors.indigo, width: 1.0),
+                            borderRadius: BorderRadius.circular(8.0),
+                          ),
+                          child: const Text(
+                            'Cambiar email/password',
+                            style:
+                                TextStyle(color: Colors.indigo, fontSize: 20.0),
+                          ),
+                          onPressed: () {
+                            openDialog(context, args);
+                          }),
+                      SizedBox(height: height * 0.07),
+                    ],
                   ),
-                  child: const Text(
-                    'Cambiar email/password',
-                    style: TextStyle(color: Colors.indigo, fontSize: 20.0),
-                  ),
-                  onPressed: () {},
-                ),
-                SizedBox(height: height * 0.07),
-              ],
-            ),
             SizedBox(height: height * 0.03),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -108,9 +99,15 @@ class EditProfilePage extends StatelessWidget {
                     style: TextStyle(color: Colors.white, fontSize: 20.0),
                   ),
                   onPressed: () {
-                    UserDatabaseService(uuid: 'asd').updateUserData(args.user);
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, 'profile', (Route<dynamic> route) => false);
+                    UserDatabaseService(uuid: args.id)
+                        .updateUserData(args.user);
+                    if (args.userSession)
+                      Navigator.pop(context); // pop current page
+                    else {
+                      Navigator.pushNamedAndRemoveUntil(context,
+                          'adminHomePage', (Route<dynamic> route) => false,
+                          arguments: 0);
+                    }
                   },
                 ),
                 SizedBox(height: height * 0.07),
@@ -119,6 +116,46 @@ class EditProfilePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Future openDialog(context, args) => showDialog(
+      context: context, builder: (_) => _EmailPasswordDialog(args: args));
+}
+
+class _EmailPasswordDialog extends StatelessWidget {
+  final args;
+  const _EmailPasswordDialog({
+    Key? key,
+    required this.args,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text('Nuevos Datos autenticacion'),
+      content: Form(
+          child: Column(
+        children: [
+          TextFormField(
+            initialValue: args.user.email,
+            onChanged: (val) => args.user.email = val,
+            decoration: const InputDecoration(labelText: "Email"),
+            minLines: 1,
+          ),
+          SizedBox(height: 20),
+          TextFormField(
+            initialValue: args.user.password,
+            onChanged: (val) => args.user.password = val,
+            decoration: const InputDecoration(labelText: "Password"),
+            obscureText: true,
+          ),
+        ],
+      )),
+      actions: [
+        TextButton(
+            onPressed: () => Navigator.pop(context), child: Text('Confirmar'))
+      ],
     );
   }
 }

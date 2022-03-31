@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class UiProvider extends ChangeNotifier {
-  int currentBottomNavigatorIndex = 0;
+  int currentBottomNavigatorIndex = 3;
 
   int get currentNavigatorIndex {
     return currentBottomNavigatorIndex;

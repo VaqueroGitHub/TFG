@@ -14,7 +14,7 @@ class UserSessionProvider extends ChangeNotifier {
     userSession = user;
   }
 
-  void loadUserInfo() async {
+  Future loadUserInfo() async {
     var userId = await AuthService().getUserId();
     userSession = (await UserDatabaseService(uuid: userId).getUserData())!;
   }

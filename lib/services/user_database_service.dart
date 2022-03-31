@@ -84,6 +84,9 @@ class UserDatabaseService {
         FirebaseFirestore.instance.collection("users");
 
     DocumentReference user = await userCollection.doc(uuid);
+    //Borrar grupos
+    //Borrar posts
+    //Borrar servicios
     await user.delete();
   }
 }

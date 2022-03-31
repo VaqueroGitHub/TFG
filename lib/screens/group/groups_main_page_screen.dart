@@ -2,60 +2,67 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/group.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
+import 'package:flutter_application_tfg/providers/group_list_provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
+import 'package:flutter_application_tfg/widgets/group_buttons.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 
-class UserGroupsPage extends StatelessWidget {
+class GroupsMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final double height = MediaQuery.of(context).size.height;
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
 
-    //List<Group> grupos =   GroupDatabaseService().getUserGroups(userSessionProvider.id);
-    final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 20),
+      body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: 40),
+            SizedBox(height: height * 0.04),
             Text(
               'Mis grupos',
               style: Theme.of(context).textTheme.headline3,
             ),
-            _GroupButtons(),
+            GroupButtons(),
             SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'MDL',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'AW',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'TFG',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'IS',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'BD',
-              text: "Mi cuenta",
-              press: () => {Navigator.pushNamed(context, 'groupDetails')},
+            Container(
+              height: height * 0.65,
+              child: Consumer<GroupListProvider>(
+                  builder: (context, providerData, _) =>
+                      FutureBuilder<List<Group>>(
+                          future: providerData
+                              .loadUserGroupList(userSessionProvider.user.id!),
+                          builder:
+                              (context, AsyncSnapshot<List<Group>> snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(child: Text("Loading..."));
+                            }
+
+                            List<Group> groupList = snapshot.data!;
+
+                            return ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemCount: groupList.length,
+                                itemBuilder: (context, index) {
+                                  return Material(
+                                    child: _GroupLabel(
+                                      etiqueta: groupList[index].asignatura,
+                                      text: groupList[index].description,
+                                      press: () => {
+                                        Navigator.pushNamed(
+                                            context, 'groupDetails',
+                                            arguments: GroupArguments(
+                                                group: groupList[index],
+                                                userSession: true))
+                                      },
+                                    ),
+                                  );
+                                });
+                          })),
             ),
           ],
         ),
@@ -105,32 +112,6 @@ class _GroupLabel extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _GroupButtons extends StatelessWidget {
-  const _GroupButtons({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-              icon: Icon(Icons.add, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'newGroupPage')}),
-          SizedBox(width: 20),
-          IconButton(
-              icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
-              onPressed: () =>
-                  {Navigator.pushNamed(context, 'groupsMainPage')}),
-        ],
       ),
     );
   }

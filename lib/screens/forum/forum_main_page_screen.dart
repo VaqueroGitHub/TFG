@@ -1,83 +1,83 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:flutter_application_tfg/models/forum_section.dart';
+import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-class SubforumMainPage extends StatelessWidget {
+class ForumMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          children: [
-            SizedBox(height: 40),
-            Text(
-              'General',
-              style: Theme.of(context).textTheme.headline3,
-            ),
-            _GroupButtons(),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'Quiero aprobar MDL',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: '¿Alguien sabe el correo de N...',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'Ideas para la semana de la in...',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'Asociaciones y desuentos pa...',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'Nuevo carnet universitario',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            _GroupLabel(
-              etiqueta: 'Código descuento burguer...',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            _GroupLabel(
-              etiqueta: 'Código decepcion Flutter',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            _GroupLabel(
-              etiqueta: 'Parking gratis CIU',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            _GroupLabel(
-              etiqueta: 'El nano no es humano',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-            _GroupLabel(
-              etiqueta: 'Es superman',
-              text: "",
-              press: () => {Navigator.pushNamed(context, 'postMainPage')},
-            ),
-          ],
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: height * 0.04),
+              Text(
+                'Foros',
+                style: Theme.of(context).textTheme.headline3,
+              ),
+              SizedBox(height: height * 0.06),
+              _GroupLabel(
+                etiqueta: 'General',
+                text: "",
+                press: () => {
+                  Navigator.pushNamed(context, 'subforumMainPage',
+                      arguments: ForumArguments(
+                          forumSection: ForumSection(title: 'General'),
+                          userSession: true))
+                },
+              ),
+              SizedBox(height: 10),
+              _GroupLabel(
+                etiqueta: 'Asignaturas',
+                text: "",
+                press: () => {
+                  Navigator.pushNamed(context, 'subforumMainPage',
+                      arguments: ForumArguments(
+                          forumSection: ForumSection(title: 'Asignaturas'),
+                          userSession: true))
+                },
+              ),
+              SizedBox(height: 10),
+              _GroupLabel(
+                etiqueta: 'Erasmus',
+                text: "",
+                press: () => {
+                  Navigator.pushNamed(context, 'subforumMainPage',
+                      arguments: ForumArguments(
+                          forumSection: ForumSection(title: 'Erasmus'),
+                          userSession: true))
+                },
+              ),
+              SizedBox(height: 10),
+              _GroupLabel(
+                etiqueta: 'Cafeteria',
+                text: "",
+                press: () => {
+                  Navigator.pushNamed(context, 'subforumMainPage',
+                      arguments: ForumArguments(
+                          forumSection: ForumSection(title: 'Cafeteria'),
+                          userSession: true))
+                },
+              ),
+              SizedBox(height: 10),
+              _GroupLabel(
+                etiqueta: 'Biblioteca',
+                text: "",
+                press: () => {
+                  Navigator.pushNamed(context, 'subforumMainPage',
+                      arguments: ForumArguments(
+                          forumSection: ForumSection(title: 'Biblioteca'),
+                          userSession: true))
+                },
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: navBar(),
@@ -125,31 +125,6 @@ class _GroupLabel extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _GroupButtons extends StatelessWidget {
-  const _GroupButtons({
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          IconButton(
-              icon: Icon(Icons.add, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'newPostPage')}),
-          SizedBox(width: 20),
-          IconButton(
-              icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
-        ],
       ),
     );
   }

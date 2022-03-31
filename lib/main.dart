@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/providers/ui_provider.dart';
 import 'package:flutter_application_tfg/providers/user_login_provider.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
+import 'package:flutter_application_tfg/screens/admin/admin_home_page.dart';
 import 'package:flutter_application_tfg/screens/login/check_auth.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
+import 'package:flutter_application_tfg/screens/service/service_main_page.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +24,7 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserRegisterProvider()),
         ChangeNotifierProvider(create: (_) => UserSessionProvider()),
         ChangeNotifierProvider(create: (_) => UiProvider()),
+        ChangeNotifierProvider(create: (_) => GroupListProvider()),
       ],
       child: MyApplication(),
     );
@@ -44,6 +48,7 @@ class MyApplication extends StatelessWidget {
         'aboutProfile': (_) => AboutProfilePage(),
         'editProfile': (_) => EditProfilePage(),
         'manageUsers': (_) => ManageUsersScreen(),
+        'adminHomePage': (_) => AdminHomePage(),
         'groupsMainPage': (_) => GroupsMainPage(),
         'newGroupPage': (_) => NewGroupPage(),
         'manageGroups': (_) => ManageGroupsScreen(),
@@ -57,7 +62,8 @@ class MyApplication extends StatelessWidget {
         'managePosts': (_) => ManagePostsScreen(),
         'manageSubforums': (_) => ManageSubforumsScreen(),
         'groupDetails': (_) => GroupDetailsScreen(),
-        'userGroupScreen': (_) => UserGroupsPage(),
+        'allGroupScreen': (_) => AllGroupsPage(),
+        'serviceMainPage': (_) => ServiceMainPage(),
       },
       theme: tfgTheme.copyWith(
           appBarTheme: const AppBarTheme(color: Colors.transparent)),

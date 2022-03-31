@@ -16,92 +16,96 @@ class ProfileScreen extends StatelessWidget {
     final double height = MediaQuery.of(context).size.height;
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.symmetric(vertical: 20),
-        child: Column(
-          children: [
-            SizedBox(height: height * 0.07),
-            Text(
-              userSessionProvider.user.nick,
-              style: Theme.of(context).textTheme.headline3,
-            ),
-            SizedBox(height: height * 0.1),
-            _ProfileMenu(
-              text: "Mi cuenta",
-              icon: IconButton(
-                icon: SvgPicture.asset("assets/icons/User Icon.svg",
-                    color: Color(0XFF283593)),
-                onPressed: () {
-                  Navigator.pushNamed(context, 'aboutProfile',
-                      arguments: UserArguments(
-                          user: userSessionProvider.user,
-                          id: userSessionProvider.user.id!));
-                },
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(height: height * 0.04),
+              Text(
+                'Perfil',
+                style: Theme.of(context).textTheme.headline3,
               ),
-            ),
-            !userSessionProvider.user.isAdmin
-                ? Container()
-                : _ProfileMenu(
-                    text: "Modo administrador",
-                    icon: IconButton(
-                      icon: SvgPicture.asset("assets/icons/Bell.svg",
-                          color: Color(0XFF283593)),
-                      onPressed: () {
-                        Navigator.pushNamed(context, 'manageUsers');
-                      },
+              SizedBox(height: height * 0.06),
+              _ProfileMenu(
+                text: "Mi cuenta",
+                icon: IconButton(
+                  icon: SvgPicture.asset("assets/icons/User Icon.svg",
+                      color: Color(0XFF283593)),
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'aboutProfile',
+                        arguments: UserArguments(
+                            user: userSessionProvider.user,
+                            id: userSessionProvider.user.id!,
+                            userSession: true));
+                  },
+                ),
+              ),
+              !userSessionProvider.user.isAdmin
+                  ? Container()
+                  : _ProfileMenu(
+                      text: "Modo administrador",
+                      icon: IconButton(
+                        icon: SvgPicture.asset("assets/icons/Bell.svg",
+                            color: Color(0XFF283593)),
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'adminHomePage');
+                        },
+                      ),
+                      press: () =>
+                          {Navigator.pushNamed(context, 'manageUsers')},
                     ),
-                    press: () => {Navigator.pushNamed(context, 'manageUsers')},
-                  ),
-            _ProfileMenu(
-              text: "Modificar datos",
-              icon: IconButton(
-                icon: SvgPicture.asset("assets/icons/Settings.svg",
-                    color: Color(0XFF283593)),
-                onPressed: () {
-                  Navigator.pushNamed(context, 'editProfile',
-                      arguments: UserArguments(
-                          user: userSessionProvider.user,
-                          id: userSessionProvider.user.id!));
-                },
+              _ProfileMenu(
+                text: "Modificar datos",
+                icon: IconButton(
+                  icon: SvgPicture.asset("assets/icons/Settings.svg",
+                      color: Color(0XFF283593)),
+                  onPressed: () {
+                    Navigator.pushNamed(context, 'editProfile',
+                        arguments: UserArguments(
+                            user: userSessionProvider.user,
+                            id: userSessionProvider.user.id!,
+                            userSession: true));
+                  },
+                ),
               ),
-            ),
-            _ProfileMenu(
-              text: "Eliminar cuenta",
-              icon: IconButton(
-                icon: SvgPicture.asset("assets/icons/Delete.svg",
-                    color: Color(0XFF283593)),
-                onPressed: () async {
-                  final resp = await AuthService()
-                      .deleteAccount(userSessionProvider.user);
-                  if (resp != null) {
-                    ScaffoldMessenger.of(context)
-                        .showSnackBar(SnackBar(content: Text("ERROR: $resp")));
-                  } else {
+              _ProfileMenu(
+                text: "Eliminar cuenta",
+                icon: IconButton(
+                  icon: SvgPicture.asset("assets/icons/Delete.svg",
+                      color: Color(0XFF283593)),
+                  onPressed: () async {
+                    final resp = await AuthService()
+                        .deleteAccount(userSessionProvider.user);
+                    if (resp != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("ERROR: $resp")));
+                    } else {
+                      Navigator.pushNamedAndRemoveUntil(
+                          context, 'home', (Route<dynamic> route) => false);
+                    }
+                  },
+                ),
+                press: () {},
+              ),
+              _ProfileMenu(
+                text: "Log Out",
+                icon: IconButton(
+                  icon: SvgPicture.asset("assets/icons/Log out.svg",
+                      color: Color(0XFF283593)),
+                  onPressed: () {
+                    AuthService().logout();
                     Navigator.pushNamedAndRemoveUntil(
                         context, 'home', (Route<dynamic> route) => false);
-                  }
-                },
-              ),
-              press: () {},
-            ),
-            _ProfileMenu(
-              text: "Log Out",
-              icon: IconButton(
-                icon: SvgPicture.asset("assets/icons/Log out.svg",
-                    color: Color(0XFF283593)),
-                onPressed: () {
+                  },
+                ),
+                press: () {
                   AuthService().logout();
                   Navigator.pushNamedAndRemoveUntil(
                       context, 'home', (Route<dynamic> route) => false);
                 },
               ),
-              press: () {
-                AuthService().logout();
-                Navigator.pushNamedAndRemoveUntil(
-                    context, 'home', (Route<dynamic> route) => false);
-              },
-            ),
-          ],
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: navBar(),

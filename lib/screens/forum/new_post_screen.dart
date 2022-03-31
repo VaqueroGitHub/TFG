@@ -3,8 +3,8 @@ import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import '../providers/user_session_provider.dart';
-import '../services/post_database_service.dart';
+import '../../providers/user_session_provider.dart';
+import '../../services/post_database_service.dart';
 
 class NewPostPage extends StatelessWidget {
   @override
