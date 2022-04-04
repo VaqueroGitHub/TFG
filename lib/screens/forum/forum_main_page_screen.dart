@@ -1,10 +1,11 @@
 // ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/forum_section.dart';
+import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class ForumMainPage extends StatelessWidget {
   @override
@@ -22,60 +23,38 @@ class ForumMainPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline3,
               ),
               SizedBox(height: height * 0.06),
-              _GroupLabel(
-                etiqueta: 'General',
-                text: "",
-                press: () => {
-                  Navigator.pushNamed(context, 'subforumMainPage',
-                      arguments: ForumArguments(
-                          forumSection: ForumSection(title: 'General'),
-                          userSession: true))
-                },
-              ),
-              SizedBox(height: 10),
-              _GroupLabel(
-                etiqueta: 'Asignaturas',
-                text: "",
-                press: () => {
-                  Navigator.pushNamed(context, 'subforumMainPage',
-                      arguments: ForumArguments(
-                          forumSection: ForumSection(title: 'Asignaturas'),
-                          userSession: true))
-                },
-              ),
-              SizedBox(height: 10),
-              _GroupLabel(
-                etiqueta: 'Erasmus',
-                text: "",
-                press: () => {
-                  Navigator.pushNamed(context, 'subforumMainPage',
-                      arguments: ForumArguments(
-                          forumSection: ForumSection(title: 'Erasmus'),
-                          userSession: true))
-                },
-              ),
-              SizedBox(height: 10),
-              _GroupLabel(
-                etiqueta: 'Cafeteria',
-                text: "",
-                press: () => {
-                  Navigator.pushNamed(context, 'subforumMainPage',
-                      arguments: ForumArguments(
-                          forumSection: ForumSection(title: 'Cafeteria'),
-                          userSession: true))
-                },
-              ),
-              SizedBox(height: 10),
-              _GroupLabel(
-                etiqueta: 'Biblioteca',
-                text: "",
-                press: () => {
-                  Navigator.pushNamed(context, 'subforumMainPage',
-                      arguments: ForumArguments(
-                          forumSection: ForumSection(title: 'Biblioteca'),
-                          userSession: true))
-                },
-              ),
+              Consumer<ForumListProvider>(
+                  builder: (context, providerData, _) =>
+                      FutureBuilder<List<ForumSection>>(
+                          future: providerData.loadForumSections(),
+                          builder: (context,
+                              AsyncSnapshot<List<ForumSection>> snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(child: Text("Loading..."));
+                            }
+
+                            List<ForumSection> forumList = snapshot.data!;
+
+                            return ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemCount: forumList.length,
+                                itemBuilder: (context, index) {
+                                  return Material(
+                                    child: _GroupLabel(
+                                      etiqueta: forumList[index].title,
+                                      text: "",
+                                      press: () => {
+                                        Navigator.pushNamed(
+                                            context, 'subforumMainPage',
+                                            arguments: ForumArguments(
+                                                forumSection: forumList[index],
+                                                userSession: true))
+                                      },
+                                    ),
+                                  );
+                                });
+                          })),
             ],
           ),
         ),

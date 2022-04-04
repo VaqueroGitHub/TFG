@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/post.dart';
-import 'package:flutter_application_tfg/providers/user_register_provider.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
+import 'package:flutter_application_tfg/providers/post_form_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
 import '../../services/post_database_service.dart';
@@ -13,6 +13,12 @@ class NewPostPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.close,
+                color: Colors.black,
+              )),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -32,14 +38,9 @@ class _NewPostPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
-
+    final postFormProvider = Provider.of<PostFormProvider>(context);
+    final args = ModalRoute.of(context)!.settings.arguments as ForumArguments;
     //creo un objeto grupo
-    Post post = new Post(
-      title: '',
-      body: '',
-      idUser: userSessionProvider.user.id!,
-      idForumSection: '3SdhCUiAg1j2Ae5RBZBB',
-    );
 
     return SingleChildScrollView(
         child: Container(
@@ -55,12 +56,12 @@ class _NewPostPage extends StatelessWidget {
                   ),
                   SizedBox(height: height * 0.04),
                   Text(
-                    'Lo incluiremos en General 🤔',
+                    'Lo incluiremos en ${args.forumSection.title} 🤔',
                     style: Theme.of(context).textTheme.headline4,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    onChanged: (val) => post.title = val,
+                    onChanged: (val) => postFormProvider.title = val,
                     maxLength: 20,
                     decoration:
                         const InputDecoration(labelText: "Introduce el título"),
@@ -71,7 +72,7 @@ class _NewPostPage extends StatelessWidget {
                     // any number you need (It works as the rows for the textarea)
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    onChanged: (val) => post.body = val,
+                    onChanged: (val) => postFormProvider.body = val,
                     maxLength: 500,
                     decoration:
                         const InputDecoration(labelText: "Introduce el texto"),
@@ -93,13 +94,22 @@ class _NewPostPage extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          if (post.title != '' && post.body != '') {
-                            PostDatabaseService()
-                                .updatePost(post, userSessionProvider.user.id!);
-                            Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                'groupsPostPage',
-                                (Route<dynamic> route) => false);
+                          if (postFormProvider.title != '' &&
+                              postFormProvider.body != '') {
+                            postFormProvider.idForumSection =
+                                args.forumSection.id!;
+                            postFormProvider.idUser =
+                                userSessionProvider.user.id!;
+                            PostDatabaseService().updatePost(
+                                postFormProvider.post(),
+                                userSessionProvider.user.id!);
+
+                            final forumListProvider =
+                                Provider.of<ForumListProvider>(context,
+                                    listen: false);
+                            forumListProvider
+                                .loadPostList(args.forumSection.id!);
+                            Navigator.pop(context);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text("RELLENA TODOS LOS CAMPOS")));

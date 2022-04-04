@@ -1,55 +1,69 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
-import 'package:flutter_application_tfg/styles/tfg_theme.dart';
+import 'package:flutter_application_tfg/models/answer.dart';
+import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
+import 'package:provider/provider.dart';
 
 class PostMainPage extends StatefulWidget {
   @override
   _PostMainPageState createState() => _PostMainPageState();
 }
 
-// ignore: non_constant_identifier_names
-var ForumPostArr = [
-  ForumPostEntry("Joaquín ",
-      "Hola,\n\nLorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
-  ForumPostEntry("Javier Vaquero",
-      "Pellentesque justo metus, finibus porttitor consequat vitae, tincidunt vitae quam. Vestibulum molestie sem diam. Nullam pretium semper tempus. Maecenas lobortis lacus nunc, id lacinia nunc imperdiet tempor. Mauris mi ipsum, finibus consectetur eleifend a, maximus eget lorem. Praesent a magna nibh. In congue sapien sed velit mattis sodales. Nam tempus pulvinar metus, in gravida elit tincidunt in. Curabitur sed sapien commodo, fringilla tortor eu, accumsan est. Proin tincidunt convallis dolor, a faucibus sapien auctor sodales. Duis vitae dapibus metus. Nulla sit amet porta ipsum, posuere tempor tortor.\n\nCurabitur mauris dolor, cursus et mi id, mattis sagittis velit. Duis eleifend mi et ante aliquam elementum. Ut feugiat diam enim, at placerat elit semper vitae. Phasellus vulputate quis ex eu dictum. Cras sapien magna, faucibus at lacus vel, faucibus viverra lorem. Phasellus quis dui tristique, ultricies velit non, cursus lectus. Suspendisse neque nisl, vestibulum non dui in, vulputate placerat elit. Sed at convallis mauris, eu blandit dolor. Vivamus suscipit iaculis erat eu condimentum. Aliquam erat volutpat. Curabitur posuere commodo arcu vel consectetur."),
-  ForumPostEntry("Carlos Luengo",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
-  ForumPostEntry("Donald Trump",
-      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."),
-];
-
 class _PostMainPageState extends State<PostMainPage> {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
-    final args = ModalRoute.of(context)!.settings.arguments as ForumArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as PostArguments;
 
     var questionSection = Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Text(
-          //   args.forumSection.title,
-          //   style: Theme.of(context).textTheme.headline2,
-          // ),
           SizedBox(height: height * 0.01),
-          Text(
-            "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.",
-            style: Theme.of(context).textTheme.subtitle2,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
+            child: Text(
+              args.post.body,
+              style: Theme.of(context).textTheme.subtitle2,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(12.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: <Widget>[
-                IconWithText(Icons.laptop_mac, "General"),
+                IconWithText(Icons.laptop_mac, args.forumSection.title),
                 IconWithText(
-                  Icons.check_circle,
+                  args.post.answered!
+                      ? Icons.check_circle
+                      : Icons.close_rounded,
                   "Respondida",
                 ),
-                IconWithText(Icons.remove_red_eye, "54")
+                TextButton(
+                    onPressed: () => Navigator.pushNamed(
+                        context, 'aboutProfile',
+                        arguments: UserArguments(
+                            user: args.post.user!,
+                            id: args.post.user!.id!,
+                            userSession: true)),
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.person,
+                          color: Colors.black,
+                        ),
+                        Text(
+                          args.post.user!.nick,
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                          ),
+                        )
+                      ],
+                    )),
+                //IconWithText(Icons.remove_red_eye, "54")
               ],
             ),
           ),
@@ -58,17 +72,9 @@ class _PostMainPageState extends State<PostMainPage> {
       ),
     );
 
-    var responses = Container(
-      padding: const EdgeInsets.all(8.0),
-      child: ListView.builder(
-        itemBuilder: (BuildContext context, int index) =>
-            ForumPost(ForumPostArr[index]),
-        itemCount: ForumPostArr.length,
-      ),
-    );
-
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: height * 0.13,
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back,
@@ -77,9 +83,13 @@ class _PostMainPageState extends State<PostMainPage> {
           onPressed: () => Navigator.pop(context),
         ),
         elevation: 0,
+        titleTextStyle: TextStyle(
+          overflow: TextOverflow.ellipsis,
+        ),
         title: Text(
-          args.forumSection.title,
+          args.post.title,
           style: Theme.of(context).textTheme.headline3,
+          maxLines: 2,
         ),
       ),
       body: Column(
@@ -88,7 +98,7 @@ class _PostMainPageState extends State<PostMainPage> {
           Expanded(
               child: Padding(
             padding: const EdgeInsets.only(bottom: 20.0),
-            child: responses,
+            child: _ListForumAnswers(),
           )),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -106,7 +116,11 @@ class _PostMainPageState extends State<PostMainPage> {
                   style: TextStyle(color: Colors.white, fontSize: 20.0),
                 ),
                 onPressed: () async {
-                  Navigator.pushNamed(context, 'newAnswerPage');
+                  Navigator.pushNamed(context, 'newAnswerPage',
+                      arguments: PostArguments(
+                          post: args.post,
+                          forumSection: args.forumSection,
+                          userSession: true));
                 },
               ),
             ],
@@ -120,9 +134,48 @@ class _PostMainPageState extends State<PostMainPage> {
 
 class ForumPostEntry {
   final String username;
+  final User user;
   final String text;
 
-  ForumPostEntry(this.username, this.text);
+  ForumPostEntry(this.username, this.text, this.user);
+}
+
+class _ListForumAnswers extends StatelessWidget {
+  const _ListForumAnswers({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as PostArguments;
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Consumer<ForumListProvider>(
+        builder: (context, providerData, _) => FutureBuilder<List<Answer>>(
+            future: providerData.loadAnswerList(args.post.id!),
+            builder: (context, AsyncSnapshot<List<Answer>> snapshot) {
+              if (!snapshot.hasData) {
+                return Center(child: Text("Loading..."));
+              }
+
+              List<Answer> answerList = snapshot.data!;
+
+              return ListView.builder(
+                  shrinkWrap: true,
+                  scrollDirection: Axis.vertical,
+                  itemCount: answerList.length,
+                  itemBuilder: (context, index) {
+                    return Material(
+                      child: ForumPost(
+                        ForumPostEntry(answerList[index].user!.nick,
+                            answerList[index].answer, answerList[index].user!),
+                      ),
+                    );
+                  });
+            }),
+      ),
+    );
+  }
 }
 
 class ForumPost extends StatelessWidget {
@@ -135,7 +188,7 @@ class ForumPost extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.all(5.0),
       decoration: BoxDecoration(
-        color: tfgTheme.highlightColor,
+        color: Colors.grey[200],
         borderRadius: const BorderRadius.all(Radius.circular(20.0)),
       ),
       child: Column(
@@ -157,7 +210,17 @@ class ForumPost extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(entry.username),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, 'aboutProfile',
+                              arguments: UserArguments(
+                                  user: entry.user,
+                                  id: entry.user.id!,
+                                  userSession: true));
+                        },
+                        child: Text(entry.username,
+                            style: TextStyle(color: Colors.white)),
+                      ),
                     ],
                   ),
                 ),

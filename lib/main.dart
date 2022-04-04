@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/answer_form_provider.dart';
+import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
+import 'package:flutter_application_tfg/providers/post_form_provider.dart';
 import 'package:flutter_application_tfg/providers/ui_provider.dart';
 import 'package:flutter_application_tfg/providers/user_login_provider.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
@@ -25,6 +28,9 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => UserSessionProvider()),
         ChangeNotifierProvider(create: (_) => UiProvider()),
         ChangeNotifierProvider(create: (_) => GroupListProvider()),
+        ChangeNotifierProvider(create: (_) => ForumListProvider()),
+        ChangeNotifierProvider(create: (_) => PostFormProvider()),
+        ChangeNotifierProvider(create: (_) => AnswerFormProvider()),
       ],
       child: MyApplication(),
     );

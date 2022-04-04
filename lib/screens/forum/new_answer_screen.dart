@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/post.dart';
+import 'package:flutter_application_tfg/providers/answer_form_provider.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import '../../models/answer.dart';
@@ -33,13 +36,8 @@ class _NewAnswerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
-
-    //creo un objeto grupo
-    Answer answer = new Answer(
-      answer: '',
-      idPost: '',
-      idUser: userSessionProvider.user.id!,
-    );
+    final answerFormProvider = Provider.of<AnswerFormProvider>(context);
+    final args = ModalRoute.of(context)!.settings.arguments as PostArguments;
 
     return SingleChildScrollView(
         child: Container(
@@ -63,7 +61,7 @@ class _NewAnswerPage extends StatelessWidget {
                     // any number you need (It works as the rows for the textarea)
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    onChanged: (val) => answer.answer = val,
+                    onChanged: (val) => answerFormProvider.answerBody = val,
                     maxLength: 500,
                     decoration:
                         const InputDecoration(labelText: "Introduce el texto"),
@@ -85,13 +83,14 @@ class _NewAnswerPage extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          if (answer.answer != '') {
-                            AnswerDatabaseService().updateAnswer(
-                                answer, userSessionProvider.user.id!);
-                            Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                'forumMainPage',
-                                (Route<dynamic> route) => false);
+                          if (answerFormProvider.answerBody != '') {
+                            answerFormProvider.idPost = args.post.id!;
+                            answerFormProvider.idUser =
+                                userSessionProvider.user.id!;
+                            await AnswerDatabaseService().updateAnswer(
+                                answerFormProvider.answer(), null);
+                            Navigator.pushNamed(context, 'postMainPage',
+                                arguments: args);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text("RELLENA TODOS LOS CAMPOS")));

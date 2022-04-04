@@ -10,6 +10,14 @@ class AboutProfilePage extends StatelessWidget {
 
     return Builder(
       builder: (context) => Scaffold(
+        backgroundColor: Colors.white,
+        appBar: AppBar(
+            backgroundColor: Colors.white,
+            elevation: 0,
+            leading: IconButton(
+                color: Colors.black,
+                onPressed: () => Navigator.pop(context),
+                icon: Icon(Icons.arrow_back))),
         body: ListView(
           physics: BouncingScrollPhysics(),
           children: [

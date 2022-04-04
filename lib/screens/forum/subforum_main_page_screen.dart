@@ -1,10 +1,13 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/forum_section.dart';
+import 'package:flutter_application_tfg/models/post.dart';
+import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/widgets/my_search_delegate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
 
 class SubforumMainPage extends StatelessWidget {
   @override
@@ -38,77 +41,39 @@ class SubforumMainPage extends StatelessWidget {
         padding: EdgeInsets.symmetric(vertical: 20),
         child: Column(
           children: [
-            // SizedBox(height: 40),
-            // Text(
-            //   args.forumSection.title,
-            //   style: Theme.of(context).textTheme.headline3,
-            // ),
             _GroupButtons(),
             SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'Quiero aprobar MDL',
-              text: "",
-              press: () => {
-                Navigator.pushNamed(context, 'postMainPage',
-                    arguments: ForumArguments(
-                        forumSection: ForumSection(title: 'Quiero aprobar MDL'),
-                        userSession: false))
-              },
-            ),
-            SizedBox(height: 10),
-            _GroupLabel(
-              etiqueta: 'Nuevo carnet universitario',
-              text: "",
-              press: () => {
-                Navigator.pushNamed(context, 'postMainPage',
-                    arguments: ForumArguments(
-                        forumSection:
-                            ForumSection(title: 'Nuevo carnet universitario'),
-                        userSession: false))
-              },
-            ),
-            _GroupLabel(
-              etiqueta: 'Código descuento burguer...',
-              text: "",
-              press: () => {
-                Navigator.pushNamed(context, 'postMainPage',
-                    arguments: ForumArguments(
-                        forumSection:
-                            ForumSection(title: 'Código descuento burguer...'),
-                        userSession: false))
-              },
-            ),
-            _GroupLabel(
-              etiqueta: 'Código decepcion Flutter',
-              text: "",
-              press: () => {
-                Navigator.pushNamed(context, 'postMainPage',
-                    arguments: ForumArguments(
-                        forumSection:
-                            ForumSection(title: 'Código decepcion Flutter'),
-                        userSession: false))
-              },
-            ),
-            _GroupLabel(
-              etiqueta: 'Parking gratis CIU',
-              text: "",
-              press: () => {
-                Navigator.pushNamed(context, 'postMainPage',
-                    arguments: ForumArguments(
-                        forumSection: ForumSection(title: 'Parking gratis CIU'),
-                        userSession: false))
-              },
-            ),
-            _GroupLabel(
-              etiqueta: 'Es superman',
-              text: "",
-              press: () => {
-                Navigator.pushNamed(context, 'postMainPage',
-                    arguments: ForumArguments(
-                        forumSection: ForumSection(title: 'Es superman'),
-                        userSession: false))
-              },
-            ),
+            Consumer<ForumListProvider>(
+                builder: (context, providerData, _) => FutureBuilder<
+                        List<Post>>(
+                    future: providerData.loadPostList(args.forumSection.id!),
+                    builder: (context, AsyncSnapshot<List<Post>> snapshot) {
+                      if (!snapshot.hasData) {
+                        return Center(child: Text("Loading..."));
+                      }
+
+                      List<Post> postList = snapshot.data!;
+
+                      return ListView.builder(
+                          shrinkWrap: true,
+                          scrollDirection: Axis.vertical,
+                          itemCount: postList.length,
+                          itemBuilder: (context, index) {
+                            return Material(
+                              child: _GroupLabel(
+                                etiqueta: postList[index].title,
+                                text: "",
+                                press: () => {
+                                  Navigator.pushNamed(context, 'postMainPage',
+                                      arguments: PostArguments(
+                                          forumSection: args.forumSection,
+                                          post: postList[index],
+                                          userSession: true))
+                                },
+                              ),
+                            );
+                          });
+                    })),
           ],
         ),
       ),
@@ -168,6 +133,7 @@ class _GroupButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as ForumArguments;
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 40, vertical: 10),
       child: Row(
@@ -175,11 +141,11 @@ class _GroupButtons extends StatelessWidget {
         children: [
           IconButton(
               icon: Icon(Icons.add, color: Color(0XFF283593)),
-              onPressed: () => {Navigator.pushNamed(context, 'newPostPage')}),
-          // SizedBox(width: 20),
-          // IconButton(
-          //     icon: Icon(Icons.manage_search, color: Color(0XFF283593)),
-          //     onPressed: () => {Navigator.pushNamed(context, 'manageGroups')}),
+              onPressed: () => {
+                    Navigator.pushNamed(context, 'newPostPage',
+                        arguments: ForumArguments(
+                            forumSection: args.forumSection, userSession: true))
+                  }),
         ],
       ),
     );
