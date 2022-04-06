@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
+import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/widgets/my_search_delegate.dart';
@@ -63,12 +64,15 @@ class SubforumMainPage extends StatelessWidget {
                               child: _GroupLabel(
                                 etiqueta: postList[index].title,
                                 text: "",
-                                press: () => {
+                                press: () async {
+                                  await Provider.of<PostMainProvider>(context,
+                                          listen: false)
+                                      .loadPost(postList[index].id!);
                                   Navigator.pushNamed(context, 'postMainPage',
                                       arguments: PostArguments(
                                           forumSection: args.forumSection,
                                           post: postList[index],
-                                          userSession: true))
+                                          userSession: true));
                                 },
                               ),
                             );

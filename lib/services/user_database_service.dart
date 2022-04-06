@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/services/auth_service.dart';
 
 class UserDatabaseService {
   final String uuid;
@@ -13,7 +14,7 @@ class UserDatabaseService {
     await Firebase.initializeApp();
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection("users");
-
+    //await AuthService().logout();
     final resp = await userCollection.doc(uuid).get();
     Map<dynamic, dynamic> data = resp.data() as Map<dynamic, dynamic>;
     if (data == null) return null;

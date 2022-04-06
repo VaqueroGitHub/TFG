@@ -17,6 +17,19 @@ class GroupsMainPage extends StatelessWidget {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
 
     return Scaffold(
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.indigo,
+        onPressed: () => Navigator.pushNamedAndRemoveUntil(
+            context, 'aboutProfile', (route) => false),
+        child: IconButton(
+          onPressed: () {},
+          icon: Icon(
+            Icons.home,
+            color: Colors.white,
+          ),
+        ),
+      ),
       backgroundColor: Color(0xFFffffff),
       body: SafeArea(
         child: Column(

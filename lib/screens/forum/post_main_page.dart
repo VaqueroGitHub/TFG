@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/answer.dart';
 import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
+import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:provider/provider.dart';
@@ -16,6 +17,7 @@ class _PostMainPageState extends State<PostMainPage> {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final args = ModalRoute.of(context)!.settings.arguments as PostArguments;
+    final postMainProvider = Provider.of<PostMainProvider>(context);
 
     var questionSection = Padding(
       padding: const EdgeInsets.all(8.0),
@@ -26,7 +28,7 @@ class _PostMainPageState extends State<PostMainPage> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
             child: Text(
-              args.post.body,
+              postMainProvider.post.body,
               style: Theme.of(context).textTheme.subtitle2,
             ),
           ),
@@ -37,7 +39,7 @@ class _PostMainPageState extends State<PostMainPage> {
               children: <Widget>[
                 IconWithText(Icons.laptop_mac, args.forumSection.title),
                 IconWithText(
-                  args.post.answered!
+                  postMainProvider.post.answered!
                       ? Icons.check_circle
                       : Icons.close_rounded,
                   "Respondida",
@@ -46,8 +48,8 @@ class _PostMainPageState extends State<PostMainPage> {
                     onPressed: () => Navigator.pushNamed(
                         context, 'aboutProfile',
                         arguments: UserArguments(
-                            user: args.post.user!,
-                            id: args.post.user!.id!,
+                            user: postMainProvider.post.user!,
+                            id: postMainProvider.post.user!.id!,
                             userSession: true)),
                     child: Row(
                       children: [
@@ -56,7 +58,7 @@ class _PostMainPageState extends State<PostMainPage> {
                           color: Colors.black,
                         ),
                         Text(
-                          args.post.user!.nick,
+                          postMainProvider.post.user!.nick,
                           style: TextStyle(
                             color: Theme.of(context).primaryColor,
                           ),
@@ -87,7 +89,7 @@ class _PostMainPageState extends State<PostMainPage> {
           overflow: TextOverflow.ellipsis,
         ),
         title: Text(
-          args.post.title,
+          postMainProvider.post.title,
           style: Theme.of(context).textTheme.headline3,
           maxLines: 2,
         ),
@@ -118,8 +120,8 @@ class _PostMainPageState extends State<PostMainPage> {
                 onPressed: () async {
                   Navigator.pushNamed(context, 'newAnswerPage',
                       arguments: PostArguments(
-                          post: args.post,
-                          forumSection: args.forumSection,
+                          post: postMainProvider.post,
+                          forumSection: postMainProvider.post.forumSection!,
                           userSession: true));
                 },
               ),

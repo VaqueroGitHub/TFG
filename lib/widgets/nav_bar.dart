@@ -55,8 +55,8 @@ class navBar extends StatelessWidget {
                 icon: Icon(Icons.forum_outlined),
                 label: 'Foros'),
             NavigationDestination(
-                selectedIcon: Icon(Icons.insert_emoticon_rounded),
-                icon: Icon(Icons.insert_emoticon_outlined),
+                selectedIcon: Icon(Icons.settings),
+                icon: Icon(Icons.settings_outlined),
                 label: 'Perfil'),
           ],
         ));

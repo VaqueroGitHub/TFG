@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/providers/answer_form_provider.dart';
-import 'package:flutter_application_tfg/providers/user_register_provider.dart';
-import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
+import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
-import '../../models/answer.dart';
 import '../../providers/user_session_provider.dart';
 import '../../services/answer_database_service.dart';
 
@@ -89,8 +85,10 @@ class _NewAnswerPage extends StatelessWidget {
                                 userSessionProvider.user.id!;
                             await AnswerDatabaseService().updateAnswer(
                                 answerFormProvider.answer(), null);
-                            Navigator.pushNamed(context, 'postMainPage',
-                                arguments: args);
+                            await Provider.of<PostMainProvider>(context,
+                                    listen: false)
+                                .loadPost(args.post.id!);
+                            Navigator.pop(context, args);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                                 content: Text("RELLENA TODOS LOS CAMPOS")));
