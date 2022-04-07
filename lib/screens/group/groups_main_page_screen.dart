@@ -5,6 +5,7 @@ import 'package:flutter_application_tfg/models/group.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/widgets/group_buttons.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -20,10 +21,23 @@ class GroupsMainPage extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
-        onPressed: () => Navigator.pushNamedAndRemoveUntil(
-            context, 'aboutProfile', (route) => false),
+        onPressed: () => Navigator.pushReplacementNamed(
+          context,
+          'aboutProfile',
+          arguments: UserArguments(
+              user: userSessionProvider.user,
+              id: userSessionProvider.user.id!,
+              userSession: true),
+        ),
         child: IconButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pushReplacementNamed(
+            context,
+            'aboutProfile',
+            arguments: UserArguments(
+                user: userSessionProvider.user,
+                id: userSessionProvider.user.id!,
+                userSession: true),
+          ),
           icon: Icon(
             Icons.home,
             color: Colors.white,

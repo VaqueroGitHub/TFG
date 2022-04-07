@@ -1,10 +1,12 @@
 // ignore_for_file: file_names
+import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
 import 'package:flutter_application_tfg/services/group_database_service.dart';
 import 'package:provider/provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class GroupDetailsScreen extends StatelessWidget {
   @override
@@ -37,9 +39,10 @@ class GroupDetailsScreen extends StatelessWidget {
             const SizedBox(height: 48),
             buildAbout(context),
             const SizedBox(height: 48),
-            Row(
+            Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
+                _InfoLinks(),
                 userSessionProvider.user.id == args.group.idUser ||
                         args.group.idMembers
                             .contains(userSessionProvider.user.id) ||
@@ -148,6 +151,7 @@ class GroupDetailsScreen extends StatelessWidget {
                                   arguments: 2);
                         },
                       ),
+                _ChatCardWidget(),
               ],
             ),
           ],
@@ -188,6 +192,81 @@ class GroupDetailsScreen extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+void _launchURL(_url) async {
+  if (!await launch(_url)) throw 'Could not launch $_url';
+}
+
+class _ChatCardWidget extends StatelessWidget {
+  const _ChatCardWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return ExpansionTileCard(
+      key: GlobalKey(),
+      leading: Icon(Icons.chat),
+      title: Text('Chat de grupo!'),
+      //subtitle: Text('I expand!'),
+      children: <Widget>[
+        Divider(
+          thickness: 1.0,
+          height: 1.0,
+        ),
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 16.0,
+              vertical: 8.0,
+            ),
+            child: Text(
+              """Hi there, I'm a drop-in replacement for Flutter's ExpansionTile.
+
+Use me any time you think your app could benefit from being just a bit more Material.
+
+These buttons control the next card down!""",
+              style:
+                  Theme.of(context).textTheme.bodyText2!.copyWith(fontSize: 16),
+            ),
+          ),
+        ),
+        ButtonBar(
+          alignment: MainAxisAlignment.spaceAround,
+          buttonHeight: 52.0,
+          buttonMinWidth: 90.0,
+          children: <Widget>[],
+        ),
+      ],
+    );
+  }
+}
+
+class _InfoLinks extends StatelessWidget {
+  const _InfoLinks({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        TextButton(
+          child: Text("🖥️ Github repo "),
+          onPressed: () => _launchURL("https://github.com/"),
+        ),
+        SizedBox(height: 20),
+        TextButton(
+          child: Text("🗂️ Drive storage "),
+          onPressed: () => _launchURL("https://drive.google.com/"),
+        ),
+        SizedBox(height: 20),
+      ],
     );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/group.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
-import 'package:flutter_application_tfg/widgets/my_search_delegate.dart';
+import 'package:flutter_application_tfg/screens/group/my_search_delegate_groups.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
@@ -28,7 +28,8 @@ class AllGroupsPage extends StatelessWidget {
               onPressed: () => Navigator.pop(context)),
           actions: [
             IconButton(
-              onPressed: () => MySearchDelegate(),
+              onPressed: () => showSearch(
+                  context: context, delegate: MySearchDelegateGroups()),
               icon: Icon(Icons.search),
               color: Colors.black,
             )

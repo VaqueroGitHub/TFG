@@ -1,23 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
+import 'package:provider/provider.dart';
 
 class AboutProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserArguments;
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
 
     return Builder(
       builder: (context) => Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.indigo,
+          onPressed: () => Navigator.pushReplacementNamed(
+            context,
+            'aboutProfile',
+            arguments: UserArguments(
+                user: userSessionProvider.user,
+                id: userSessionProvider.user.id!,
+                userSession: true),
+          ),
+          child: IconButton(
+            onPressed: () => Navigator.pushReplacementNamed(
+              context,
+              'aboutProfile',
+              arguments: UserArguments(
+                  user: userSessionProvider.user,
+                  id: userSessionProvider.user.id!,
+                  userSession: true),
+            ),
+            icon: Icon(
+              Icons.home,
+              color: Colors.white,
+            ),
+          ),
+        ),
         backgroundColor: Colors.white,
-        appBar: AppBar(
-            backgroundColor: Colors.white,
-            elevation: 0,
-            leading: IconButton(
-                color: Colors.black,
-                onPressed: () => Navigator.pop(context),
-                icon: Icon(Icons.arrow_back))),
         body: ListView(
           physics: BouncingScrollPhysics(),
           children: [
@@ -35,6 +57,7 @@ class AboutProfilePage extends StatelessWidget {
             buildAbout(context, args.user),
           ],
         ),
+        bottomNavigationBar: navBar(),
       ),
     );
   }

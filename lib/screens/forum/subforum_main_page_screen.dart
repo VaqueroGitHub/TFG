@@ -6,7 +6,7 @@ import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
-import 'package:flutter_application_tfg/widgets/my_search_delegate.dart';
+import 'package:flutter_application_tfg/screens/group/my_search_delegate_groups.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -28,7 +28,7 @@ class SubforumMainPage extends StatelessWidget {
               onPressed: () => Navigator.pop(context)),
           actions: [
             IconButton(
-              onPressed: () => MySearchDelegate(),
+              onPressed: () => MySearchDelegateGroups(),
               icon: Icon(Icons.search),
               color: Colors.black,
             )

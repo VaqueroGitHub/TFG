@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 
-class MySearchDelegate extends SearchDelegate {
+class MySearchDelegateGroups extends SearchDelegate {
+  @override
+  String get searchFieldLabel => 'Buscar grupo';
+
   @override
   List<Widget>? buildActions(BuildContext context) => [
         IconButton(
@@ -22,13 +25,14 @@ class MySearchDelegate extends SearchDelegate {
 
   @override
   Widget buildResults(BuildContext context) {
-    // TODO: implement buildResults
-    throw UnimplementedError();
+    return Text('buildResults');
   }
 
   @override
   Widget buildSuggestions(BuildContext context) {
-    // TODO: implement buildSuggestions
-    throw UnimplementedError();
+    if (query.isEmpty) {
+      return Container();
+    }
+    return Container();
   }
 }

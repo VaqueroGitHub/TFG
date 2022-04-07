@@ -18,9 +18,23 @@ class ProfileScreen extends StatelessWidget {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
-        onPressed: () {},
+        onPressed: () => Navigator.pushReplacementNamed(
+          context,
+          'aboutProfile',
+          arguments: UserArguments(
+              user: userSessionProvider.user,
+              id: userSessionProvider.user.id!,
+              userSession: true),
+        ),
         child: IconButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pushReplacementNamed(
+            context,
+            'aboutProfile',
+            arguments: UserArguments(
+                user: userSessionProvider.user,
+                id: userSessionProvider.user.id!,
+                userSession: true),
+          ),
           icon: Icon(
             Icons.home,
             color: Colors.white,
@@ -38,20 +52,20 @@ class ProfileScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline3,
               ),
               SizedBox(height: height * 0.06),
-              _ProfileMenu(
-                text: "Mi cuenta",
-                icon: IconButton(
-                  icon: SvgPicture.asset("assets/icons/User Icon.svg",
-                      color: Color(0XFF283593)),
-                  onPressed: () {
-                    Navigator.pushNamed(context, 'aboutProfile',
-                        arguments: UserArguments(
-                            user: userSessionProvider.user,
-                            id: userSessionProvider.user.id!,
-                            userSession: true));
-                  },
-                ),
-              ),
+              // _ProfileMenu(
+              //   text: "Mi cuenta",
+              //   icon: IconButton(
+              //     icon: SvgPicture.asset("assets/icons/User Icon.svg",
+              //         color: Color(0XFF283593)),
+              //     onPressed: () {
+              //       Navigator.pushNamed(context, 'aboutProfile',
+              //           arguments: UserArguments(
+              //               user: userSessionProvider.user,
+              //               id: userSessionProvider.user.id!,
+              //               userSession: true));
+              //     },
+              //   ),
+              // ),
               !userSessionProvider.user.isAdmin
                   ? Container()
                   : _ProfileMenu(

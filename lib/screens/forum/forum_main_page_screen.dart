@@ -2,7 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/forum_section.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -11,14 +13,28 @@ class ForumMainPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
     return Scaffold(
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.indigo,
-        onPressed: () => Navigator.pushNamedAndRemoveUntil(
-            context, 'aboutProfile', (route) => false),
+        onPressed: () => Navigator.pushReplacementNamed(
+          context,
+          'aboutProfile',
+          arguments: UserArguments(
+              user: userSessionProvider.user,
+              id: userSessionProvider.user.id!,
+              userSession: true),
+        ),
         child: IconButton(
-          onPressed: () {},
+          onPressed: () => Navigator.pushReplacementNamed(
+            context,
+            'aboutProfile',
+            arguments: UserArguments(
+                user: userSessionProvider.user,
+                id: userSessionProvider.user.id!,
+                userSession: true),
+          ),
           icon: Icon(
             Icons.home,
             color: Colors.white,
