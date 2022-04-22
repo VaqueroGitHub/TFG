@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/answer.dart';
-import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
+import 'package:flutter_application_tfg/widgets/answer_post.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/intl.dart';
 
 class PostMainPage extends StatefulWidget {
   @override
@@ -45,8 +46,7 @@ class _PostMainPageState extends State<PostMainPage> {
                   "Respondida",
                 ),
                 TextButton(
-                    onPressed: () => Navigator.pushNamed(
-                        context, 'aboutProfile',
+                    onPressed: () => Navigator.pushNamed(context, 'seeProfile',
                         arguments: UserArguments(
                             user: postMainProvider.post.user!,
                             id: postMainProvider.post.user!.id!,
@@ -94,56 +94,47 @@ class _PostMainPageState extends State<PostMainPage> {
           maxLines: 2,
         ),
       ),
-      body: Column(
-        children: <Widget>[
-          questionSection,
-          Expanded(
-              child: Padding(
-            padding: const EdgeInsets.only(bottom: 20.0),
-            child: _ListForumAnswers(),
-          )),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              MaterialButton(
-                elevation: 10.0,
-                minWidth: 170.0,
-                height: 50.0,
-                color: Theme.of(context).primaryColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            questionSection,
+            Expanded(child: _ListAnswers()),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                MaterialButton(
+                  elevation: 10.0,
+                  minWidth: 170.0,
+                  height: 50.0,
+                  color: Theme.of(context).primaryColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8.0),
+                  ),
+                  child: const Text(
+                    'Responder',
+                    style: TextStyle(color: Colors.white, fontSize: 20.0),
+                  ),
+                  onPressed: () async {
+                    Navigator.pushNamed(context, 'newAnswerPage',
+                        arguments: PostArguments(
+                            post: postMainProvider.post,
+                            forumSection: postMainProvider.post.forumSection!,
+                            userSession: true));
+                  },
                 ),
-                child: const Text(
-                  'Responder',
-                  style: TextStyle(color: Colors.white, fontSize: 20.0),
-                ),
-                onPressed: () async {
-                  Navigator.pushNamed(context, 'newAnswerPage',
-                      arguments: PostArguments(
-                          post: postMainProvider.post,
-                          forumSection: postMainProvider.post.forumSection!,
-                          userSession: true));
-                },
-              ),
-            ],
-          ),
-          SizedBox(height: height * 0.04),
-        ],
+              ],
+            ),
+            SizedBox(height: height * 0.04),
+          ],
+        ),
       ),
     );
   }
 }
 
-class ForumPostEntry {
-  final String username;
-  final User user;
-  final String text;
-
-  ForumPostEntry(this.username, this.text, this.user);
-}
-
-class _ListForumAnswers extends StatelessWidget {
-  const _ListForumAnswers({
+class _ListAnswers extends StatelessWidget {
+  const _ListAnswers({
     Key? key,
   }) : super(key: key);
 
@@ -168,78 +159,17 @@ class _ListForumAnswers extends StatelessWidget {
                   itemCount: answerList.length,
                   itemBuilder: (context, index) {
                     return Material(
-                      child: ForumPost(
-                        ForumPostEntry(answerList[index].user!.nick,
-                            answerList[index].answer, answerList[index].user!),
+                      child: AnswerPost(
+                        PostEntry(
+                          answerList[index].user!.nick,
+                          answerList[index].answer,
+                          answerList[index].user!,
+                          answerList[index].dateTimeToString,
+                        ),
                       ),
                     );
                   });
             }),
-      ),
-    );
-  }
-}
-
-class ForumPost extends StatelessWidget {
-  final ForumPostEntry entry;
-
-  ForumPost(this.entry);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(5.0),
-      decoration: BoxDecoration(
-        color: Colors.grey[200],
-        borderRadius: const BorderRadius.all(Radius.circular(20.0)),
-      ),
-      child: Column(
-        children: <Widget>[
-          Container(
-            decoration: BoxDecoration(
-              color: Color.fromARGB(255, 160, 156, 156),
-              borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(20.0),
-                  topRight: Radius.circular(20.0)),
-            ),
-            child: Row(
-              children: <Widget>[
-                Icon(
-                  Icons.person,
-                  size: 50.0,
-                ),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pushNamed(context, 'aboutProfile',
-                              arguments: UserArguments(
-                                  user: entry.user,
-                                  id: entry.user.id!,
-                                  userSession: true));
-                        },
-                        child: Text(entry.username,
-                            style: TextStyle(color: Colors.white)),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ),
-          Container(
-            margin: const EdgeInsets.only(left: 2.0, right: 2.0, bottom: 2.0),
-            padding: const EdgeInsets.all(8.0),
-            decoration: BoxDecoration(
-                color: Colors.grey[200],
-                borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(20.0),
-                    bottomRight: Radius.circular(20.0))),
-            child: Text(entry.text),
-          ),
-        ],
       ),
     );
   }

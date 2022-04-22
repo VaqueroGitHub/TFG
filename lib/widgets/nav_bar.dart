@@ -19,7 +19,7 @@ class navBar extends StatelessWidget {
             uiProvider.currentNavigatorIndex = index;
             switch (index) {
               case 0:
-                Navigator.pushNamedAndRemoveUntil(context, 'serviceMainPage',
+                Navigator.pushNamedAndRemoveUntil(context, 'servicesMainPage',
                     (Route<dynamic> route) => false);
                 break;
               case 1:

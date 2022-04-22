@@ -8,6 +8,7 @@ class User {
     required this.password,
     required this.isAdmin,
     required this.bio,
+    this.url,
     this.id,
   });
 
@@ -17,6 +18,7 @@ class User {
   String password;
   bool isAdmin;
   String bio;
+  String? url;
   String? id;
 
   factory User.fromJson(Map<String, dynamic> json) => User(
@@ -27,6 +29,7 @@ class User {
         isAdmin: json["isAdmin"],
         bio: json["bio"],
         id: json["id"],
+        url: json["url"],
       );
 
   Map<String, dynamic> toJson() => {

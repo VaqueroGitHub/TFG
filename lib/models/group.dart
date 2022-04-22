@@ -1,5 +1,4 @@
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:meta/meta.dart';
 import 'dart:convert';
 
 Group groupFromJson(String str) => Group.fromJson(json.decode(str));
@@ -12,6 +11,8 @@ class Group {
       required this.year,
       required this.description,
       required this.nMembersRequired,
+      required this.githUrl,
+      required this.driveUrl,
       required this.idMembers,
       required this.idUser,
       this.id,
@@ -21,6 +22,8 @@ class Group {
   int year;
   String description;
   int nMembersRequired;
+  String githUrl;
+  String driveUrl;
   List<String> idMembers;
   String idUser;
   String? id;
@@ -32,6 +35,8 @@ class Group {
         description: json["description"],
         nMembersRequired: json["nMembersRequired"],
         idMembers: List<String>.from(json["idMembers"].map((x) => x)),
+        driveUrl: json['driveUrl'],
+        githUrl: json['githUrl'],
         idUser: json["idUser"],
         id: json["id"],
         user: json["user"],
@@ -43,6 +48,8 @@ class Group {
         "description": description,
         "nMembersRequired": nMembersRequired,
         "idMembers": List<dynamic>.from(idMembers.map((x) => x)),
+        "driveUrl": driveUrl,
+        "githUrl": githUrl,
         "idUser": idUser,
       };
 }

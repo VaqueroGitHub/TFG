@@ -52,20 +52,6 @@ class ProfileScreen extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline3,
               ),
               SizedBox(height: height * 0.06),
-              // _ProfileMenu(
-              //   text: "Mi cuenta",
-              //   icon: IconButton(
-              //     icon: SvgPicture.asset("assets/icons/User Icon.svg",
-              //         color: Color(0XFF283593)),
-              //     onPressed: () {
-              //       Navigator.pushNamed(context, 'aboutProfile',
-              //           arguments: UserArguments(
-              //               user: userSessionProvider.user,
-              //               id: userSessionProvider.user.id!,
-              //               userSession: true));
-              //     },
-              //   ),
-              // ),
               !userSessionProvider.user.isAdmin
                   ? Container()
                   : _ProfileMenu(

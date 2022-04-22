@@ -1,21 +1,21 @@
 // ignore_for_file: file_names
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/group_message.dart';
+import 'package:flutter_application_tfg/models/service_message.dart';
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/providers/group_list_provider.dart';
+import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
-import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
+import 'package:flutter_application_tfg/services/service_database_service.dart';
 import 'package:flutter_application_tfg/widgets/answer_post.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class GroupDetailsScreen extends StatelessWidget {
+class ServiceDetailsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
 
     return Builder(
@@ -31,7 +31,7 @@ class GroupDetailsScreen extends StatelessWidget {
                 ),
                 onPressed: () => Navigator.pop(context)),
             title: Text(
-              'Grupo',
+              'Servicio',
               style: Theme.of(context).textTheme.headline3,
             )),
         backgroundColor: Color(0xFFffffff),
@@ -47,89 +47,55 @@ class GroupDetailsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _InfoLinks(),
-                userSessionProvider.user.id == args.group.idUser ||
-                        args.group.idMembers
-                            .contains(userSessionProvider.user.id) ||
-                        args.group.idMembers.length >=
-                            args.group.nMembersRequired
+                userSessionProvider.user.id == args.service.idOwnerUser ||
+                        args.service.idCustomerUser ==
+                            userSessionProvider.user.id ||
+                        !args.service.idCustomerUser.isEmpty
                     ? Container()
                     : MaterialButton(
                         elevation: 10.0,
                         minWidth: 200.0,
                         height: 50.0,
                         color: userSessionProvider.user.id ==
-                                    args.group.idUser ||
-                                args.group.idMembers
-                                    .contains(userSessionProvider.user.id) ||
-                                args.group.idMembers.length >=
-                                    args.group.nMembersRequired
+                                    args.service.idOwnerUser ||
+                                args.service.idCustomerUser ==
+                                    userSessionProvider.user.id ||
+                                !args.service.idCustomerUser.isEmpty
                             ? Colors.grey
                             : Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Text(
-                          userSessionProvider.user.id == args.group.idUser ||
-                                  args.group.idMembers
-                                      .contains(userSessionProvider.user.id) ||
-                                  args.group.idMembers.length >=
-                                      args.group.nMembersRequired
-                              ? 'Ya inscirto'
-                              : 'Únete',
+                          userSessionProvider.user.id ==
+                                      args.service.idOwnerUser ||
+                                  args.service.idCustomerUser ==
+                                      userSessionProvider.user.id ||
+                                  !args.service.idCustomerUser.isEmpty
+                              ? 'Ya obtenido'
+                              : 'Obtener',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
                           if (userSessionProvider.user.id ==
-                                  args.group.idUser ||
-                              args.group.idMembers
-                                  .contains(userSessionProvider.user.id) ||
-                              args.group.idMembers.length >=
-                                  args.group.nMembersRequired) return;
+                                  args.service.idOwnerUser ||
+                              args.service.idCustomerUser ==
+                                  userSessionProvider.user.id ||
+                              !args.service.idCustomerUser.isEmpty) return;
 
-                          await GroupDatabaseService().joinGroup(
-                              args.group, userSessionProvider.user.id!);
-
-                          args.userSession
-                              ? Navigator.popAndPushNamed(
-                                  context, 'groupsMainPage')
-                              : Navigator.popAndPushNamed(
-                                  context, 'adminHomePage',
-                                  arguments: 2);
-                        },
-                      ),
-                SizedBox(
-                  height: 20,
-                ),
-                userSessionProvider.user.id == args.group.idUser ||
-                        !args.group.idMembers
-                            .contains(userSessionProvider.user.id)
-                    ? Container()
-                    : MaterialButton(
-                        elevation: 10.0,
-                        minWidth: 200.0,
-                        height: 50.0,
-                        color: Theme.of(context).primaryColor,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          'Salir del grupo',
-                          style: TextStyle(color: Colors.white, fontSize: 20.0),
-                        ),
-                        onPressed: () async {
-                          await GroupDatabaseService().exitGroup(
-                              args.group, userSessionProvider.user.id!);
+                          await ServiceDatabaseService().obtainService(
+                              args.service, userSessionProvider.user.id!);
 
                           args.userSession
                               ? Navigator.popAndPushNamed(
-                                  context, 'groupsMainPage')
+                                  context, 'servicesMainPage')
                               : Navigator.popAndPushNamed(
                                   context, 'adminHomePage',
-                                  arguments: 2);
+                                  arguments: 3);
                         },
                       ),
                 SizedBox(height: 20),
-                userSessionProvider.user.id != args.group.idUser
+                userSessionProvider.user.id != args.service.idOwnerUser
                     ? Container()
                     : MaterialButton(
                         elevation: 10.0,
@@ -144,15 +110,15 @@ class GroupDetailsScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          await GroupDatabaseService()
-                              .deleteGroup(args.group.id!);
+                          await ServiceDatabaseService()
+                              .deleteService(args.service.id!);
 
                           args.userSession
                               ? Navigator.popAndPushNamed(
-                                  context, 'groupsMainPage')
+                                  context, 'servicesMainPage')
                               : Navigator.popAndPushNamed(
                                   context, 'adminHomePage',
-                                  arguments: 2);
+                                  arguments: 3);
                         },
                       ),
                 _ChatCardWidget(),
@@ -179,19 +145,19 @@ class GroupDetailsScreen extends StatelessWidget {
       );
 
   Widget buildAbout(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 48),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            '¿Qué busca el grupo? 👨🏻‍🎓',
+            'Descripcion del servicio ofertado 👨🏻‍🎓',
             style: Theme.of(context).textTheme.headline3,
           ),
           const SizedBox(height: 16),
           Text(
-            args.group.description,
+            args.service.description,
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ],
@@ -211,13 +177,13 @@ class _ChatCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ExpansionTileCard(
         key: GlobalKey(),
         leading: Icon(Icons.chat),
-        title: Text('Chat de grupo!'),
+        title: Text('Chat!'),
         //subtitle: Text('I expand!'),
         children: <Widget>[
           Divider(
@@ -225,11 +191,11 @@ class _ChatCardWidget extends StatelessWidget {
             height: 1.0,
           ),
           TextButton(
-              onPressed: () => Navigator.pushNamed(context, 'newGroupMessage',
-                  arguments:
-                      GroupArguments(group: args.group, userSession: true)),
+              onPressed: () => Navigator.pushNamed(context, 'newServiceMessage',
+                  arguments: ServiceArguments(
+                      service: args.service, userSession: true)),
               child: Text("Nuevo mensaje")),
-          _ListChatGroup(),
+          _ListChatService(),
           ButtonBar(
             alignment: MainAxisAlignment.spaceAround,
             buttonHeight: 52.0,
@@ -242,38 +208,37 @@ class _ChatCardWidget extends StatelessWidget {
   }
 }
 
-class _ListChatGroup extends StatelessWidget {
-  const _ListChatGroup({
+class _ListChatService extends StatelessWidget {
+  const _ListChatService({
     Key? key,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
-    final groupListProvider = Provider.of<GroupListProvider>(context);
+    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
 
-    return Consumer<GroupListProvider>(
-        builder: (context, groupListProvider, child) {
+    return Consumer<ServiceListProvider>(
+        builder: (context, serviceListProvider, child) {
       //groupListProvider.loadMessagesGroupList(args.group.id!);
 
-      return FutureBuilder<List<GroupMessage>>(
-          future: groupListProvider.loadMessagesGroupList(args.group.id!),
-          builder: (context, AsyncSnapshot<List<GroupMessage>> snapshot) {
+      return FutureBuilder<List<ServiceMessage>>(
+          future: serviceListProvider.loadMessagesServiceList(args.service.id!),
+          builder: (context, AsyncSnapshot<List<ServiceMessage>> snapshot) {
             if (!snapshot.hasData) {
               return Center(child: Text("Loading..."));
             }
             return ListView.builder(
                 shrinkWrap: true,
                 scrollDirection: Axis.vertical,
-                itemCount: groupListProvider.listMessage.length,
+                itemCount: serviceListProvider.listMessage.length,
                 itemBuilder: (context, index) {
                   return Material(
                     child: AnswerPost(
                       PostEntry(
-                          groupListProvider.listMessage[index].user!.nick,
-                          groupListProvider.listMessage[index].message,
-                          groupListProvider.listMessage[index].user!,
-                          groupListProvider
+                          serviceListProvider.listMessage[index].user!.nick,
+                          serviceListProvider.listMessage[index].message,
+                          serviceListProvider.listMessage[index].user!,
+                          serviceListProvider
                               .listMessage[index].dateTimeToString),
                     ),
                   );
@@ -290,19 +255,16 @@ class _InfoLinks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        TextButton(
-          child: Text("🖥️ Github repo "),
-          onPressed: () => _launchURL(args.group.githUrl),
-        ),
-        SizedBox(height: 20),
-        TextButton(
-          child: Text("🗂️ Drive storage "),
-          onPressed: () => _launchURL(args.group.driveUrl),
-        ),
+        !args.service.conference.isEmpty
+            ? TextButton(
+                child: Text("📹 Conference url "),
+                onPressed: () => _launchURL(args.service.conference),
+              )
+            : Container(),
         SizedBox(height: 20),
       ],
     );
@@ -343,30 +305,30 @@ class GroupNumbersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
+        // buildButton(
+        //     context,
+        //     (args.group.idMembers.length).toString() +
+        //         '/' +
+        //         args.group.nMembersRequired.toString(),
+        //     'Miembros',
+        //     null,
+        //     null),
+        buildDivider(),
+        buildButton(context, args.service.code, 'Codigo', null, null),
+        buildDivider(),
         buildButton(
             context,
-            (args.group.idMembers.length).toString() +
-                '/' +
-                args.group.nMembersRequired.toString(),
-            'Miembros',
-            null,
-            null),
-        buildDivider(),
-        buildButton(context, args.group.asignatura, 'Asignatura', null, null),
-        buildDivider(),
-        buildButton(
-            context,
-            args.group.user!.nick,
+            args.service.userOwner!.nick,
             'Propietario',
             'seeProfile',
             UserArguments(
-                user: args.group.user!,
-                id: args.group.user!.id!,
+                user: args.service.userOwner!,
+                id: args.service.userOwner!.id!,
                 userSession: true)),
       ],
     );

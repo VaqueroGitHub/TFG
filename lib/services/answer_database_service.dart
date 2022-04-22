@@ -27,13 +27,15 @@ class AnswerDatabaseService {
         'answer': answer.answer,
         'idPost': answer.idPost,
         'idUser': answer.idUser,
+        'datetime': answer.datetime,
       });
     }
 
     return await answerCollection.doc(uuid).set({
       'answer': answer.answer,
       'idPost': answer.idPost,
-      'idUser': answer.idUser
+      'idUser': answer.idUser,
+      'datetime': answer.datetime,
     });
   }
 
@@ -51,6 +53,7 @@ class AnswerDatabaseService {
     final QuerySnapshot answerCollection = await FirebaseFirestore.instance
         .collection("answer")
         .where('idPost', isEqualTo: idPost)
+        .orderBy("datetime", descending: true)
         .get();
 
     List<Answer> listAnswers = [];
@@ -64,6 +67,7 @@ class AnswerDatabaseService {
         idUser: answerMap['idUser'],
         user: user,
         id: element.id,
+        datetime: answerMap['datetime'],
       );
 
       listAnswers.add(answer);

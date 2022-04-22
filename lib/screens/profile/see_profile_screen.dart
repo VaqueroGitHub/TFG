@@ -7,7 +7,7 @@ import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:provider/provider.dart';
 
-class AboutProfilePage extends StatelessWidget {
+class SeeProfilePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as UserArguments;
@@ -15,31 +15,16 @@ class AboutProfilePage extends StatelessWidget {
 
     return Builder(
       builder: (context) => Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.indigo,
-          onPressed: () => Navigator.pushReplacementNamed(
-            context,
-            'aboutProfile',
-            arguments: UserArguments(
-                user: userSessionProvider.user,
-                id: userSessionProvider.user.id!,
-                userSession: true),
-          ),
-          child: IconButton(
-            onPressed: () => Navigator.pushReplacementNamed(
-              context,
-              'aboutProfile',
-              arguments: UserArguments(
-                  user: userSessionProvider.user,
-                  id: userSessionProvider.user.id!,
-                  userSession: true),
-            ),
-            icon: Icon(
-              Icons.home,
-              color: Colors.white,
-            ),
-          ),
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.pop(context)),
         ),
         backgroundColor: Colors.white,
         body: ListView(
@@ -47,6 +32,7 @@ class AboutProfilePage extends StatelessWidget {
           children: [
             const SizedBox(height: 24),
             ProfileWidget(
+              isEdit: false,
               fileImage: args.user.url,
               onClicked: () async {},
             ),
@@ -58,7 +44,6 @@ class AboutProfilePage extends StatelessWidget {
             buildAbout(context, args.user),
           ],
         ),
-        bottomNavigationBar: navBar(),
       ),
     );
   }

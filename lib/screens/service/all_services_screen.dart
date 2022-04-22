@@ -1,89 +1,76 @@
 // ignore_for_file: file_names
 
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/models/group.dart';
-import 'package:flutter_application_tfg/providers/group_list_provider.dart';
-import 'package:flutter_application_tfg/providers/user_session_provider.dart';
-import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
-import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
-import 'package:flutter_application_tfg/widgets/group_buttons.dart';
-import 'package:flutter_application_tfg/widgets/widgets.dart';
+import 'package:flutter_application_tfg/models/service.dart';
+import 'package:flutter_application_tfg/providers/service_list_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
+import 'package:flutter_application_tfg/screens/service/my_search_delegate_services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 
-class GroupsMainPage extends StatelessWidget {
+class AllServicesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
 
     return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo,
-        onPressed: () => Navigator.pushReplacementNamed(
-          context,
-          'aboutProfile',
-          arguments: UserArguments(
-              user: userSessionProvider.user,
-              id: userSessionProvider.user.id!,
-              userSession: true),
-        ),
-        child: IconButton(
-          onPressed: () => Navigator.pushReplacementNamed(
-            context,
-            'aboutProfile',
-            arguments: UserArguments(
-                user: userSessionProvider.user,
-                id: userSessionProvider.user.id!,
-                userSession: true),
-          ),
-          icon: Icon(
-            Icons.home,
-            color: Colors.white,
-          ),
-        ),
-      ),
+      appBar: AppBar(
+          backgroundColor: Color(0xFFffffff),
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.pop(context)),
+          actions: [
+            IconButton(
+              onPressed: () => showSearch(
+                  context: context, delegate: MySearchDelegateServices()),
+              icon: Icon(Icons.search),
+              color: Colors.black,
+            )
+          ],
+          title: Text(
+            'Todos los servicios',
+            style: Theme.of(context).textTheme.headline4,
+          )),
       backgroundColor: Color(0xFFffffff),
       body: SafeArea(
         child: Column(
           children: [
-            SizedBox(height: height * 0.04),
-            Text(
-              'Mis grupos',
-              style: Theme.of(context).textTheme.headline3,
-            ),
-            GroupButtons(),
             SizedBox(height: 10),
             Container(
-              height: height * 0.64,
-              child: Consumer<GroupListProvider>(
+              height: height * 0.8,
+              child: Consumer<ServiceListProvider>(
                   builder: (context, providerData, _) =>
-                      FutureBuilder<List<Group>>(
-                          future: providerData
-                              .loadUserGroupList(userSessionProvider.user.id!),
+                      FutureBuilder<List<Service>>(
+                          future: providerData.loadAllServiceList(),
                           builder:
-                              (context, AsyncSnapshot<List<Group>> snapshot) {
+                              (context, AsyncSnapshot<List<Service>> snapshot) {
                             if (!snapshot.hasData) {
                               return Center(child: Text("Loading..."));
                             }
 
-                            List<Group> groupList = snapshot.data!;
+                            List<Service> serviceList = snapshot.data!;
 
                             return ListView.builder(
                                 shrinkWrap: true,
                                 scrollDirection: Axis.vertical,
-                                itemCount: groupList.length,
+                                itemCount: serviceList.length,
                                 itemBuilder: (context, index) {
                                   return Material(
-                                    child: _GroupLabel(
-                                      etiqueta: groupList[index].asignatura,
-                                      text: groupList[index].description,
+                                    child: _ServiceLabel(
+                                      etiqueta: serviceList[index].code,
+                                      text: serviceList[index].description,
                                       press: () => {
                                         Navigator.pushNamed(
-                                            context, 'groupDetails',
-                                            arguments: GroupArguments(
-                                                group: groupList[index],
+                                            context, 'serviceDetails',
+                                            arguments: ServiceArguments(
+                                                service: serviceList[index],
                                                 userSession: true))
                                       },
                                     ),
@@ -94,13 +81,12 @@ class GroupsMainPage extends StatelessWidget {
           ],
         ),
       ),
-      bottomNavigationBar: navBar(),
     );
   }
 }
 
-class _GroupLabel extends StatelessWidget {
-  const _GroupLabel({
+class _ServiceLabel extends StatelessWidget {
+  const _ServiceLabel({
     Key? key,
     required this.text,
     required this.etiqueta,

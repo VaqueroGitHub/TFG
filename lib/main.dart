@@ -1,16 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/answer_form_provider.dart';
+import 'package:flutter_application_tfg/providers/edit_user_provider.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
+import 'package:flutter_application_tfg/providers/group_form_provider.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
+import 'package:flutter_application_tfg/providers/message_form_provider.dart';
 import 'package:flutter_application_tfg/providers/post_form_provider.dart';
 import 'package:flutter_application_tfg/providers/post_main_provider.dart';
+import 'package:flutter_application_tfg/providers/service_form_provider.dart';
+import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/providers/ui_provider.dart';
 import 'package:flutter_application_tfg/providers/user_login_provider.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screens/admin/admin_home_page.dart';
+import 'package:flutter_application_tfg/screens/group/new_group_message_screen.dart';
 import 'package:flutter_application_tfg/screens/login/check_auth.dart';
+import 'package:flutter_application_tfg/screens/profile/see_profile_screen.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
+import 'package:flutter_application_tfg/screens/service/all_services_screen.dart';
+import 'package:flutter_application_tfg/screens/service/new_service_message_screen.dart';
+import 'package:flutter_application_tfg/screens/service/new_service_screen.dart';
+import 'package:flutter_application_tfg/screens/service/service_details_screen.dart';
 import 'package:flutter_application_tfg/screens/service/service_main_page.dart';
 import 'package:flutter_application_tfg/styles/tfg_theme.dart';
 import 'package:provider/provider.dart';
@@ -33,6 +44,11 @@ class AppState extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => PostFormProvider()),
         ChangeNotifierProvider(create: (_) => AnswerFormProvider()),
         ChangeNotifierProvider(create: (_) => PostMainProvider()),
+        ChangeNotifierProvider(create: (_) => MessageFormProvider()),
+        ChangeNotifierProvider(create: (_) => GroupFormProvider()),
+        ChangeNotifierProvider(create: (_) => ServiceListProvider()),
+        ChangeNotifierProvider(create: (_) => ServiceFormProvider()),
+        ChangeNotifierProvider(create: (_) => EditUserProvider()),
       ],
       child: MyApplication(),
     );
@@ -54,6 +70,7 @@ class MyApplication extends StatelessWidget {
         'checkAuth': (_) => CheckAuthScreen(),
         'profile': (_) => ProfileScreen(),
         'aboutProfile': (_) => AboutProfilePage(),
+        'seeProfile': (_) => SeeProfilePage(),
         'editProfile': (_) => EditProfilePage(),
         'manageUsers': (_) => ManageUsersScreen(),
         'adminHomePage': (_) => AdminHomePage(),
@@ -61,6 +78,7 @@ class MyApplication extends StatelessWidget {
         'newGroupPage': (_) => NewGroupPage(),
         'manageGroups': (_) => ManageGroupsScreen(),
         'editGroup': (_) => EditGroupPage(),
+        'newGroupMessage': (_) => NewGroupMessagePage(),
         'forumMainPage': (_) => ForumMainPage(),
         'subforumMainPage': (_) => SubforumMainPage(),
         'newSubforumPage': (_) => NewSubforumPage(),
@@ -71,7 +89,11 @@ class MyApplication extends StatelessWidget {
         'manageSubforums': (_) => ManageSubforumsScreen(),
         'groupDetails': (_) => GroupDetailsScreen(),
         'allGroupScreen': (_) => AllGroupsPage(),
-        'serviceMainPage': (_) => ServiceMainPage(),
+        'servicesMainPage': (_) => ServiceMainPage(),
+        'allServiceScreen': (_) => AllServicesPage(),
+        'serviceDetails': (_) => ServiceDetailsScreen(),
+        'newServicePage': (_) => NewServicePage(),
+        'newServiceMessage': (_) => NewServiceMessagePage(),
       },
       theme: tfgTheme.copyWith(
           appBarTheme: const AppBarTheme(color: Colors.transparent)),

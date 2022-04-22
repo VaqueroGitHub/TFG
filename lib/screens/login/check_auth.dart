@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:provider/provider.dart';
 
@@ -22,9 +23,16 @@ class CheckAuthScreen extends StatelessWidget {
             } else {
               final userSessionProvider =
                   Provider.of<UserSessionProvider>(context, listen: false);
-              userSessionProvider.loadUserInfo().then((value) =>
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, 'profile', (Route<dynamic> route) => false));
+              userSessionProvider.loadUserInfo().then(
+                    (value) => Navigator.pushReplacementNamed(
+                      context,
+                      'aboutProfile',
+                      arguments: UserArguments(
+                          user: userSessionProvider.user,
+                          id: userSessionProvider.user.id!,
+                          userSession: true),
+                    ),
+                  );
             }
           });
 

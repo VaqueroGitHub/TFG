@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/auth_service.dart';
 
 class UserDatabaseService {
   final String uuid;
@@ -25,7 +22,8 @@ class UserDatabaseService {
         password: data["password"],
         isAdmin: data["isAdmin"],
         bio: data["bio"],
-        id: resp.id);
+        id: resp.id,
+        url: data["url"]);
 
     return user;
   }
@@ -42,6 +40,7 @@ class UserDatabaseService {
         'nick': user.nick,
         'isAdmin': true,
         "bio": user.bio,
+        "url": user.url
       });
     } else {
       return await userCollection.doc(uuid).set({
@@ -51,6 +50,7 @@ class UserDatabaseService {
         'nick': user.nick,
         'isAdmin': false,
         "bio": user.bio,
+        "url": user.url
       });
     }
   }
@@ -72,7 +72,8 @@ class UserDatabaseService {
           password: userMap["password"],
           isAdmin: userMap["isAdmin"],
           bio: userMap["bio"],
-          id: element.id);
+          id: element.id,
+          url: userMap["url"]);
       listUser.add(user);
     });
 

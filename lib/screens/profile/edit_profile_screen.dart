@@ -1,22 +1,42 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/edit_user_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
-class EditProfilePage extends StatelessWidget {
+class EditProfilePage extends StatefulWidget {
+  @override
+  State<EditProfilePage> createState() => _EditProfilePageState();
+}
+
+class _EditProfilePageState extends State<EditProfilePage> {
+  String? localImage = null;
+
   @override
   Widget build(BuildContext context) {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final editUserProvider = Provider.of<EditUserProvider>(context);
     final args = ModalRoute.of(context)!.settings.arguments as UserArguments;
-
+    //localImage = args.user.url;
     final double height = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Color(0xFFffffff),
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        centerTitle: true,
         elevation: 0,
+        leading: IconButton(
+            icon: Icon(
+              Icons.arrow_back,
+              color: Colors.black,
+            ),
+            onPressed: () => Navigator.pop(context)),
       ),
       body: Form(
         child: ListView(
@@ -31,10 +51,29 @@ class EditProfilePage extends StatelessWidget {
             ),
             SizedBox(height: height * 0.02),
             ProfileWidget(
-              imagePath:
-                  'https://www.freeiconspng.com/thumbs/profile-icon-png/profile-icon-9.png',
+              fileImage: localImage,
               isEdit: true,
-              onClicked: () async {},
+              onClicked: () async {
+                final picker = new ImagePicker();
+                final PickedFile? pickedFile = await picker.getImage(
+                    // source: ImageSource.gallery,
+                    source: ImageSource.camera,
+                    imageQuality: 100);
+
+                if (pickedFile == null) {
+                  print('No seleccionó nada');
+                  return;
+                }
+                editUserProvider.newPictureFile =
+                    File.fromUri(Uri(path: pickedFile.path));
+                String? newPictureLocal = await editUserProvider.uploadImage();
+
+                setState(() {
+                  localImage = newPictureLocal;
+                });
+                // editUserProvider.imageL = newPictureLocal;
+                // editUserProvider.notifyListeners();
+              },
             ),
             TextFormField(
               initialValue: args.user.fullName,
@@ -99,11 +138,16 @@ class EditProfilePage extends StatelessWidget {
                     style: TextStyle(color: Colors.white, fontSize: 20.0),
                   ),
                   onPressed: () {
+                    if (localImage != null) args.user.url = localImage;
                     UserDatabaseService(uuid: args.id)
                         .updateUserData(args.user);
-                    if (args.userSession)
+                    if (args.userSession) {
+                      setState(() {
+                        userSessionProvider.user.url = localImage;
+                      });
+                      // userSessionProvider.user.url = editUserProvider.imageL;
                       Navigator.pop(context); // pop current page
-                    else {
+                    } else {
                       Navigator.pushNamedAndRemoveUntil(context,
                           'adminHomePage', (Route<dynamic> route) => false,
                           arguments: 0);
@@ -116,6 +160,32 @@ class EditProfilePage extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+
+  Widget getImage(File? picture) {
+    if (picture == null)
+      return Image(
+        image: AssetImage('assets/imgs/no-image.png'),
+        fit: BoxFit.contain,
+        width: 128,
+        height: 128,
+      );
+
+    if (picture.path.startsWith('http'))
+      return FadeInImage(
+        image: NetworkImage(picture.path),
+        placeholder: AssetImage('assets/imgs/jar-loading.png'),
+        fit: BoxFit.contain,
+        width: 128,
+        height: 128,
+      );
+
+    return Image.file(
+      File(picture.path),
+      fit: BoxFit.contain,
+      width: 128,
+      height: 128,
     );
   }
 

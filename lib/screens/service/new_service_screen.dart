@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_tfg/providers/group_form_provider.dart';
+import 'package:flutter_application_tfg/providers/service_form_provider.dart';
+import 'package:flutter_application_tfg/services/service_database_service.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
-
 import '../../providers/user_session_provider.dart';
 
-class NewGroupPage extends StatelessWidget {
+class NewServicePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
@@ -38,7 +37,7 @@ class _NewGroupPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
-    final groupFormProvider = Provider.of<GroupFormProvider>(context);
+    final serviceFormProvider = Provider.of<ServiceFormProvider>(context);
 
     return SingleChildScrollView(
         child: Container(
@@ -49,59 +48,45 @@ class _NewGroupPage extends StatelessWidget {
                 children: [
                   SizedBox(height: height * 0.04),
                   Text(
-                    '¡Crea tu nuevo grupo de estudio! 🤝🏻',
+                    '¡Publica tu nuevo servicio a compartir! 🤝🏻',
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   Text(
-                    'Rellena los datos del grupo 📝',
+                    'Rellena los datos del servicio 📝',
                     style: Theme.of(context).textTheme.headline3,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    onChanged: (val) => groupFormProvider.asignatura = val,
+                    onChanged: (val) => serviceFormProvider.code = val,
                     decoration: const InputDecoration(
-                        labelText: "Introduce el codigo de la asignatura"),
+                        labelText:
+                            "Introduce el codigo del Servicio(max 3 chars)"),
                     minLines: 1,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
                     onChanged: (val) => val != ''
-                        ? groupFormProvider.nMembersRequired = int.parse(val)
-                        : groupFormProvider.nMembersRequired = -1,
+                        ? serviceFormProvider.nCoins = int.parse(val)
+                        : serviceFormProvider.nCoins = -1,
                     decoration: const InputDecoration(
-                        labelText: "Introduce el tamaño del grupo"),
+                        labelText: "Introduce el coste del servicio"),
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    onChanged: (val) => val != ''
-                        ? groupFormProvider.year = int.parse(val)
-                        : groupFormProvider.year = -1,
+                    onChanged: (val) => serviceFormProvider.conference = val,
                     decoration: const InputDecoration(
                         labelText:
-                            "Introduce el curso al que pertenece la asignatura"),
-                  ),
-                  SizedBox(height: height * 0.04),
-                  TextFormField(
-                    onChanged: (val) => groupFormProvider.githUrl = val,
-                    decoration: const InputDecoration(
-                        labelText:
-                            "Introduce la url del repositorio github del grupo"),
-                  ),
-                  SizedBox(height: height * 0.04),
-                  TextFormField(
-                    onChanged: (val) => groupFormProvider.driveUrl = val,
-                    decoration: const InputDecoration(
-                        labelText:
-                            "Introduce la url del repositorio drive del grupo"),
+                            "Introduce la posible url para la conferencia online a dar el servicio "),
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
                     // any number you need (It works as the rows for the textarea)
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    onChanged: (val) => groupFormProvider.description = val,
+                    onChanged: (val) => serviceFormProvider.description = val,
                     decoration: const InputDecoration(
-                        labelText: "¿Qué esperas de los miembros del grupo?"),
+                        labelText:
+                            "Describe detalladamente el servicio a prestar"),
                   ),
                   SizedBox(height: height * 0.04),
                   Row(
@@ -116,20 +101,22 @@ class _NewGroupPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: const Text(
-                          'Crear grupo',
+                          'Publicar servicio',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          if (groupFormProvider.asignatura != '' &&
-                              groupFormProvider.description != '' &&
-                              groupFormProvider.year != -1 &&
-                              groupFormProvider.nMembersRequired != -1) {
-                            GroupDatabaseService().updateGroup(
-                                groupFormProvider.group(userSessionProvider),
+                          if (serviceFormProvider.code != '' &&
+                              serviceFormProvider.description != '' &&
+                              serviceFormProvider.nCoins != -1) {
+                            serviceFormProvider.idOwnerUser =
+                                userSessionProvider.user.id!;
+                            ServiceDatabaseService().updateService(
+                                serviceFormProvider
+                                    .service(userSessionProvider),
                                 null);
                             Navigator.pushNamedAndRemoveUntil(
                                 context,
-                                'groupsMainPage',
+                                'servicesMainPage',
                                 (Route<dynamic> route) => false);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

@@ -1,15 +1,18 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 class ProfileWidget extends StatelessWidget {
-  final String imagePath;
+  final String? fileImage;
   final bool isEdit;
   final VoidCallback onClicked;
 
   const ProfileWidget({
     Key? key,
-    required this.imagePath,
+    this.fileImage,
     this.isEdit = false,
     required this.onClicked,
+    File? imagePath,
   }) : super(key: key);
 
   @override
@@ -23,7 +26,7 @@ class ProfileWidget extends StatelessWidget {
           Positioned(
             bottom: 0,
             right: 4,
-            child: buildEditIcon(color),
+            child: !isEdit ? Container() : buildEditIcon(color),
           ),
         ],
       ),
@@ -31,32 +34,52 @@ class ProfileWidget extends StatelessWidget {
   }
 
   Widget buildImage() {
-    final image = NetworkImage(imagePath);
+    //final image = NetworkImage(imagePath);
 
     return ClipOval(
-      child: Material(
-        color: Colors.transparent,
-        child: Ink.image(
-          image: image,
-          fit: BoxFit.cover,
-          width: 128,
-          height: 128,
-          child: InkWell(onTap: onClicked),
-        ),
-      ),
+      child: Material(color: Colors.transparent, child: getImage(fileImage)),
     );
   }
 
-  Widget buildEditIcon(Color color) => buildCircle(
-        color: Colors.white,
-        all: 3,
+  Widget getImage(String? picture) {
+    if (picture == null)
+      return Image(
+        image: AssetImage('assets/imgs/no-image.png'),
+        fit: BoxFit.contain,
+        width: 128,
+        height: 128,
+      );
+
+    if (picture.startsWith('http'))
+      return FadeInImage(
+        image: NetworkImage(picture),
+        placeholder: AssetImage('assets/imgs/jar-loading.png'),
+        fit: BoxFit.contain,
+        width: 128,
+        height: 128,
+      );
+
+    return Image.file(
+      File(picture),
+      fit: BoxFit.contain,
+      width: 128,
+      height: 128,
+    );
+  }
+
+  Widget buildEditIcon(Color color) => GestureDetector(
+        onTap: onClicked,
         child: buildCircle(
-          color: color,
-          all: 8,
-          child: Icon(
-            isEdit ? Icons.add_a_photo : Icons.edit,
-            color: Colors.white,
-            size: 20,
+          color: Colors.white,
+          all: 3,
+          child: buildCircle(
+            color: color,
+            all: 8,
+            child: Icon(
+              isEdit ? Icons.add_a_photo : Icons.edit,
+              color: Colors.white,
+              size: 20,
+            ),
           ),
         ),
       );

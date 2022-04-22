@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_tfg/models/answer.dart';
 
@@ -15,6 +16,10 @@ class AnswerFormProvider extends ChangeNotifier {
   }
 
   Answer answer() {
-    return Answer(answer: answerBody, idPost: idPost, idUser: idUser);
+    return Answer(
+        answer: answerBody,
+        idPost: idPost,
+        idUser: idUser,
+        datetime: Timestamp.fromDate(DateTime.now()));
   }
 }

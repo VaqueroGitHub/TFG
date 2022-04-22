@@ -1,112 +1,158 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/service.dart';
+import 'package:flutter_application_tfg/providers/service_list_provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/widgets/nav_bar.dart';
-import 'package:flutter_folding_card/flutter_folding_card.dart';
+import 'package:flutter_application_tfg/widgets/service_buttons.dart';
+import 'package:provider/provider.dart';
 
-class ServiceMainPage extends StatefulWidget {
-  const ServiceMainPage({Key? key}) : super(key: key);
-
+class ServiceMainPage extends StatelessWidget {
   @override
-  State<ServiceMainPage> createState() => _ServiceMainPageState();
+  Widget build(BuildContext context) {
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final double height = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.indigo,
+          onPressed: () => Navigator.pushReplacementNamed(
+            context,
+            'aboutProfile',
+            arguments: UserArguments(
+                user: userSessionProvider.user,
+                id: userSessionProvider.user.id!,
+                userSession: true),
+          ),
+          child: IconButton(
+            onPressed: () => Navigator.pushReplacementNamed(
+              context,
+              'aboutProfile',
+              arguments: UserArguments(
+                  user: userSessionProvider.user,
+                  id: userSessionProvider.user.id!,
+                  userSession: true),
+            ),
+            icon: Icon(
+              Icons.home,
+              color: Colors.white,
+            ),
+          ),
+        ),
+        backgroundColor: Color(0xFFffffff),
+        bottomNavigationBar: navBar(),
+        body: SafeArea(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(height: height * 0.04),
+                Text(
+                  'Servicios',
+                  style: Theme.of(context).textTheme.headline3,
+                  textAlign: TextAlign.center,
+                ),
+                SizedBox(height: height * 0.06),
+                ServiceButtons(),
+                _ServiceList(
+                    height: height, userSessionProvider: userSessionProvider),
+              ],
+            ),
+          ),
+        ));
+  }
 }
 
-class _ServiceMainPageState extends State<ServiceMainPage> {
-  final _kImageUrls = [
-    "https://scontent-hkg4-1.xx.fbcdn.net/v/t1.6435-9/240669493_3093165274342302_7696944317595605164_n.jpg?_nc_cat=107&ccb=1-5&_nc_sid=730e14&_nc_ohc=QRmRTo3bJOQAX_u8ELe&_nc_ht=scontent-hkg4-1.xx&oh=374ca65aaff7a46dfd4d2f14aff72b11&oe=614F64BC",
-    "https://scontent-hkg4-2.xx.fbcdn.net/v/t1.6435-9/240758821_3092745557717607_1758983175902930666_n.jpg?_nc_cat=109&ccb=1-5&_nc_sid=730e14&_nc_ohc=z0srgae32A4AX_oURvc&_nc_ht=scontent-hkg4-2.xx&oh=e981297264aca64a25aaf285259f41d7&oe=614CDEA1",
-    "https://scontent-hkg4-1.xx.fbcdn.net/v/t1.6435-9/240624734_3092487924410037_2111143168440995076_n.jpg?_nc_cat=107&ccb=1-5&_nc_sid=730e14&_nc_ohc=TZukbOFjxowAX8IYthH&_nc_ht=scontent-hkg4-1.xx&oh=59dd511589b6dbdea97a3b478b5d629f&oe=614D9448",
-    "https://scontent-hkg4-1.xx.fbcdn.net/v/t1.6435-9/s640x640/237446804_3091585131166983_1116147550483070313_n.jpg?_nc_cat=105&ccb=1-5&_nc_sid=8bfeb9&_nc_ohc=5QCW7JFNQoAAX-Suuyv&_nc_ht=scontent-hkg4-1.xx&oh=ca4d078c57e9b95815d6facb38bef7db&oe=614C87E3",
-  ];
+class _ServiceList extends StatelessWidget {
+  const _ServiceList({
+    Key? key,
+    required this.height,
+    required this.userSessionProvider,
+  }) : super(key: key);
 
-  final itemCount = 3;
-  var foldOutList = <bool>[false, false, false];
+  final double height;
+  final UserSessionProvider userSessionProvider;
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Example'),
-        actions: [
-          IconButton(
-            onPressed: () {
-              setState(() {
-                for (var i = 0; i < foldOutList.length; ++i) {
-                  foldOutList[i] = false;
+    return Container(
+      height: height * 0.64,
+      child: Consumer<ServiceListProvider>(
+          builder: (context, providerData, _) => FutureBuilder<List<Service>>(
+              future: providerData
+                  .loadUserServiceList(userSessionProvider.user.id!),
+              builder: (context, AsyncSnapshot<List<Service>> snapshot) {
+                if (!snapshot.hasData) {
+                  return Center(child: Text("Loading..."));
                 }
-              });
-            },
-            icon: Icon(Icons.cleaning_services_sharp),
-          ),
-        ],
-      ),
-      backgroundColor: Colors.white,
-      body: ListView.builder(
-        itemBuilder: (context, index) {
-          return Padding(
-            padding: const EdgeInsets.only(left: 22.0, right: 22, top: 25),
-            child: FoldingCard(
-              foldOut: foldOutList[index],
-              curve: foldOutList[index] == true
-                  ? Curves.easeInCubic
-                  : Curves.easeOutCubic,
-              duration: Duration(milliseconds: 1400),
-              coverBackground: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    foldOutList[index] = true;
-                  });
-                },
-                child: Text(
-                  'This is a sample coverBackground, click on it to fold in.',
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              expandedCard: index == 1
-                  ? Stack(
-                      children: [
-                        Image.network(
-                          _kImageUrls[3],
-                          fit: BoxFit.fitWidth,
-                          width: MediaQuery.of(context).size.width,
-                          alignment: Alignment.topCenter,
+
+                List<Service> groupList = snapshot.data!;
+
+                return ListView.builder(
+                    shrinkWrap: true,
+                    scrollDirection: Axis.vertical,
+                    itemCount: groupList.length,
+                    itemBuilder: (context, index) {
+                      return Material(
+                        child: _ServiceLabel(
+                          etiqueta: groupList[index].code,
+                          text: groupList[index].description,
+                          press: () => {
+                            Navigator.pushNamed(context, 'serviceDetails',
+                                arguments: ServiceArguments(
+                                    service: groupList[index],
+                                    userSession: true))
+                          },
                         ),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {},
-                            child: Text(
-                              'This is a other sample for expandedCard.',
-                            ),
-                          ),
-                        )
-                      ],
-                    )
-                  : Image.network(
-                      _kImageUrls[1],
-                      fit: BoxFit.cover,
-                      width: MediaQuery.of(context).size.width,
-                      alignment: Alignment.topCenter,
-                    ),
-              cover: ElevatedButton(
-                style: ButtonStyle(
-                  padding: MaterialStateProperty.all(EdgeInsets.zero),
-                ),
-                onPressed: () {
-                  setState(() {
-                    foldOutList[index] = false;
-                  });
-                },
-                child: Image.network(
-                  _kImageUrls[2],
-                  fit: BoxFit.fitWidth,
-                  width: MediaQuery.of(context).size.width,
-                  alignment: Alignment.topCenter,
-                ),
-              ),
-              foldingHeight: 100,
-              expandedHeight: 300,
+                      );
+                    });
+              })),
+    );
+  }
+}
+
+class _ServiceLabel extends StatelessWidget {
+  const _ServiceLabel({
+    Key? key,
+    required this.text,
+    required this.etiqueta,
+    this.press,
+  }) : super(key: key);
+
+  final String text;
+  final String etiqueta;
+  final VoidCallback? press;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+      child: TextButton(
+        style: TextButton.styleFrom(
+          padding: EdgeInsets.all(20),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          backgroundColor: Color(0xFFF5F6F9),
+        ),
+        onPressed: press,
+        child: Row(
+          children: [
+            Text(
+              etiqueta,
+              style: Theme.of(context).textTheme.headline4,
             ),
-          );
-        },
-        itemCount: itemCount,
+            SizedBox(width: 20),
+            Expanded(
+                child:
+                    Text(text, style: Theme.of(context).textTheme.bodyText2)),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Color(0XFF283593),
+            ),
+          ],
+        ),
       ),
     );
   }
