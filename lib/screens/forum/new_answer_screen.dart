@@ -13,6 +13,12 @@ class NewAnswerPage extends StatelessWidget {
 
     return Scaffold(
         appBar: AppBar(
+          leading: IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: Icon(
+                Icons.close,
+                color: Colors.black,
+              )),
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -39,6 +45,8 @@ class _NewAnswerPage extends StatelessWidget {
         child: Container(
             padding: EdgeInsets.only(left: 35, right: 35),
             child: Form(
+              key: answerFormProvider.formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -58,6 +66,10 @@ class _NewAnswerPage extends StatelessWidget {
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     onChanged: (val) => answerFormProvider.answerBody = val,
+                    validator: (val) {
+                      if (val == null || val.length < 2 || val.length > 500)
+                        return 'Introduzca una respuesta valida';
+                    },
                     maxLength: 500,
                     decoration:
                         const InputDecoration(labelText: "Introduce el texto"),
@@ -79,20 +91,18 @@ class _NewAnswerPage extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          if (answerFormProvider.answerBody != '') {
-                            answerFormProvider.idPost = args.post.id!;
-                            answerFormProvider.idUser =
-                                userSessionProvider.user.id!;
-                            await AnswerDatabaseService().updateAnswer(
-                                answerFormProvider.answer(), null);
-                            await Provider.of<PostMainProvider>(context,
-                                    listen: false)
-                                .loadPost(args.post.id!);
-                            Navigator.pop(context, args);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text("RELLENA TODOS LOS CAMPOS")));
-                          }
+                          if (!answerFormProvider.isValidForm()) return;
+                          answerFormProvider.idPost = args.post!.id!;
+                          answerFormProvider.idUser =
+                              userSessionProvider.user.id!;
+                          await AnswerDatabaseService()
+                              .updateAnswer(answerFormProvider.answer(), null);
+                          final postMainProvider =
+                              Provider.of<PostMainProvider>(context,
+                                  listen: false);
+                          await postMainProvider.loadPost(args.post!.id!);
+                          postMainProvider.notifyListeners();
+                          Navigator.pop(context, args);
                         },
                       ),
                     ],

@@ -71,9 +71,9 @@ class ServiceDatabaseService {
   Future obtainService(Service service, String idUser) async {
     await Firebase.initializeApp();
     final CollectionReference serviceCollection =
-        FirebaseFirestore.instance.collection("group");
+        FirebaseFirestore.instance.collection("service");
 
-    if (service.idOwnerUser == idUser) service.idCustomerUser = idUser;
+    if (service.idOwnerUser != idUser) service.idCustomerUser = idUser;
 
     return await serviceCollection.doc(service.id).set({
       "code": service.code,
@@ -84,25 +84,6 @@ class ServiceDatabaseService {
       "nCoins": service.nCoins,
     });
   }
-
-  // Future exitGroup(Group group, String idUser) async {
-  //   await Firebase.initializeApp();
-  //   final CollectionReference groupCollection =
-  //       FirebaseFirestore.instance.collection("group");
-
-  //   if (group.idMembers.contains(idUser)) group.idMembers.remove(idUser);
-
-  //   return await groupCollection.doc(group.id).set({
-  //     "asignatura": group.asignatura,
-  //     "year": group.year,
-  //     "description": group.description,
-  //     "nMembersRequired": group.nMembersRequired,
-  //     "githUrl": group.githUrl,
-  //     "driveUrl": group.driveUrl,
-  //     "idMembers": group.idMembers,
-  //     "idUser": group.idUser,
-  //   });
-  // }
 
   Future<List<Service>> getUserServices(String idUser) async {
     await Firebase.initializeApp();
@@ -203,5 +184,40 @@ class ServiceDatabaseService {
     }
 
     return listOwnServices;
+  }
+
+  Future<List<Service>> getServicesByQueryCode(String query) async {
+    await Firebase.initializeApp();
+    final QuerySnapshot serviceCollection = await FirebaseFirestore.instance
+        .collection("service")
+        .where("code", isEqualTo: query)
+        .get();
+
+    List<Service> listQueryServices = [];
+    for (var element in serviceCollection.docs) {
+      Map<dynamic, dynamic> serviceMap = element.data() as Map;
+      User? userOwner =
+          await UserDatabaseService(uuid: serviceMap['idOwnerUser'])
+              .getUserData();
+      User? userCustomer = !serviceMap['idCustomerUser'].toString().isEmpty
+          ? await UserDatabaseService(uuid: serviceMap['idCustomerUser'])
+              .getUserData()
+          : null;
+      Service service = Service(
+        code: serviceMap['code'],
+        conference: serviceMap['conference'],
+        description: serviceMap['description'],
+        idOwnerUser: serviceMap['idOwnerUser'],
+        idCustomerUser: serviceMap['idCustomerUser'],
+        nCoins: serviceMap['nCoins'],
+        id: element.id,
+        userOwner: userOwner,
+        userCustomer: userCustomer,
+      );
+
+      listQueryServices.add(service);
+    }
+
+    return listQueryServices;
   }
 }

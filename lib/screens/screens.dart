@@ -16,6 +16,5 @@ export 'package:flutter_application_tfg/screens/forum/post_main_page.dart';
 export 'package:flutter_application_tfg/screens/forum/new_subforum_screen.dart';
 export 'package:flutter_application_tfg/screens/forum/new_answer_screen.dart';
 export 'package:flutter_application_tfg/screens/admin/manage_posts_screen.dart';
-export 'package:flutter_application_tfg/screens/admin/manage_subforums_screen.dart';
 export 'package:flutter_application_tfg/screens/group/group_details_screen.dart';
 export 'package:flutter_application_tfg/screens/group/all_groups_screen.dart';

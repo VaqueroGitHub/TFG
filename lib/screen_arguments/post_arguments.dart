@@ -2,14 +2,16 @@ import 'package:flutter_application_tfg/models/forum_section.dart';
 import 'package:flutter_application_tfg/models/post.dart';
 
 class PostArguments {
-  Post post;
+  Post? post;
   ForumSection forumSection;
   String? id;
   bool userSession;
+  bool isEditing;
 
   PostArguments(
       {required this.post,
       required this.forumSection,
       this.id,
-      required this.userSession});
+      required this.userSession,
+      required this.isEditing});
 }

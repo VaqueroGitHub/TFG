@@ -1,8 +1,11 @@
 // ignore_for_file: file_names
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/service.dart';
 import 'package:flutter_application_tfg/models/service_message.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/service_details_provider.dart';
+import 'package:flutter_application_tfg/providers/service_form_provider.dart';
 import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
@@ -17,23 +20,71 @@ class ServiceDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final serviceDetailsProvider = Provider.of<ServiceDetailsProvider>(context);
+    final serviceFormProvider = Provider.of<ServiceFormProvider>(context);
+    final serviceListProvider = Provider.of<ServiceListProvider>(context);
 
     return Builder(
       builder: (context) => Scaffold(
         appBar: AppBar(
-            backgroundColor: Color(0xFFffffff),
-            centerTitle: true,
-            elevation: 0,
-            leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-                onPressed: () => Navigator.pop(context)),
-            title: Text(
-              'Servicio',
-              style: Theme.of(context).textTheme.headline3,
-            )),
+          backgroundColor: Color(0xFFffffff),
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () async {
+                Navigator.pop(context);
+              }),
+          title: Text(
+            'Servicio',
+            style: Theme.of(context).textTheme.headline3,
+          ),
+          actions: [
+            serviceDetailsProvider.service!.idOwnerUser ==
+                    userSessionProvider.user.id
+                ? IconButton(
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      color: Colors.black,
+                    ),
+                    onPressed: () async {
+                      serviceFormProvider
+                          .setService(serviceDetailsProvider.service!);
+                      final service = await Navigator.pushNamed(
+                          context, 'newServicePage',
+                          arguments: ServiceArguments(
+                              service: serviceDetailsProvider.service!,
+                              userSession: true,
+                              isEditing: true));
+                      if (service != null) {
+                        serviceDetailsProvider.service = service as Service;
+                        serviceDetailsProvider.notifyListeners();
+                      }
+                    },
+                  )
+                : Container(),
+            serviceDetailsProvider.service!.idOwnerUser ==
+                    userSessionProvider.user.id
+                ? IconButton(
+                    icon: Icon(
+                      Icons.delete_outline,
+                      color: Colors.black,
+                    ),
+                    onPressed: () async {
+                      await ServiceDatabaseService()
+                          .deleteService(serviceDetailsProvider.service!.id!);
+                      await serviceListProvider
+                          .loadUserServiceList(userSessionProvider.user.id!);
+                      Navigator.pushReplacementNamed(
+                          context, 'servicesMainPage');
+                    },
+                  )
+                : Container()
+          ],
+        ),
         backgroundColor: Color(0xFFffffff),
         body: ListView(
           physics: BouncingScrollPhysics(),
@@ -47,47 +98,44 @@ class ServiceDetailsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _InfoLinks(),
-                userSessionProvider.user.id == args.service.idOwnerUser ||
-                        args.service.idCustomerUser ==
+                userSessionProvider.user.id ==
+                            serviceDetailsProvider.service!.idOwnerUser ||
+                        serviceDetailsProvider.service!.idCustomerUser ==
                             userSessionProvider.user.id ||
-                        !args.service.idCustomerUser.isEmpty
+                        !serviceDetailsProvider.service!.idCustomerUser.isEmpty
                     ? Container()
                     : MaterialButton(
                         elevation: 10.0,
                         minWidth: 200.0,
                         height: 50.0,
                         color: userSessionProvider.user.id ==
-                                    args.service.idOwnerUser ||
-                                args.service.idCustomerUser ==
+                                    serviceDetailsProvider
+                                        .service!.idOwnerUser ||
+                                serviceDetailsProvider
+                                        .service!.idCustomerUser ==
                                     userSessionProvider.user.id ||
-                                !args.service.idCustomerUser.isEmpty
+                                !serviceDetailsProvider
+                                    .service!.idCustomerUser.isEmpty
                             ? Colors.grey
                             : Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Text(
-                          userSessionProvider.user.id ==
-                                      args.service.idOwnerUser ||
-                                  args.service.idCustomerUser ==
-                                      userSessionProvider.user.id ||
-                                  !args.service.idCustomerUser.isEmpty
-                              ? 'Ya obtenido'
-                              : 'Obtener',
+                          'Obtener',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          if (userSessionProvider.user.id ==
-                                  args.service.idOwnerUser ||
-                              args.service.idCustomerUser ==
-                                  userSessionProvider.user.id ||
-                              !args.service.idCustomerUser.isEmpty) return;
-
                           await ServiceDatabaseService().obtainService(
-                              args.service, userSessionProvider.user.id!);
+                              serviceDetailsProvider.service!,
+                              userSessionProvider.user.id!);
 
+                          await serviceListProvider.loadUserServiceList(
+                              userSessionProvider.user.id!);
+                          await serviceListProvider.loadAllServiceList();
+                          serviceListProvider.notifyListeners();
                           args.userSession
-                              ? Navigator.popAndPushNamed(
+                              ? Navigator.pushReplacementNamed(
                                   context, 'servicesMainPage')
                               : Navigator.popAndPushNamed(
                                   context, 'adminHomePage',
@@ -95,33 +143,12 @@ class ServiceDetailsScreen extends StatelessWidget {
                         },
                       ),
                 SizedBox(height: 20),
-                userSessionProvider.user.id != args.service.idOwnerUser
-                    ? Container()
-                    : MaterialButton(
-                        elevation: 10.0,
-                        minWidth: 200.0,
-                        height: 50.0,
-                        color: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          'Eliminar',
-                          style: TextStyle(color: Colors.white, fontSize: 20.0),
-                        ),
-                        onPressed: () async {
-                          await ServiceDatabaseService()
-                              .deleteService(args.service.id!);
-
-                          args.userSession
-                              ? Navigator.popAndPushNamed(
-                                  context, 'servicesMainPage')
-                              : Navigator.popAndPushNamed(
-                                  context, 'adminHomePage',
-                                  arguments: 3);
-                        },
-                      ),
-                _ChatCardWidget(),
+                serviceDetailsProvider.service!.idOwnerUser ==
+                            userSessionProvider.user.id! ||
+                        serviceDetailsProvider.service!.idCustomerUser ==
+                            userSessionProvider.user.id!
+                    ? _ChatCardWidget()
+                    : Container(),
               ],
             ),
           ],
@@ -145,7 +172,7 @@ class ServiceDetailsScreen extends StatelessWidget {
       );
 
   Widget buildAbout(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
+    final serviceDetailsProvider = Provider.of<ServiceDetailsProvider>(context);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 48),
       child: Column(
@@ -157,7 +184,7 @@ class ServiceDetailsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            args.service.description,
+            serviceDetailsProvider.service!.description,
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ],
@@ -177,11 +204,10 @@ class _ChatCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
+    final serviceDetailsProvider = Provider.of<ServiceDetailsProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ExpansionTileCard(
-        key: GlobalKey(),
         leading: Icon(Icons.chat),
         title: Text('Chat!'),
         //subtitle: Text('I expand!'),
@@ -193,7 +219,9 @@ class _ChatCardWidget extends StatelessWidget {
           TextButton(
               onPressed: () => Navigator.pushNamed(context, 'newServiceMessage',
                   arguments: ServiceArguments(
-                      service: args.service, userSession: true)),
+                      service: serviceDetailsProvider.service!,
+                      userSession: true,
+                      isEditing: false)),
               child: Text("Nuevo mensaje")),
           _ListChatService(),
           ButtonBar(
@@ -215,14 +243,13 @@ class _ListChatService extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
+    final serviceDetailsProvider = Provider.of<ServiceDetailsProvider>(context);
 
     return Consumer<ServiceListProvider>(
         builder: (context, serviceListProvider, child) {
-      //groupListProvider.loadMessagesGroupList(args.group.id!);
-
       return FutureBuilder<List<ServiceMessage>>(
-          future: serviceListProvider.loadMessagesServiceList(args.service.id!),
+          future: serviceListProvider
+              .loadMessagesServiceList(serviceDetailsProvider.service!.id!),
           builder: (context, AsyncSnapshot<List<ServiceMessage>> snapshot) {
             if (!snapshot.hasData) {
               return Center(child: Text("Loading..."));
@@ -255,14 +282,23 @@ class _InfoLinks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
+    final serviceDetailsProvider = Provider.of<ServiceDetailsProvider>(context);
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        !args.service.conference.isEmpty
+        Text(
+            '⭐ Coste del servicio: ${serviceDetailsProvider.service!.nCoins} coins'),
+        SizedBox(height: 10),
+        !serviceDetailsProvider.service!.conference.isEmpty &&
+                (serviceDetailsProvider.service!.idOwnerUser ==
+                        userSessionProvider.user.id! ||
+                    serviceDetailsProvider.service!.idCustomerUser ==
+                        userSessionProvider.user.id!)
             ? TextButton(
                 child: Text("📹 Conference url "),
-                onPressed: () => _launchURL(args.service.conference),
+                onPressed: () =>
+                    _launchURL(serviceDetailsProvider.service!.conference),
               )
             : Container(),
         SizedBox(height: 20),
@@ -305,31 +341,41 @@ class GroupNumbersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
+    final serviceDetailsProvider = Provider.of<ServiceDetailsProvider>(context);
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        // buildButton(
-        //     context,
-        //     (args.group.idMembers.length).toString() +
-        //         '/' +
-        //         args.group.nMembersRequired.toString(),
-        //     'Miembros',
-        //     null,
-        //     null),
+        // buildButton(context, serviceDetailsProvider.service!.nCoins.toString(),
+        //     'Coste', null, null),
+        serviceDetailsProvider.service!.userCustomer != null
+            ? buildButton(
+                context,
+                serviceDetailsProvider.service!.userCustomer!.nick,
+                'Beneficiario',
+                'seeProfile',
+                UserArguments(
+                    user: serviceDetailsProvider.service!.userCustomer!,
+                    id: serviceDetailsProvider.service!.userCustomer!.id!,
+                    userSession: true))
+            : Container(),
         buildDivider(),
-        buildButton(context, args.service.code, 'Codigo', null, null),
+        Hero(
+          tag: serviceDetailsProvider.service!.id!,
+          child: buildButton(context, serviceDetailsProvider.service!.code,
+              'Codigo', null, null),
+        ),
         buildDivider(),
         buildButton(
             context,
-            args.service.userOwner!.nick,
+            serviceDetailsProvider.service!.userOwner!.nick,
             'Propietario',
             'seeProfile',
             UserArguments(
-                user: args.service.userOwner!,
-                id: args.service.userOwner!.id!,
+                user: serviceDetailsProvider.service!.userOwner!,
+                id: serviceDetailsProvider.service!.userOwner!.id!,
                 userSession: true)),
+        buildDivider(),
       ],
     );
   }

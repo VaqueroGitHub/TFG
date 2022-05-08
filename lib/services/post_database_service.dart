@@ -13,7 +13,7 @@ class PostDatabaseService {
     final CollectionReference postCollection =
         FirebaseFirestore.instance.collection("post");
 
-    if (idUser == null) {
+    if (post.id == null) {
       return await postCollection.add({
         'title': post.title,
         'body': post.body,
@@ -21,7 +21,7 @@ class PostDatabaseService {
         'idForumSection': post.idForumSection,
       });
     }
-    return await postCollection.doc().set({
+    return await postCollection.doc(post.id).set({
       'title': post.title,
       'body': post.body,
       'idUser': post.idUser,
@@ -138,6 +138,41 @@ class PostDatabaseService {
     final QuerySnapshot postCollection = await FirebaseFirestore.instance
         .collection("post")
         .where('idForumSection', isEqualTo: idForumSection)
+        .get();
+
+    List<Post> listPost = [];
+    for (var element in postCollection.docs) {
+      Map<dynamic, dynamic> postMap = element.data() as Map;
+      bool answered =
+          (await AnswerDatabaseService().getAnswersPost(element.id)).isNotEmpty
+              ? true
+              : false;
+      User? user =
+          await UserDatabaseService(uuid: postMap['idUser']).getUserData();
+      ForumSection? forumSection = await ForumDatabaseService()
+          .getForumSection(postMap['idForumSection']);
+      Post post = Post(
+        title: postMap['title'],
+        body: postMap['body'],
+        idUser: postMap['idUser'],
+        idForumSection: postMap['idForumSection'],
+        answered: answered,
+        user: user!,
+        id: element.id,
+        forumSection: forumSection,
+      );
+
+      listPost.add(post);
+    }
+
+    return listPost;
+  }
+
+  Future<List<Post>> getServicesByQuery(String query) async {
+    await Firebase.initializeApp();
+    final QuerySnapshot postCollection = await FirebaseFirestore.instance
+        .collection("post")
+        .where("title", isEqualTo: query)
         .get();
 
     List<Post> listPost = [];

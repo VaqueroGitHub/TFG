@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/group.dart';
+import 'package:flutter_application_tfg/providers/group_details_provider.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
 import 'package:flutter_application_tfg/screens/group/my_search_delegate_groups.dart';
@@ -13,6 +14,7 @@ class AllGroupsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
+    final groupDetailsProvider = Provider.of<GroupDetailsProvider>(context);
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
 
     return Scaffold(
@@ -46,35 +48,43 @@ class AllGroupsPage extends StatelessWidget {
             Container(
               height: height * 0.8,
               child: Consumer<GroupListProvider>(
-                  builder: (context, providerData, _) => FutureBuilder<
-                          List<Group>>(
-                      future: providerData.loadAllGroupList(),
-                      builder: (context, AsyncSnapshot<List<Group>> snapshot) {
-                        if (!snapshot.hasData) {
-                          return Center(child: Text("Loading..."));
-                        }
+                  builder: (context, providerData, _) =>
+                      FutureBuilder<List<Group>>(
+                          future: providerData.loadAllGroupList(),
+                          builder:
+                              (context, AsyncSnapshot<List<Group>> snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(child: Text("Loading..."));
+                            }
 
-                        List<Group> groupList = snapshot.data!;
+                            List<Group> groupList = snapshot.data!;
 
-                        return ListView.builder(
-                            shrinkWrap: true,
-                            scrollDirection: Axis.vertical,
-                            itemCount: groupList.length,
-                            itemBuilder: (context, index) {
-                              return Material(
-                                child: _GroupLabel(
-                                  etiqueta: groupList[index].asignatura,
-                                  text: groupList[index].description,
-                                  press: () => {
-                                    Navigator.pushNamed(context, 'groupDetails',
-                                        arguments: GroupArguments(
-                                            group: groupList[index],
-                                            userSession: true))
-                                  },
-                                ),
-                              );
-                            });
-                      })),
+                            return ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemCount: groupList.length,
+                                itemBuilder: (context, index) {
+                                  return Material(
+                                    child: Hero(
+                                      tag: groupList[index].asignatura,
+                                      child: _GroupLabel(
+                                        etiqueta: groupList[index].asignatura,
+                                        text: groupList[index].description,
+                                        press: () {
+                                          groupDetailsProvider.group =
+                                              groupList[index];
+                                          Navigator.pushNamed(
+                                              context, 'groupDetails',
+                                              arguments: GroupArguments(
+                                                  group: groupList[index],
+                                                  userSession: true,
+                                                  isEditing: false));
+                                        },
+                                      ),
+                                    ),
+                                  );
+                                });
+                          })),
             ),
           ],
         ),
@@ -115,8 +125,10 @@ class _GroupLabel extends StatelessWidget {
             ),
             SizedBox(width: 20),
             Expanded(
-                child:
-                    Text(text, style: Theme.of(context).textTheme.bodyText2)),
+                child: Text(text,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis)),
             Icon(
               Icons.arrow_forward_ios,
               color: Color(0XFF283593),

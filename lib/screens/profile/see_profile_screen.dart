@@ -39,7 +39,7 @@ class SeeProfilePage extends StatelessWidget {
             const SizedBox(height: 24),
             buildName(context, args.user),
             const SizedBox(height: 24),
-            NumbersWidget(),
+            NumbersWidget(userId: args.user.id!),
             const SizedBox(height: 48),
             buildAbout(context, args.user),
           ],

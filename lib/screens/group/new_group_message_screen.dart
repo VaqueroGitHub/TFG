@@ -82,7 +82,7 @@ class _NewAnswerPage extends StatelessWidget {
                         ),
                         onPressed: () async {
                           if (messageFormProvider.message != '') {
-                            messageFormProvider.idGroup = args.group.id!;
+                            messageFormProvider.idGroup = args.group!.id!;
                             messageFormProvider.idUser =
                                 userSessionProvider.user.id!;
                             await MessageGroupDatabaseService()
@@ -90,7 +90,7 @@ class _NewAnswerPage extends StatelessWidget {
                                     messageFormProvider.groupMessage(), null);
                             await Provider.of<GroupListProvider>(context,
                                     listen: false)
-                                .loadMessagesGroupList(args.group.id!);
+                                .loadMessagesGroupList(args.group!.id!);
                             Navigator.pop(context, args);
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(

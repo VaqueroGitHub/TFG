@@ -1,15 +1,58 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/group.dart';
+import 'package:flutter_application_tfg/models/post.dart';
+import 'package:flutter_application_tfg/models/service.dart';
+import 'package:flutter_application_tfg/services/group_database_service.dart';
+import 'package:flutter_application_tfg/services/post_database_service.dart';
+import 'package:flutter_application_tfg/services/service_database_service.dart';
 
 class NumbersWidget extends StatelessWidget {
+  final String userId;
+
+  const NumbersWidget({Key? key, required this.userId}) : super(key: key);
+
   @override
   Widget build(BuildContext context) => Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          buildButton(context, '0', 'Servicios'),
+          FutureBuilder<List<Service>>(
+            future: ServiceDatabaseService().getUserServices(userId),
+            initialData: [],
+            builder: (context, AsyncSnapshot<List<Service>> snapshot) {
+              if (snapshot.hasData) {
+                final List<Service> listUser = snapshot.data!;
+                return buildButton(
+                    context, listUser.length.toString(), 'Servicios');
+              }
+              return buildButton(context, '0', 'Servicios');
+            },
+          ),
           buildDivider(),
-          buildButton(context, '0', 'Grupos'),
+          FutureBuilder<List<Group>>(
+            future: GroupDatabaseService().getUserGroups(userId),
+            initialData: [],
+            builder: (context, AsyncSnapshot<List<Group>> snapshot) {
+              if (snapshot.hasData) {
+                final List<Group> listGroups = snapshot.data!;
+                return buildButton(
+                    context, listGroups.length.toString(), 'Grupos');
+              }
+              return buildButton(context, '0', 'Grupos');
+            },
+          ),
           buildDivider(),
-          buildButton(context, '0', 'Foros'),
+          FutureBuilder<List<Post>>(
+            future: PostDatabaseService().getUserPosts(userId),
+            initialData: [],
+            builder: (context, AsyncSnapshot<List<Post>> snapshot) {
+              if (snapshot.hasData) {
+                final List<Post> listPosts = snapshot.data!;
+                return buildButton(
+                    context, listPosts.length.toString(), 'Posts');
+              }
+              return buildButton(context, '0', 'Posts');
+            },
+          ),
         ],
       );
   Widget buildDivider() => Container(

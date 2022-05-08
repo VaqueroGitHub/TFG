@@ -1,15 +1,24 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_application_tfg/models/user.dart';
 import 'package:http/http.dart' as http;
-
-import 'package:flutter/foundation.dart';
 
 class EditUserProvider extends ChangeNotifier {
   File? newPictureFile;
   String? imageL;
 
+  GlobalKey<FormState> formKey = GlobalKey();
+
+  late User user;
+
   void set localImage(String? image) {
     imageL = image;
+  }
+
+  bool isValidForm() {
+    return formKey.currentState?.validate() ?? false;
   }
 
   //bool isSaving = false;
@@ -34,8 +43,6 @@ class EditUserProvider extends ChangeNotifier {
     final resp = await http.Response.fromStream(streamResponse);
 
     if (resp.statusCode != 200 && resp.statusCode != 201) {
-      print('algo salio mal');
-      print(resp.body);
       return null;
     }
 

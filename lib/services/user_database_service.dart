@@ -28,7 +28,7 @@ class UserDatabaseService {
     return user;
   }
 
-  Future updateUserData(User user) async {
+  Future updateUserData(User user, bool active) async {
     await Firebase.initializeApp();
     final CollectionReference userCollection =
         FirebaseFirestore.instance.collection("users");
@@ -40,7 +40,8 @@ class UserDatabaseService {
         'nick': user.nick,
         'isAdmin': true,
         "bio": user.bio,
-        "url": user.url
+        "url": user.url,
+        "active": active
       });
     } else {
       return await userCollection.doc(uuid).set({
@@ -50,7 +51,8 @@ class UserDatabaseService {
         'nick': user.nick,
         'isAdmin': false,
         "bio": user.bio,
-        "url": user.url
+        "url": user.url,
+        "active": active
       });
     }
   }
@@ -60,6 +62,7 @@ class UserDatabaseService {
     final QuerySnapshot userCollection = await FirebaseFirestore.instance
         .collection("users")
         .where('isAdmin', isEqualTo: false)
+        .where('active', isEqualTo: true)
         .get();
 
     List<User> listUser = [];

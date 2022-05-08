@@ -14,87 +14,89 @@ class ForumMainPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final double height = MediaQuery.of(context).size.height;
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo,
-        onPressed: () => Navigator.pushReplacementNamed(
-          context,
-          'aboutProfile',
-          arguments: UserArguments(
-              user: userSessionProvider.user,
-              id: userSessionProvider.user.id!,
-              userSession: true),
-        ),
-        child: IconButton(
-          onPressed: () => Navigator.pushReplacementNamed(
-            context,
-            'aboutProfile',
-            arguments: UserArguments(
-                user: userSessionProvider.user,
-                id: userSessionProvider.user.id!,
-                userSession: true),
-          ),
-          icon: Icon(
-            Icons.home,
-            color: Colors.white,
-          ),
+    return
+        // Scaffold(
+        //   floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        //   floatingActionButton: FloatingActionButton(
+        //     backgroundColor: Colors.indigo,
+        //     onPressed: () => Navigator.pushReplacementNamed(
+        //       context,
+        //       'aboutProfile',
+        //       arguments: UserArguments(
+        //           user: userSessionProvider.user,
+        //           id: userSessionProvider.user.id!,
+        //           userSession: true),
+        //     ),
+        //     child: IconButton(
+        //       onPressed: () => Navigator.pushReplacementNamed(
+        //         context,
+        //         'aboutProfile',
+        //         arguments: UserArguments(
+        //             user: userSessionProvider.user,
+        //             id: userSessionProvider.user.id!,
+        //             userSession: true),
+        //       ),
+        //       icon: Icon(
+        //         Icons.home,
+        //         color: Colors.white,
+        //       ),
+        //     ),
+        //   ),
+        //   backgroundColor: Color(0xFFffffff),
+        //   body:
+        SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: height * 0.04),
+            Text(
+              'Foros',
+              style: Theme.of(context).textTheme.headline3,
+            ),
+            SizedBox(height: height * 0.06),
+            Consumer<ForumListProvider>(
+                builder: (context, providerData, _) =>
+                    FutureBuilder<List<ForumSection>>(
+                        future: providerData.loadForumSections(),
+                        builder: (context,
+                            AsyncSnapshot<List<ForumSection>> snapshot) {
+                          if (!snapshot.hasData) {
+                            return Center(child: Text("Loading..."));
+                          }
+
+                          List<ForumSection> forumList = snapshot.data!;
+
+                          return ListView.builder(
+                              shrinkWrap: true,
+                              scrollDirection: Axis.vertical,
+                              itemCount: forumList.length,
+                              itemBuilder: (context, index) {
+                                return Material(
+                                  child: _ForumLabel(
+                                    etiqueta: forumList[index].title,
+                                    text: "",
+                                    press: () => {
+                                      Navigator.pushNamed(
+                                          context, 'subforumMainPage',
+                                          arguments: ForumArguments(
+                                              forumSection: forumList[index],
+                                              userSession: true))
+                                    },
+                                  ),
+                                );
+                              });
+                        })),
+          ],
         ),
       ),
-      backgroundColor: Color(0xFFffffff),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: height * 0.04),
-              Text(
-                'Foros',
-                style: Theme.of(context).textTheme.headline3,
-              ),
-              SizedBox(height: height * 0.06),
-              Consumer<ForumListProvider>(
-                  builder: (context, providerData, _) =>
-                      FutureBuilder<List<ForumSection>>(
-                          future: providerData.loadForumSections(),
-                          builder: (context,
-                              AsyncSnapshot<List<ForumSection>> snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(child: Text("Loading..."));
-                            }
-
-                            List<ForumSection> forumList = snapshot.data!;
-
-                            return ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount: forumList.length,
-                                itemBuilder: (context, index) {
-                                  return Material(
-                                    child: _GroupLabel(
-                                      etiqueta: forumList[index].title,
-                                      text: "",
-                                      press: () => {
-                                        Navigator.pushNamed(
-                                            context, 'subforumMainPage',
-                                            arguments: ForumArguments(
-                                                forumSection: forumList[index],
-                                                userSession: true))
-                                      },
-                                    ),
-                                  );
-                                });
-                          })),
-            ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: navBar(),
     );
+    // bottomNavigationBar: navBar(),
+    // );
   }
 }
 
-class _GroupLabel extends StatelessWidget {
-  const _GroupLabel({
+class _ForumLabel extends StatelessWidget {
+  const _ForumLabel({
     Key? key,
     required this.text,
     required this.etiqueta,
@@ -125,8 +127,10 @@ class _GroupLabel extends StatelessWidget {
             ),
             SizedBox(width: 20),
             Expanded(
-                child:
-                    Text(text, style: Theme.of(context).textTheme.bodyText2)),
+                child: Text(text,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis)),
             Icon(
               Icons.arrow_forward_ios,
               color: Color(0XFF283593),

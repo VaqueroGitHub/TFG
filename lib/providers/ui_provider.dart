@@ -9,5 +9,6 @@ class UiProvider extends ChangeNotifier {
 
   void set currentNavigatorIndex(int index) {
     currentBottomNavigatorIndex = index;
+    notifyListeners();
   }
 }

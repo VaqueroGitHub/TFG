@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
+import 'package:flutter_application_tfg/providers/post_form_provider.dart';
+import 'package:flutter_application_tfg/providers/post_main_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/services/post_database_service.dart';
 import 'package:provider/provider.dart';
 
@@ -42,11 +45,26 @@ class _ManagePostsScreen extends State<ManagePostsScreen> {
                           children: <Widget>[
                             IconButton(
                               icon: Icon(Icons.edit),
-                              onPressed: () {
-                                Navigator.pushNamed(
-                                  context,
-                                  'groupDetails',
-                                );
+                              onPressed: () async {
+                                final postFormProvider =
+                                    Provider.of<PostFormProvider>(context,
+                                        listen: false);
+                                final forumListProvider =
+                                    Provider.of<ForumListProvider>(context,
+                                        listen: false);
+                                postFormProvider.setPost(postList[index]);
+                                final post = await Navigator.pushNamed(
+                                    context, 'newPostPage',
+                                    arguments: PostArguments(
+                                        forumSection:
+                                            postList[index].forumSection!,
+                                        userSession: true,
+                                        isEditing: true,
+                                        post: postList[index]));
+                                if (post != null) {
+                                  await forumListProvider.loadAllPostList();
+                                  forumListProvider.notifyListeners();
+                                }
                               },
                             ),
                             IconButton(

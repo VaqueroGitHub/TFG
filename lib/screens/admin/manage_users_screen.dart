@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/edit_user_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
@@ -9,7 +10,7 @@ import 'package:provider/provider.dart';
 class ManageUsersScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    //final double height = MediaQuery.of(context).size.height;
+    final editUserProvider = Provider.of<EditUserProvider>(context);
     return FutureBuilder<List<User>>(
         future: getUserList(context),
         initialData: [],
@@ -29,6 +30,8 @@ class ManageUsersScreen extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.edit),
                           onPressed: () {
+                            editUserProvider.user = listUser[index];
+                            editUserProvider.notifyListeners();
                             Navigator.pushNamed(context, 'editProfile',
                                 arguments: UserArguments(
                                     user: listUser[index],
@@ -45,7 +48,8 @@ class ManageUsersScreen extends StatelessWidget {
                               ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text("ERROR: $resp")));
                             } else {
-                              Navigator.popAndPushNamed(context, "manageUsers");
+                              Navigator.popAndPushNamed(
+                                  context, "adminHomePage");
                               //     (Route<dynamic> route) => false); // push it back in
                               //getUserList(context);
                             }

@@ -13,17 +13,18 @@ class GroupDatabaseService {
     final resp = await groupCollection.doc(uuid).get();
     final data = resp.data() as Map<String, dynamic?>;
     if (data == null) return null;
+    User? user = await UserDatabaseService(uuid: data['idUser']).getUserData();
     Group group = Group(
-      asignatura: data['asignatura'],
-      year: data['year'],
-      description: data['description'],
-      nMembersRequired: data['nMembersRequired'],
-      idMembers: data['idMembers'],
-      idUser: data['idUser'],
-      id: resp.id,
-      driveUrl: data['driveUrl'],
-      githUrl: data['githUrl'],
-    );
+        asignatura: data['asignatura'],
+        year: data['year'],
+        description: data['description'],
+        nMembersRequired: data['nMembersRequired'],
+        idMembers: (data['idMembers'] as List<dynamic>).cast<String>(),
+        idUser: data['idUser'],
+        id: resp.id,
+        driveUrl: data['driveUrl'],
+        githUrl: data['githUrl'],
+        user: user);
 
     return group;
   }
@@ -165,6 +166,48 @@ class GroupDatabaseService {
     await Firebase.initializeApp();
     final QuerySnapshot groupCollection =
         await FirebaseFirestore.instance.collection("group").get();
+
+    List<Group> listOwnGroups = [];
+    for (var element in groupCollection.docs) {
+      Map<dynamic, dynamic> groupMap = element.data() as Map;
+      User? user =
+          await UserDatabaseService(uuid: groupMap['idUser']).getUserData();
+      Group group = Group(
+          asignatura: groupMap['asignatura'],
+          year: groupMap['year'],
+          description: groupMap['description'],
+          nMembersRequired: groupMap['nMembersRequired'],
+          idMembers: (groupMap['idMembers'] as List<dynamic>).cast<String>(),
+          driveUrl: groupMap['driveUrl'],
+          githUrl: groupMap['githUrl'],
+          idUser: groupMap['idUser'],
+          id: element.id,
+          user: user);
+
+      listOwnGroups.add(group);
+    }
+
+    return listOwnGroups;
+  }
+
+  Future<List<User>> getMembersGroup(List<String> idMembers) async {
+    await Firebase.initializeApp();
+
+    List<User> listUser = [];
+    for (String idUser in idMembers) {
+      User? user = await UserDatabaseService(uuid: idUser).getUserData();
+      listUser.add(user!);
+    }
+
+    return listUser;
+  }
+
+  Future<List<Group>> getServicesByQueryAsignatura(String query) async {
+    await Firebase.initializeApp();
+    final QuerySnapshot groupCollection = await FirebaseFirestore.instance
+        .collection("group")
+        .where("asignatura", isEqualTo: query)
+        .get();
 
     List<Group> listOwnGroups = [];
     for (var element in groupCollection.docs) {

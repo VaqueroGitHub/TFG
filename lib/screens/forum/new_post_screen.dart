@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/post_form_provider.dart';
-import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
+import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
 import '../../services/post_database_service.dart';
@@ -14,7 +14,7 @@ class NewPostPage extends StatelessWidget {
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () => Navigator.pop(context, null),
               icon: Icon(
                 Icons.close,
                 color: Colors.black,
@@ -39,40 +39,56 @@ class _NewPostPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
     final postFormProvider = Provider.of<PostFormProvider>(context);
-    final args = ModalRoute.of(context)!.settings.arguments as ForumArguments;
+    final args = ModalRoute.of(context)!.settings.arguments as PostArguments;
     //creo un objeto grupo
 
     return SingleChildScrollView(
         child: Container(
             padding: EdgeInsets.only(left: 35, right: 35),
             child: Form(
+              key: postFormProvider.formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: height * 0.04),
                   Text(
-                    '¿Quieres crear un nuevo post?',
+                    args.isEditing
+                        ? 'Edicion del post'
+                        : '¿Quieres crear un nuevo post?',
                     style: Theme.of(context).textTheme.headline2,
                   ),
                   SizedBox(height: height * 0.04),
-                  Text(
-                    'Lo incluiremos en ${args.forumSection.title} 🤔',
-                    style: Theme.of(context).textTheme.headline4,
-                  ),
+                  args.isEditing
+                      ? Text(
+                          'Lo incluiremos en ${args.forumSection.title} 🤔',
+                          style: Theme.of(context).textTheme.headline4,
+                        )
+                      : Container(),
                   SizedBox(height: height * 0.04),
                   TextFormField(
+                    initialValue: args.isEditing ? args.post!.title : '',
                     onChanged: (val) => postFormProvider.title = val,
                     maxLength: 20,
+                    validator: (val) {
+                      if (val == null || val.length < 2 || val.length > 20)
+                        return 'Introduce un titulo de post valido.';
+                    },
                     decoration:
                         const InputDecoration(labelText: "Introduce el título"),
                     minLines: 1,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
+                    initialValue: args.isEditing ? args.post!.body : '',
                     // any number you need (It works as the rows for the textarea)
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
                     onChanged: (val) => postFormProvider.body = val,
+                    validator: (val) {
+                      if (val == null || val.length < 10 || val.length > 500)
+                        return 'Introduce una descripcion de post valida.';
+                    },
                     maxLength: 500,
                     decoration:
                         const InputDecoration(labelText: "Introduce el texto"),
@@ -89,31 +105,35 @@ class _NewPostPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: const Text(
-                          'Crear post',
+                        child: Text(
+                          args.isEditing ? 'Editar post' : 'Crear post',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          if (postFormProvider.title != '' &&
-                              postFormProvider.body != '') {
-                            postFormProvider.idForumSection =
-                                args.forumSection.id!;
-                            postFormProvider.idUser =
-                                userSessionProvider.user.id!;
-                            PostDatabaseService().updatePost(
-                                postFormProvider.post(),
-                                userSessionProvider.user.id!);
+                          if (!postFormProvider.isValidForm()) return;
 
-                            final forumListProvider =
-                                Provider.of<ForumListProvider>(context,
-                                    listen: false);
-                            forumListProvider
-                                .loadPostList(args.forumSection.id!);
-                            Navigator.pop(context);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text("RELLENA TODOS LOS CAMPOS")));
-                          }
+                          postFormProvider.idForumSection =
+                              args.forumSection.id!;
+                          postFormProvider.idUser =
+                              userSessionProvider.user.id!;
+                          PostDatabaseService().updatePost(
+                              args.isEditing
+                                  ? postFormProvider.postWithId(args.post!.id!)
+                                  : postFormProvider.post(),
+                              userSessionProvider.user.id!);
+
+                          final forumListProvider =
+                              Provider.of<ForumListProvider>(context,
+                                  listen: false);
+                          await forumListProvider
+                              .loadPostList(args.forumSection.id!);
+                          forumListProvider.notifyListeners();
+                          Navigator.pop(
+                              context,
+                              args.isEditing
+                                  ? await PostDatabaseService()
+                                      .getPostData(args.post!.id!)
+                                  : null);
                         },
                       ),
                     ],

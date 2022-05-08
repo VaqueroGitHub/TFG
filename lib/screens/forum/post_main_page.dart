@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/answer.dart';
+import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/post_main_provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
+import 'package:flutter_application_tfg/services/post_database_service.dart';
 import 'package:flutter_application_tfg/widgets/answer_post.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
@@ -19,6 +22,8 @@ class _PostMainPageState extends State<PostMainPage> {
     final double height = MediaQuery.of(context).size.height;
     final args = ModalRoute.of(context)!.settings.arguments as PostArguments;
     final postMainProvider = Provider.of<PostMainProvider>(context);
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final forumListProvider = Provider.of<ForumListProvider>(context);
 
     var questionSection = Padding(
       padding: const EdgeInsets.all(8.0),
@@ -43,7 +48,9 @@ class _PostMainPageState extends State<PostMainPage> {
                   postMainProvider.post.answered!
                       ? Icons.check_circle
                       : Icons.close_rounded,
-                  "Respondida",
+                  postMainProvider.post.answered!
+                      ? "Respondida"
+                      : "No respondida",
                 ),
                 TextButton(
                     onPressed: () => Navigator.pushNamed(context, 'seeProfile',
@@ -84,14 +91,54 @@ class _PostMainPageState extends State<PostMainPage> {
           ),
           onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          args.post!.idUser == userSessionProvider.user.id
+              ? IconButton(
+                  icon: Icon(
+                    Icons.edit_outlined,
+                    color: Colors.black,
+                  ),
+                  onPressed: () async {
+                    final post = await Navigator.pushNamed(
+                        context, 'newPostPage',
+                        arguments: PostArguments(
+                            forumSection: args.forumSection,
+                            userSession: true,
+                            isEditing: true,
+                            post: postMainProvider.post));
+                    if (post != null) {
+                      postMainProvider.postMain = post as Post;
+                      postMainProvider.notifyListeners();
+                    }
+                  },
+                )
+              : Container(),
+          args.post!.idUser == userSessionProvider.user.id
+              ? IconButton(
+                  icon: Icon(
+                    Icons.delete_outline,
+                    color: Colors.black,
+                  ),
+                  onPressed: () async {
+                    await PostDatabaseService().deletePost(args.post!.id!);
+                    await forumListProvider.loadPostList(args.forumSection.id!);
+                    forumListProvider.notifyListeners();
+                    Navigator.pop(context);
+                  },
+                )
+              : Container()
+        ],
         elevation: 0,
         titleTextStyle: TextStyle(
           overflow: TextOverflow.ellipsis,
         ),
-        title: Text(
-          postMainProvider.post.title,
-          style: Theme.of(context).textTheme.headline3,
-          maxLines: 2,
+        title: Hero(
+          tag: postMainProvider.post.id!,
+          child: Text(
+            postMainProvider.post.title,
+            style: Theme.of(context).textTheme.headline3,
+            maxLines: 2,
+          ),
         ),
       ),
       body: Padding(
@@ -120,7 +167,8 @@ class _PostMainPageState extends State<PostMainPage> {
                         arguments: PostArguments(
                             post: postMainProvider.post,
                             forumSection: postMainProvider.post.forumSection!,
-                            userSession: true));
+                            userSession: true,
+                            isEditing: false));
                   },
                 ),
               ],
@@ -145,7 +193,7 @@ class _ListAnswers extends StatelessWidget {
       padding: const EdgeInsets.all(8.0),
       child: Consumer<ForumListProvider>(
         builder: (context, providerData, _) => FutureBuilder<List<Answer>>(
-            future: providerData.loadAnswerList(args.post.id!),
+            future: providerData.loadAnswerList(args.post!.id!),
             builder: (context, AsyncSnapshot<List<Answer>> snapshot) {
               if (!snapshot.hasData) {
                 return Center(child: Text("Loading..."));

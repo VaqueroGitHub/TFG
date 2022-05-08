@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/service.dart';
+import 'package:flutter_application_tfg/providers/service_details_provider.dart';
 import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
@@ -14,54 +15,56 @@ class ServiceMainPage extends StatelessWidget {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
     final double height = MediaQuery.of(context).size.height;
 
-    return Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: Colors.indigo,
-          onPressed: () => Navigator.pushReplacementNamed(
-            context,
-            'aboutProfile',
-            arguments: UserArguments(
-                user: userSessionProvider.user,
-                id: userSessionProvider.user.id!,
-                userSession: true),
-          ),
-          child: IconButton(
-            onPressed: () => Navigator.pushReplacementNamed(
-              context,
-              'aboutProfile',
-              arguments: UserArguments(
-                  user: userSessionProvider.user,
-                  id: userSessionProvider.user.id!,
-                  userSession: true),
+    return
+        //Scaffold(
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        // floatingActionButton: FloatingActionButton(
+        //   backgroundColor: Colors.indigo,
+        //   onPressed: () => Navigator.pushReplacementNamed(
+        //     context,
+        //     'aboutProfile',
+        //     arguments: UserArguments(
+        //         user: userSessionProvider.user,
+        //         id: userSessionProvider.user.id!,
+        //         userSession: true),
+        //   ),
+        //   child: IconButton(
+        //     onPressed: () => Navigator.pushReplacementNamed(
+        //       context,
+        //       'aboutProfile',
+        //       arguments: UserArguments(
+        //           user: userSessionProvider.user,
+        //           id: userSessionProvider.user.id!,
+        //           userSession: true),
+        //     ),
+        //     icon: Icon(
+        //       Icons.home,
+        //       color: Colors.white,
+        //     ),
+        //   ),
+        // ),
+        // backgroundColor: Color(0xFFffffff),
+        // bottomNavigationBar: navBar(),body:
+        SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: height * 0.04),
+            Text(
+              'Servicios',
+              style: Theme.of(context).textTheme.headline3,
+              textAlign: TextAlign.center,
             ),
-            icon: Icon(
-              Icons.home,
-              color: Colors.white,
-            ),
-          ),
+            SizedBox(height: height * 0.06),
+            ServiceButtons(),
+            _ServiceList(
+                height: height, userSessionProvider: userSessionProvider),
+          ],
         ),
-        backgroundColor: Color(0xFFffffff),
-        bottomNavigationBar: navBar(),
-        body: SafeArea(
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SizedBox(height: height * 0.04),
-                Text(
-                  'Servicios',
-                  style: Theme.of(context).textTheme.headline3,
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: height * 0.06),
-                ServiceButtons(),
-                _ServiceList(
-                    height: height, userSessionProvider: userSessionProvider),
-              ],
-            ),
-          ),
-        ));
+      ),
+    );
+    // );
   }
 }
 
@@ -88,23 +91,32 @@ class _ServiceList extends StatelessWidget {
                   return Center(child: Text("Loading..."));
                 }
 
-                List<Service> groupList = snapshot.data!;
+                List<Service> serviceList = snapshot.data!;
 
                 return ListView.builder(
                     shrinkWrap: true,
                     scrollDirection: Axis.vertical,
-                    itemCount: groupList.length,
+                    itemCount: serviceList.length,
                     itemBuilder: (context, index) {
                       return Material(
-                        child: _ServiceLabel(
-                          etiqueta: groupList[index].code,
-                          text: groupList[index].description,
-                          press: () => {
-                            Navigator.pushNamed(context, 'serviceDetails',
-                                arguments: ServiceArguments(
-                                    service: groupList[index],
-                                    userSession: true))
-                          },
+                        child: Hero(
+                          tag: serviceList[index].id!,
+                          child: _ServiceLabel(
+                            etiqueta: serviceList[index].code,
+                            text: serviceList[index].description,
+                            press: () {
+                              final serviceDetailsProvider =
+                                  Provider.of<ServiceDetailsProvider>(context,
+                                      listen: false);
+                              serviceDetailsProvider.service =
+                                  serviceList[index];
+                              Navigator.pushNamed(context, 'serviceDetails',
+                                  arguments: ServiceArguments(
+                                      service: serviceList[index],
+                                      userSession: true,
+                                      isEditing: false));
+                            },
+                          ),
                         ),
                       );
                     });
@@ -145,8 +157,10 @@ class _ServiceLabel extends StatelessWidget {
             ),
             SizedBox(width: 20),
             Expanded(
-                child:
-                    Text(text, style: Theme.of(context).textTheme.bodyText2)),
+                child: Text(text,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis)),
             Icon(
               Icons.arrow_forward_ios,
               color: Color(0XFF283593),

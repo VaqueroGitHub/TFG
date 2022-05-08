@@ -22,4 +22,27 @@ class PostFormProvider extends ChangeNotifier {
         idForumSection: idForumSection,
         idUser: idUser);
   }
+
+  Post postWithId(String id) {
+    return Post(
+        id: id,
+        title: title,
+        body: body,
+        idForumSection: idForumSection,
+        idUser: idUser);
+  }
+
+  void setPost(Post post) {
+    title = post.title;
+    body = post.body;
+    idUser = post.idUser;
+    idForumSection = post.idForumSection;
+  }
+
+  void setEmptyPost(Post post) {
+    title = '';
+    body = '';
+    idUser = '';
+    idForumSection = '';
+  }
 }

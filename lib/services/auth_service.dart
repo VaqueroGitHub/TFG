@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/email_pass_form_provider.dart';
+import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -34,7 +36,8 @@ class AuthService {
     if (decodedResp.containsKey('idToken')) {
       //Registro realizado con exito
       //Guardar informacion usuario con su uid auto generado
-      UserDatabaseService(uuid: decodedResp['localId']).updateUserData(user);
+      UserDatabaseService(uuid: decodedResp['localId'])
+          .updateUserData(user, true);
       return null;
     } else {
       if (decodedResp.containsKey('error')) {
@@ -99,8 +102,47 @@ class AuthService {
     final url = Uri.https(_baseUrl, '/v1/accounts:delete', {'key': _apiKey});
     final resp = await http.post(url, body: jsonEncode(authData));
     if (resp.body.contains("error")) return resp.body;
-    UserDatabaseService(uuid: user.id!).deleteUser();
+    UserDatabaseService(uuid: user.id!).updateUserData(user, false);
     return null;
+  }
+
+  Future<String?> changeEmailPassword(
+      EmailPassFormProvider emailPassFormProvider,
+      UserSessionProvider userSessionProvider) async {
+    final authData = {
+      "idToken": await getIdToken(),
+      "email": emailPassFormProvider.email,
+      "password": emailPassFormProvider.password,
+      "returnSecureToken": true
+    };
+
+    final url = Uri.https(_baseUrl, '/v1/accounts:update', {'key': _apiKey});
+    final resp = await http.post(url, body: jsonEncode(authData));
+
+    final Map<String, dynamic> decodedResp = jsonDecode(resp.body);
+    if (decodedResp.containsKey('idToken')) {
+      User user = userSessionProvider.user;
+      user.email = emailPassFormProvider.email;
+      user.password = emailPassFormProvider.password;
+      UserDatabaseService(uuid: decodedResp['localId'])
+          .updateUserData(user, true);
+      return null;
+    } else {
+      if (decodedResp.containsKey('error')) {
+        if (decodedResp['error']["message"] ==
+            'CREDENTIAL_TOO_OLD_LOGIN_AGAIN') {
+          return 'Sesion caducada hacer login de nuevo.';
+        }
+        if (decodedResp['error']["message"] == 'EMAIL_EXISTS') {
+          return 'Email introducido ya existente';
+        }
+        if (decodedResp['error']["message"] == 'TOKEN_EXPIRED') {
+          return 'Volver hacer login para aplicar cambios';
+        }
+        return decodedResp['error']["message"];
+      }
+      return 'Error de conexion';
+    }
   }
 
   Future logout() async {
@@ -120,5 +162,10 @@ class AuthService {
   Future<String> getUserId() async {
     final userId = await storage.read(key: 'userId');
     return userId!;
+  }
+
+  Future<String> getIdToken() async {
+    final idToken = await storage.read(key: 'token');
+    return idToken!;
   }
 }

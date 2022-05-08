@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/screens/admin/manage_services_screen.dart';
 import 'package:flutter_application_tfg/screens/screens.dart';
 
 class AdminHomePage extends StatelessWidget {
@@ -42,13 +43,7 @@ class AdminHomePage extends StatelessWidget {
               ManageUsersScreen(),
               ManagePostsScreen(),
               ManageGroupsScreen(),
-              Container(
-                child: Center(
-                  child: Text('Servicios',
-                      style:
-                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
-                ),
-              ),
+              ManageServicesScreen(),
             ]),
           )),
     );

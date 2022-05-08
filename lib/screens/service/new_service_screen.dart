@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/service_details_provider.dart';
 import 'package:flutter_application_tfg/providers/service_form_provider.dart';
+import 'package:flutter_application_tfg/providers/service_list_provider.dart';
+import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
 import 'package:flutter_application_tfg/services/service_database_service.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
@@ -22,12 +25,12 @@ class NewServicePage extends StatelessWidget {
               onPressed: () => Navigator.pop(context)),
         ),
         backgroundColor: Color(0xFFffffff),
-        body: _NewGroupPage(height: height));
+        body: _NewServiceBody(height: height));
   }
 }
 
-class _NewGroupPage extends StatelessWidget {
-  const _NewGroupPage({
+class _NewServiceBody extends StatelessWidget {
+  const _NewServiceBody({
     Key? key,
     required this.height,
   }) : super(key: key);
@@ -38,52 +41,96 @@ class _NewGroupPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
     final serviceFormProvider = Provider.of<ServiceFormProvider>(context);
+    final serviceDetailsProvider = Provider.of<ServiceDetailsProvider>(context);
+    final serviceListProvider = Provider.of<ServiceListProvider>(context);
+    final args = ModalRoute.of(context)!.settings.arguments as ServiceArguments;
 
     return SingleChildScrollView(
         child: Container(
             padding: EdgeInsets.only(left: 35, right: 35),
             child: Form(
+              key: serviceFormProvider.formKey,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SizedBox(height: height * 0.04),
-                  Text(
-                    '¡Publica tu nuevo servicio a compartir! 🤝🏻',
-                    style: Theme.of(context).textTheme.headline2,
-                  ),
+                  !args.isEditing
+                      ? Text(
+                          '¡Publica tu nuevo servicio a compartir! 🤝🏻',
+                          style: Theme.of(context).textTheme.headline2,
+                        )
+                      : Container(),
                   Text(
                     'Rellena los datos del servicio 📝',
                     style: Theme.of(context).textTheme.headline3,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
+                    initialValue: serviceFormProvider.code,
                     onChanged: (val) => serviceFormProvider.code = val,
+                    validator: (val) {
+                      return (val == null || val.isEmpty || val.length > 3)
+                          ? 'Introduzca un codigo de servicio válido'
+                          : null;
+                    },
+                    maxLength: 3,
                     decoration: const InputDecoration(
-                        labelText:
-                            "Introduce el codigo del Servicio(max 3 chars)"),
+                        labelText: "Introduce el codigo del Servicio"),
                     minLines: 1,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
+                    initialValue: serviceFormProvider.nCoins >= 0
+                        ? serviceFormProvider.nCoins.toString()
+                        : '',
                     onChanged: (val) => val != ''
                         ? serviceFormProvider.nCoins = int.parse(val)
                         : serviceFormProvider.nCoins = -1,
+                    validator: (val) {
+                      return (val == null ||
+                              val.isEmpty ||
+                              int.tryParse(val) == null ||
+                              int.parse(val) < 0)
+                          ? 'Introduzca un coste de servicio válido'
+                          : null;
+                    },
                     decoration: const InputDecoration(
                         labelText: "Introduce el coste del servicio"),
+                    keyboardType: TextInputType.number,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
+                    initialValue: serviceFormProvider.conference,
                     onChanged: (val) => serviceFormProvider.conference = val,
+                    validator: (val) {
+                      return (val == null ||
+                              val.isEmpty ||
+                              !val.startsWith('https://www.zoom.us/'))
+                          ? 'Escriba una conferencia zoom valida: https://www.zoom.us/...'
+                          : null;
+                    },
                     decoration: const InputDecoration(
                         labelText:
                             "Introduce la posible url para la conferencia online a dar el servicio "),
+                    keyboardType: TextInputType.url,
+                    maxLines: null,
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
+                    initialValue: serviceFormProvider.description,
                     // any number you need (It works as the rows for the textarea)
                     keyboardType: TextInputType.multiline,
                     maxLines: null,
+                    maxLength: 500,
                     onChanged: (val) => serviceFormProvider.description = val,
+                    validator: (val) {
+                      return (val == null ||
+                              val.length < 10 ||
+                              val.length > 500)
+                          ? 'Escriba una descripción entre 10 y 500 caracteres.'
+                          : null;
+                    },
                     decoration: const InputDecoration(
                         labelText:
                             "Describe detalladamente el servicio a prestar"),
@@ -100,28 +147,32 @@ class _NewGroupPage extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
-                        child: const Text(
-                          'Publicar servicio',
+                        child: Text(
+                          args.isEditing
+                              ? 'Editar servicio'
+                              : 'Publicar servicio',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          if (serviceFormProvider.code != '' &&
-                              serviceFormProvider.description != '' &&
-                              serviceFormProvider.nCoins != -1) {
-                            serviceFormProvider.idOwnerUser =
-                                userSessionProvider.user.id!;
-                            ServiceDatabaseService().updateService(
-                                serviceFormProvider
-                                    .service(userSessionProvider),
-                                null);
-                            Navigator.pushNamedAndRemoveUntil(
-                                context,
-                                'servicesMainPage',
-                                (Route<dynamic> route) => false);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                content: Text("RELLENA TODOS LOS CAMPOS")));
-                          }
+                          if (!serviceFormProvider.isValidForm()) return;
+                          serviceFormProvider.idOwnerUser.isEmpty
+                              ? (serviceFormProvider.idOwnerUser =
+                                  userSessionProvider.user.id!)
+                              : null;
+                          await ServiceDatabaseService().updateService(
+                              await serviceFormProvider.service(),
+                              args.isEditing ? args.service!.id : null);
+                          await serviceListProvider.loadUserServiceList(
+                              userSessionProvider.user.id!);
+                          serviceListProvider.notifyListeners();
+                          if (args.isEditing) {
+                            serviceDetailsProvider.service =
+                                await serviceFormProvider.service();
+
+                            Navigator.pop(
+                                context, serviceFormProvider.service());
+                          } else
+                            Navigator.pop(context);
                         },
                       ),
                     ],

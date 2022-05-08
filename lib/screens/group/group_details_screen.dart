@@ -1,8 +1,11 @@
 // ignore_for_file: file_names
 import 'package:expansion_tile_card/expansion_tile_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/models/group.dart';
 import 'package:flutter_application_tfg/models/group_message.dart';
 import 'package:flutter_application_tfg/models/user.dart';
+import 'package:flutter_application_tfg/providers/group_details_provider.dart';
+import 'package:flutter_application_tfg/providers/group_form_provider.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
@@ -17,23 +20,65 @@ class GroupDetailsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final groupDetailsProvider = Provider.of<GroupDetailsProvider>(context);
+    final groupFormProvider = Provider.of<GroupFormProvider>(context);
+    final groupListProvider = Provider.of<GroupListProvider>(context);
 
     return Builder(
       builder: (context) => Scaffold(
         appBar: AppBar(
-            backgroundColor: Color(0xFFffffff),
-            centerTitle: true,
-            elevation: 0,
-            leading: IconButton(
-                icon: Icon(
-                  Icons.arrow_back,
-                  color: Colors.black,
-                ),
-                onPressed: () => Navigator.pop(context)),
-            title: Text(
-              'Grupo',
-              style: Theme.of(context).textTheme.headline3,
-            )),
+          backgroundColor: Color(0xFFffffff),
+          centerTitle: true,
+          elevation: 0,
+          leading: IconButton(
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.black,
+              ),
+              onPressed: () => Navigator.pop(context)),
+          title: Text(
+            'Grupo',
+            style: Theme.of(context).textTheme.headline3,
+          ),
+          actions: [
+            groupDetailsProvider.group!.idUser == userSessionProvider.user.id
+                ? IconButton(
+                    icon: Icon(
+                      Icons.edit_outlined,
+                      color: Colors.black,
+                    ),
+                    onPressed: () async {
+                      groupFormProvider.setGroup(args.group!);
+                      final group = await Navigator.pushNamed(
+                          context, 'newGroupPage',
+                          arguments: GroupArguments(
+                              group: groupDetailsProvider.group!,
+                              userSession: true,
+                              isEditing: true));
+                      if (group != null) {
+                        groupDetailsProvider.group = group as Group;
+                        groupDetailsProvider.notifyListeners();
+                      }
+                    },
+                  )
+                : Container(),
+            groupDetailsProvider.group!.idUser == userSessionProvider.user.id
+                ? IconButton(
+                    icon: Icon(
+                      Icons.delete_outline,
+                      color: Colors.black,
+                    ),
+                    onPressed: () async {
+                      await GroupDatabaseService()
+                          .deleteGroup(groupDetailsProvider.group!.id!);
+                      await groupListProvider
+                          .loadUserGroupList(userSessionProvider.user.id!);
+                      Navigator.pushReplacementNamed(context, 'groupsMainPage');
+                    },
+                  )
+                : Container()
+          ],
+        ),
         backgroundColor: Color(0xFFffffff),
         body: ListView(
           physics: BouncingScrollPhysics(),
@@ -47,47 +92,53 @@ class GroupDetailsScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 _InfoLinks(),
-                userSessionProvider.user.id == args.group.idUser ||
-                        args.group.idMembers
+                userSessionProvider.user.id ==
+                            groupDetailsProvider.group!.idUser ||
+                        groupDetailsProvider.group!.idMembers
                             .contains(userSessionProvider.user.id) ||
-                        args.group.idMembers.length >=
-                            args.group.nMembersRequired
+                        groupDetailsProvider.group!.idMembers.length >=
+                            groupDetailsProvider.group!.nMembersRequired
                     ? Container()
                     : MaterialButton(
                         elevation: 10.0,
                         minWidth: 200.0,
                         height: 50.0,
                         color: userSessionProvider.user.id ==
-                                    args.group.idUser ||
-                                args.group.idMembers
+                                    groupDetailsProvider.group!.idUser ||
+                                groupDetailsProvider.group!.idMembers
                                     .contains(userSessionProvider.user.id) ||
-                                args.group.idMembers.length >=
-                                    args.group.nMembersRequired
+                                groupDetailsProvider.group!.idMembers.length >=
+                                    groupDetailsProvider.group!.nMembersRequired
                             ? Colors.grey
                             : Theme.of(context).primaryColor,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Text(
-                          userSessionProvider.user.id == args.group.idUser ||
-                                  args.group.idMembers
+                          userSessionProvider.user.id ==
+                                      groupDetailsProvider.group!.idUser ||
+                                  groupDetailsProvider.group!.idMembers
                                       .contains(userSessionProvider.user.id) ||
-                                  args.group.idMembers.length >=
-                                      args.group.nMembersRequired
+                                  groupDetailsProvider
+                                          .group!.idMembers.length >=
+                                      groupDetailsProvider
+                                          .group!.nMembersRequired
                               ? 'Ya inscirto'
                               : 'Únete',
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
                           if (userSessionProvider.user.id ==
-                                  args.group.idUser ||
-                              args.group.idMembers
+                                  groupDetailsProvider.group!.idUser ||
+                              groupDetailsProvider.group!.idMembers
                                   .contains(userSessionProvider.user.id) ||
-                              args.group.idMembers.length >=
-                                  args.group.nMembersRequired) return;
+                              groupDetailsProvider.group!.idMembers.length >=
+                                  groupDetailsProvider.group!.nMembersRequired)
+                            return;
 
                           await GroupDatabaseService().joinGroup(
-                              args.group, userSessionProvider.user.id!);
+                              groupDetailsProvider.group!,
+                              userSessionProvider.user.id!);
 
                           args.userSession
                               ? Navigator.popAndPushNamed(
@@ -100,8 +151,9 @@ class GroupDetailsScreen extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                userSessionProvider.user.id == args.group.idUser ||
-                        !args.group.idMembers
+                userSessionProvider.user.id ==
+                            groupDetailsProvider.group!.idUser ||
+                        !groupDetailsProvider.group!.idMembers
                             .contains(userSessionProvider.user.id)
                     ? Container()
                     : MaterialButton(
@@ -118,7 +170,8 @@ class GroupDetailsScreen extends StatelessWidget {
                         ),
                         onPressed: () async {
                           await GroupDatabaseService().exitGroup(
-                              args.group, userSessionProvider.user.id!);
+                              groupDetailsProvider.group!,
+                              userSessionProvider.user.id!);
 
                           args.userSession
                               ? Navigator.popAndPushNamed(
@@ -129,33 +182,12 @@ class GroupDetailsScreen extends StatelessWidget {
                         },
                       ),
                 SizedBox(height: 20),
-                userSessionProvider.user.id != args.group.idUser
-                    ? Container()
-                    : MaterialButton(
-                        elevation: 10.0,
-                        minWidth: 200.0,
-                        height: 50.0,
-                        color: Colors.red,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8.0),
-                        ),
-                        child: Text(
-                          'Eliminar',
-                          style: TextStyle(color: Colors.white, fontSize: 20.0),
-                        ),
-                        onPressed: () async {
-                          await GroupDatabaseService()
-                              .deleteGroup(args.group.id!);
-
-                          args.userSession
-                              ? Navigator.popAndPushNamed(
-                                  context, 'groupsMainPage')
-                              : Navigator.popAndPushNamed(
-                                  context, 'adminHomePage',
-                                  arguments: 2);
-                        },
-                      ),
-                _ChatCardWidget(),
+                userSessionProvider.user.id ==
+                            groupDetailsProvider.group!.idUser ||
+                        groupDetailsProvider.group!.idMembers
+                            .contains(userSessionProvider.user.id)
+                    ? _ChatCardWidget()
+                    : Container(),
               ],
             ),
           ],
@@ -179,7 +211,7 @@ class GroupDetailsScreen extends StatelessWidget {
       );
 
   Widget buildAbout(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final groupDetailsProvider = Provider.of<GroupDetailsProvider>(context);
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 48),
       child: Column(
@@ -191,7 +223,7 @@ class GroupDetailsScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           Text(
-            args.group.description,
+            groupDetailsProvider.group!.description,
             style: Theme.of(context).textTheme.bodyText1,
           ),
         ],
@@ -211,14 +243,13 @@ class _ChatCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final groupDetailsProvider = Provider.of<GroupDetailsProvider>(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: ExpansionTileCard(
-        key: GlobalKey(),
+        //key: GlobalKey(),
         leading: Icon(Icons.chat),
         title: Text('Chat de grupo!'),
-        //subtitle: Text('I expand!'),
         children: <Widget>[
           Divider(
             thickness: 1.0,
@@ -226,8 +257,10 @@ class _ChatCardWidget extends StatelessWidget {
           ),
           TextButton(
               onPressed: () => Navigator.pushNamed(context, 'newGroupMessage',
-                  arguments:
-                      GroupArguments(group: args.group, userSession: true)),
+                  arguments: GroupArguments(
+                      group: groupDetailsProvider.group!,
+                      userSession: true,
+                      isEditing: false)),
               child: Text("Nuevo mensaje")),
           _ListChatGroup(),
           ButtonBar(
@@ -250,14 +283,14 @@ class _ListChatGroup extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
-    final groupListProvider = Provider.of<GroupListProvider>(context);
+    //final groupListProvider2 = Provider.of<GroupListProvider>(context);
 
     return Consumer<GroupListProvider>(
         builder: (context, groupListProvider, child) {
       //groupListProvider.loadMessagesGroupList(args.group.id!);
 
       return FutureBuilder<List<GroupMessage>>(
-          future: groupListProvider.loadMessagesGroupList(args.group.id!),
+          future: groupListProvider.loadMessagesGroupList(args.group!.id!),
           builder: (context, AsyncSnapshot<List<GroupMessage>> snapshot) {
             if (!snapshot.hasData) {
               return Center(child: Text("Loading..."));
@@ -290,19 +323,34 @@ class _InfoLinks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
+    final groupDetailsProvider = Provider.of<GroupDetailsProvider>(context);
+    final userSessionProvider = Provider.of<UserSessionProvider>(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        TextButton(
-          child: Text("🖥️ Github repo "),
-          onPressed: () => _launchURL(args.group.githUrl),
-        ),
+        !groupDetailsProvider.group!.githUrl.isEmpty &&
+                (userSessionProvider.user.id ==
+                        groupDetailsProvider.group!.idUser ||
+                    groupDetailsProvider.group!.idMembers
+                        .contains(userSessionProvider.user.id))
+            ? TextButton(
+                child: Text("🖥️ Github repo "),
+                onPressed: () =>
+                    _launchURL(groupDetailsProvider.group!.githUrl),
+              )
+            : Container(),
         SizedBox(height: 20),
-        TextButton(
-          child: Text("🗂️ Drive storage "),
-          onPressed: () => _launchURL(args.group.driveUrl),
-        ),
+        !groupDetailsProvider.group!.driveUrl.isEmpty &&
+                (userSessionProvider.user.id ==
+                        groupDetailsProvider.group!.idUser ||
+                    groupDetailsProvider.group!.idMembers
+                        .contains(userSessionProvider.user.id))
+            ? TextButton(
+                child: Text("🗂️ Drive storage "),
+                onPressed: () =>
+                    _launchURL(groupDetailsProvider.group!.driveUrl),
+              )
+            : Container(),
         SizedBox(height: 20),
       ],
     );
@@ -343,30 +391,36 @@ class GroupNumbersWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as GroupArguments;
-
+    final groupDetailsProvider = Provider.of<GroupDetailsProvider>(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
         buildButton(
             context,
-            (args.group.idMembers.length).toString() +
+            (groupDetailsProvider.group!.idMembers.length).toString() +
                 '/' +
-                args.group.nMembersRequired.toString(),
+                groupDetailsProvider.group!.nMembersRequired.toString(),
             'Miembros',
-            null,
-            null),
+            'membersScreen',
+            GroupArguments(
+                userSession: true,
+                isEditing: false,
+                group: groupDetailsProvider.group!)),
         buildDivider(),
-        buildButton(context, args.group.asignatura, 'Asignatura', null, null),
+        Hero(
+          tag: groupDetailsProvider.group!.asignatura,
+          child: buildButton(context, groupDetailsProvider.group!.asignatura,
+              'Asignatura', null, null),
+        ),
         buildDivider(),
         buildButton(
             context,
-            args.group.user!.nick,
+            groupDetailsProvider.group!.user!.nick,
             'Propietario',
             'seeProfile',
             UserArguments(
-                user: args.group.user!,
-                id: args.group.user!.id!,
+                user: groupDetailsProvider.group!.user!,
+                id: groupDetailsProvider.group!.user!.id!,
                 userSession: true)),
       ],
     );

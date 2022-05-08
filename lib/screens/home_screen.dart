@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 
 class HomeScreen extends StatelessWidget {
   @override
@@ -33,7 +34,8 @@ class _HomeBody extends StatelessWidget {
         children: <Widget>[
           Container(
             padding: const EdgeInsets.only(left: 35, right: 35),
-            child: Image.asset('assets/imgs/vaquero.png'),
+            child: Lottie.asset('assets/imgs/lottie-home.json',
+                height: MediaQuery.of(context).size.height * 0.4),
           ),
           SizedBox(height: height * 0.04),
           Column(

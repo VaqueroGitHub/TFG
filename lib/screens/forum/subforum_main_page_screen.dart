@@ -6,6 +6,7 @@ import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/forum_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
+import 'package:flutter_application_tfg/screens/forum/my_search_delegate_forums.dart';
 import 'package:flutter_application_tfg/screens/group/my_search_delegate_groups.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
@@ -28,7 +29,8 @@ class SubforumMainPage extends StatelessWidget {
               onPressed: () => Navigator.pop(context)),
           actions: [
             IconButton(
-              onPressed: () => MySearchDelegateGroups(),
+              onPressed: () => showSearch(
+                  context: context, delegate: MySearchDelegateForums()),
               icon: Icon(Icons.search),
               color: Colors.black,
             )
@@ -61,19 +63,24 @@ class SubforumMainPage extends StatelessWidget {
                           itemCount: postList.length,
                           itemBuilder: (context, index) {
                             return Material(
-                              child: _GroupLabel(
-                                etiqueta: postList[index].title,
-                                text: "",
-                                press: () async {
-                                  await Provider.of<PostMainProvider>(context,
-                                          listen: false)
-                                      .loadPost(postList[index].id!);
-                                  Navigator.pushNamed(context, 'postMainPage',
-                                      arguments: PostArguments(
+                              child: Hero(
+                                tag: postList[index].id!,
+                                child: _PostLabel(
+                                  etiqueta: postList[index].title,
+                                  text: "",
+                                  press: () async {
+                                    await Provider.of<PostMainProvider>(context,
+                                            listen: false)
+                                        .loadPost(postList[index].id!);
+                                    Navigator.pushNamed(context, 'postMainPage',
+                                        arguments: PostArguments(
                                           forumSection: args.forumSection,
                                           post: postList[index],
-                                          userSession: true));
-                                },
+                                          userSession: true,
+                                          isEditing: false,
+                                        ));
+                                  },
+                                ),
                               ),
                             );
                           });
@@ -85,8 +92,8 @@ class SubforumMainPage extends StatelessWidget {
   }
 }
 
-class _GroupLabel extends StatelessWidget {
-  const _GroupLabel({
+class _PostLabel extends StatelessWidget {
+  const _PostLabel({
     Key? key,
     required this.text,
     required this.etiqueta,
@@ -117,8 +124,10 @@ class _GroupLabel extends StatelessWidget {
             ),
             SizedBox(width: 20),
             Expanded(
-                child:
-                    Text(text, style: Theme.of(context).textTheme.bodyText2)),
+                child: Text(text,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis)),
             Icon(
               Icons.arrow_forward_ios,
               color: Color(0XFF283593),
@@ -147,8 +156,11 @@ class _GroupButtons extends StatelessWidget {
               icon: Icon(Icons.add, color: Color(0XFF283593)),
               onPressed: () => {
                     Navigator.pushNamed(context, 'newPostPage',
-                        arguments: ForumArguments(
-                            forumSection: args.forumSection, userSession: true))
+                        arguments: PostArguments(
+                            forumSection: args.forumSection,
+                            userSession: true,
+                            isEditing: false,
+                            post: null))
                   }),
         ],
       ),

@@ -1,10 +1,9 @@
 // ignore_for_file: file_names
-
 import 'package:flutter/material.dart';
+import 'package:flutter_application_tfg/providers/edit_user_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
-import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -12,80 +11,127 @@ class ProfileScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
+    final editUserProvider = Provider.of<EditUserProvider>(context);
 
     final double height = MediaQuery.of(context).size.height;
-    return Scaffold(
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.indigo,
-        onPressed: () => Navigator.pushReplacementNamed(
-          context,
-          'aboutProfile',
-          arguments: UserArguments(
-              user: userSessionProvider.user,
-              id: userSessionProvider.user.id!,
-              userSession: true),
-        ),
-        child: IconButton(
-          onPressed: () => Navigator.pushReplacementNamed(
-            context,
-            'aboutProfile',
-            arguments: UserArguments(
-                user: userSessionProvider.user,
-                id: userSessionProvider.user.id!,
-                userSession: true),
-          ),
-          icon: Icon(
-            Icons.home,
-            color: Colors.white,
-          ),
+    return
+        // Scaffold(
+        //   floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+        //   floatingActionButton: FloatingActionButton(
+        //     backgroundColor: Colors.indigo,
+        //     onPressed: () => Navigator.pushReplacementNamed(
+        //       context,
+        //       'aboutProfile',
+        //       arguments: UserArguments(
+        //           user: userSessionProvider.user,
+        //           id: userSessionProvider.user.id!,
+        //           userSession: true),
+        //     ),
+        //     child: Icon(
+        //       Icons.home,
+        //       color: Colors.white,
+        //     ),
+        //   ),
+        //   backgroundColor: Color(0xFFffffff),
+        //   body:
+        SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            SizedBox(height: height * 0.04),
+            Text(
+              'Perfil',
+              style: Theme.of(context).textTheme.headline3,
+            ),
+            SizedBox(height: height * 0.06),
+            !userSessionProvider.user.isAdmin
+                ? Container()
+                : _ProfileMenu(
+                    text: "Modo administrador",
+                    icon: IconButton(
+                      icon: SvgPicture.asset("assets/icons/Bell.svg",
+                          color: Color(0XFF283593)),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, 'adminHomePage'),
+                    ),
+                    press: () => Navigator.pushNamed(context, 'adminHomePage'),
+                  ),
+            _ProfileMenu(
+              text: "Modificar datos",
+              press: () {
+                editUserProvider.user = userSessionProvider.user;
+                Navigator.pushNamed(context, 'editProfile',
+                    arguments: UserArguments(
+                        user: userSessionProvider.user,
+                        id: userSessionProvider.user.id!,
+                        userSession: true));
+              },
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/Settings.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {
+                  editUserProvider.user = userSessionProvider.user;
+                  Navigator.pushNamed(context, 'editProfile',
+                      arguments: UserArguments(
+                          user: userSessionProvider.user,
+                          id: userSessionProvider.user.id!,
+                          userSession: true));
+                },
+              ),
+            ),
+            _ProfileMenu(
+              text: "Eliminar cuenta",
+              press: () {
+                _delete(context, userSessionProvider);
+              },
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/Delete.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {
+                  _delete(context, userSessionProvider);
+                },
+              ),
+            ),
+            _ProfileMenu(
+              text: "Log Out",
+              icon: IconButton(
+                icon: SvgPicture.asset("assets/icons/Log out.svg",
+                    color: Color(0XFF283593)),
+                onPressed: () {
+                  AuthService().logout();
+                  Navigator.pushNamedAndRemoveUntil(
+                      context, 'home', (Route<dynamic> route) => false);
+                },
+              ),
+              press: () {
+                AuthService().logout();
+                Navigator.pushNamedAndRemoveUntil(
+                    context, 'home', (Route<dynamic> route) => false);
+              },
+            ),
+          ],
         ),
       ),
-      backgroundColor: Color(0xFFffffff),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              SizedBox(height: height * 0.04),
-              Text(
-                'Perfil',
-                style: Theme.of(context).textTheme.headline3,
-              ),
-              SizedBox(height: height * 0.06),
-              !userSessionProvider.user.isAdmin
-                  ? Container()
-                  : _ProfileMenu(
-                      text: "Modo administrador",
-                      icon: IconButton(
-                        icon: SvgPicture.asset("assets/icons/Bell.svg",
-                            color: Color(0XFF283593)),
-                        onPressed: () {
-                          Navigator.pushNamed(context, 'adminHomePage');
-                        },
-                      ),
-                      press: () =>
-                          {Navigator.pushNamed(context, 'manageUsers')},
-                    ),
-              _ProfileMenu(
-                text: "Modificar datos",
-                icon: IconButton(
-                  icon: SvgPicture.asset("assets/icons/Settings.svg",
-                      color: Color(0XFF283593)),
-                  onPressed: () {
-                    Navigator.pushNamed(context, 'editProfile',
-                        arguments: UserArguments(
-                            user: userSessionProvider.user,
-                            id: userSessionProvider.user.id!,
-                            userSession: true));
-                  },
-                ),
-              ),
-              _ProfileMenu(
-                text: "Eliminar cuenta",
-                icon: IconButton(
-                  icon: SvgPicture.asset("assets/icons/Delete.svg",
-                      color: Color(0XFF283593)),
+    );
+    //   bottomNavigationBar: navBar(),
+    // );
+  }
+
+  void _delete(BuildContext context, UserSessionProvider userSessionProvider) {
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: const Text('Eliminar cuenta usuario'),
+            content: const Text(
+                '¿Esta seguro/a de que quiere borrar su cuenta? Perderá todos sus datos.'),
+            actions: [
+              // The "Yes" button
+              TextButton(
                   onPressed: () async {
+                    // Close the dialog
+                    Navigator.of(context).pop();
+
                     final resp = await AuthService()
                         .deleteAccount(userSessionProvider.user);
                     if (resp != null) {
@@ -96,32 +142,16 @@ class ProfileScreen extends StatelessWidget {
                           context, 'home', (Route<dynamic> route) => false);
                     }
                   },
-                ),
-                press: () {},
-              ),
-              _ProfileMenu(
-                text: "Log Out",
-                icon: IconButton(
-                  icon: SvgPicture.asset("assets/icons/Log out.svg",
-                      color: Color(0XFF283593)),
+                  child: const Text('Confirmar')),
+              TextButton(
                   onPressed: () {
-                    AuthService().logout();
-                    Navigator.pushNamedAndRemoveUntil(
-                        context, 'home', (Route<dynamic> route) => false);
+                    // Close the dialog
+                    Navigator.of(context).pop();
                   },
-                ),
-                press: () {
-                  AuthService().logout();
-                  Navigator.pushNamedAndRemoveUntil(
-                      context, 'home', (Route<dynamic> route) => false);
-                },
-              ),
+                  child: const Text('No!'))
             ],
-          ),
-        ),
-      ),
-      bottomNavigationBar: navBar(),
-    );
+          );
+        });
   }
 }
 

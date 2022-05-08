@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/edit_user_provider.dart';
+import 'package:flutter_application_tfg/providers/email_pass_form_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
+import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_application_tfg/services/user_database_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:image_picker/image_picker.dart';
@@ -22,7 +24,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
     final editUserProvider = Provider.of<EditUserProvider>(context);
     final args = ModalRoute.of(context)!.settings.arguments as UserArguments;
-    //localImage = args.user.url;
     final double height = MediaQuery.of(context).size.height;
 
     return Scaffold(
@@ -39,6 +40,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
             onPressed: () => Navigator.pop(context)),
       ),
       body: Form(
+        key: editUserProvider.formKey,
+        autovalidateMode: AutovalidateMode.onUserInteraction,
         child: ListView(
           padding: EdgeInsets.symmetric(horizontal: 32),
           physics: BouncingScrollPhysics(),
@@ -51,7 +54,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             SizedBox(height: height * 0.02),
             ProfileWidget(
-              fileImage: localImage,
+              fileImage: localImage == null ? args.user.url : localImage,
               isEdit: true,
               onClicked: () async {
                 final picker = new ImagePicker();
@@ -61,7 +64,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     imageQuality: 100);
 
                 if (pickedFile == null) {
-                  print('No seleccionó nada');
                   return;
                 }
                 editUserProvider.newPictureFile =
@@ -71,32 +73,34 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 setState(() {
                   localImage = newPictureLocal;
                 });
-                // editUserProvider.imageL = newPictureLocal;
-                // editUserProvider.notifyListeners();
               },
             ),
             TextFormField(
-              initialValue: args.user.fullName,
-              onChanged: (val) => args.user.fullName = val,
+              initialValue: editUserProvider.user.fullName,
+              onChanged: (val) => editUserProvider.user.fullName = val,
               decoration: const InputDecoration(labelText: "Nombre completo"),
               minLines: 1,
             ),
             SizedBox(height: height * 0.05),
             TextFormField(
-              initialValue: args.user.nick,
-              onChanged: (val) => args.user.nick = val,
+              initialValue: editUserProvider.user.nick,
+              onChanged: (val) => editUserProvider.user.nick = val,
               decoration: const InputDecoration(labelText: "Nick"),
+              validator: (val) {
+                if (val == null || val.length < 1)
+                  return 'Nick no puede ser vacío.';
+              },
             ),
             SizedBox(height: height * 0.05),
             TextFormField(
-              initialValue: args.user.bio,
-              onChanged: (val) => args.user.bio = val,
+              initialValue: editUserProvider.user.bio,
+              onChanged: (val) => editUserProvider.user.bio = val,
               decoration: const InputDecoration(labelText: "Bio"),
               minLines: 1,
               maxLines: 6,
             ),
             SizedBox(height: height * 0.07),
-            args.user.id != userSessionProvider.user.id
+            editUserProvider.user.id != userSessionProvider.user.id
                 ? Container()
                 : Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -116,7 +120,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 TextStyle(color: Colors.indigo, fontSize: 20.0),
                           ),
                           onPressed: () {
-                            openDialog(context, args);
+                            _ChangeEmailPassword(context, userSessionProvider);
                           }),
                       SizedBox(height: height * 0.07),
                     ],
@@ -138,13 +142,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     style: TextStyle(color: Colors.white, fontSize: 20.0),
                   ),
                   onPressed: () {
-                    if (localImage != null) args.user.url = localImage;
+                    if (!editUserProvider.isValidForm()) return;
+                    if (localImage != null) {
+                      args.user.url = localImage;
+                      if (args.userSession) {
+                        setState(() {
+                          userSessionProvider.user.url = localImage;
+                        });
+                      }
+                    }
                     UserDatabaseService(uuid: args.id)
-                        .updateUserData(args.user);
+                        .updateUserData(args.user, true);
                     if (args.userSession) {
-                      setState(() {
-                        userSessionProvider.user.url = localImage;
-                      });
                       // userSessionProvider.user.url = editUserProvider.imageL;
                       Navigator.pop(context); // pop current page
                     } else {
@@ -163,69 +172,98 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  Widget getImage(File? picture) {
-    if (picture == null)
-      return Image(
-        image: AssetImage('assets/imgs/no-image.png'),
-        fit: BoxFit.contain,
-        width: 128,
-        height: 128,
-      );
+  void _ChangeEmailPassword(
+      BuildContext context, UserSessionProvider userSessionProvider) {
+    final emailPassFormProvider =
+        Provider.of<EmailPassFormProvider>(context, listen: false);
+    emailPassFormProvider.email = userSessionProvider.user.email;
+    emailPassFormProvider.password = userSessionProvider.user.password;
+    showDialog(
+        context: context,
+        builder: (BuildContext ctx) {
+          return AlertDialog(
+            title: const Text('Cambiar email/password'),
+            content: Container(
+              height: 270.0,
+              child: Form(
+                key: emailPassFormProvider.formKey,
+                autovalidateMode: AutovalidateMode.onUserInteraction,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    TextFormField(
+                      initialValue: emailPassFormProvider.email,
+                      onChanged: (val) => emailPassFormProvider.email = val,
+                      validator: (val) {
+                        String pattern =
+                            r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
+                        RegExp regExp = RegExp(pattern);
+                        return regExp.hasMatch(val ?? '')
+                            ? null
+                            : 'Escriba un email valido';
+                      },
+                      decoration: const InputDecoration(labelText: "Email"),
+                      minLines: 1,
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      initialValue: emailPassFormProvider.password,
+                      onChanged: (val) => emailPassFormProvider.password = val,
+                      decoration: const InputDecoration(labelText: "Password"),
+                      validator: (val) {
+                        if (val == null || val.length < 6)
+                          return 'La contraseña debe tener al menos 6 caracteres';
+                      },
+                      obscureText: true,
+                    ),
+                    SizedBox(height: 20),
+                    TextFormField(
+                      initialValue: emailPassFormProvider.password,
+                      onChanged: (val) =>
+                          emailPassFormProvider.confirmPassword = val,
+                      validator: (val) {
+                        if (val != emailPassFormProvider.password)
+                          return 'Las contraseñas no coinciden';
+                      },
+                      decoration:
+                          const InputDecoration(labelText: "Confirm password"),
+                      obscureText: true,
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            actions: [
+              // The "Yes" button
+              TextButton(
+                  onPressed: () async {
+                    if (!emailPassFormProvider.isValidForm()) return;
 
-    if (picture.path.startsWith('http'))
-      return FadeInImage(
-        image: NetworkImage(picture.path),
-        placeholder: AssetImage('assets/imgs/jar-loading.png'),
-        fit: BoxFit.contain,
-        width: 128,
-        height: 128,
-      );
+                    // Close the dialog
+                    Navigator.of(context).pop();
 
-    return Image.file(
-      File(picture.path),
-      fit: BoxFit.contain,
-      width: 128,
-      height: 128,
-    );
-  }
+                    String? resp = await AuthService().changeEmailPassword(
+                        emailPassFormProvider, userSessionProvider);
 
-  Future openDialog(context, args) => showDialog(
-      context: context, builder: (_) => _EmailPasswordDialog(args: args));
-}
-
-class _EmailPasswordDialog extends StatelessWidget {
-  final args;
-  const _EmailPasswordDialog({
-    Key? key,
-    required this.args,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text('Nuevos Datos autenticacion'),
-      content: Form(
-          child: Column(
-        children: [
-          TextFormField(
-            initialValue: args.user.email,
-            onChanged: (val) => args.user.email = val,
-            decoration: const InputDecoration(labelText: "Email"),
-            minLines: 1,
-          ),
-          SizedBox(height: 20),
-          TextFormField(
-            initialValue: args.user.password,
-            onChanged: (val) => args.user.password = val,
-            decoration: const InputDecoration(labelText: "Password"),
-            obscureText: true,
-          ),
-        ],
-      )),
-      actions: [
-        TextButton(
-            onPressed: () => Navigator.pop(context), child: Text('Confirmar'))
-      ],
-    );
+                    print(resp);
+                    if (resp != null) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("ERROR: $resp")));
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "EXITO: Volver hacer login para aplicar cambios")));
+                    }
+                  },
+                  child: const Text('CONFIRMAR')),
+              TextButton(
+                  onPressed: () {
+                    // Close the dialog
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('CANCELAR'))
+            ],
+          );
+        });
   }
 }

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/service.dart';
+import 'package:flutter_application_tfg/providers/service_details_provider.dart';
 import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
 import 'package:flutter_application_tfg/screens/service/my_search_delegate_services.dart';
@@ -46,37 +47,47 @@ class AllServicesPage extends StatelessWidget {
             Container(
               height: height * 0.8,
               child: Consumer<ServiceListProvider>(
-                  builder: (context, providerData, _) =>
-                      FutureBuilder<List<Service>>(
-                          future: providerData.loadAllServiceList(),
-                          builder:
-                              (context, AsyncSnapshot<List<Service>> snapshot) {
-                            if (!snapshot.hasData) {
-                              return Center(child: Text("Loading..."));
-                            }
+                  builder: (context, providerData, _) => FutureBuilder<
+                          List<Service>>(
+                      future: providerData.loadAllServiceList(),
+                      builder:
+                          (context, AsyncSnapshot<List<Service>> snapshot) {
+                        if (!snapshot.hasData) {
+                          return Center(child: Text("Loading..."));
+                        }
 
-                            List<Service> serviceList = snapshot.data!;
+                        List<Service> serviceList = snapshot.data!;
 
-                            return ListView.builder(
-                                shrinkWrap: true,
-                                scrollDirection: Axis.vertical,
-                                itemCount: serviceList.length,
-                                itemBuilder: (context, index) {
-                                  return Material(
-                                    child: _ServiceLabel(
-                                      etiqueta: serviceList[index].code,
-                                      text: serviceList[index].description,
-                                      press: () => {
-                                        Navigator.pushNamed(
-                                            context, 'serviceDetails',
-                                            arguments: ServiceArguments(
-                                                service: serviceList[index],
-                                                userSession: true))
-                                      },
-                                    ),
-                                  );
-                                });
-                          })),
+                        return ListView.builder(
+                            shrinkWrap: true,
+                            scrollDirection: Axis.vertical,
+                            itemCount: serviceList.length,
+                            itemBuilder: (context, index) {
+                              return Material(
+                                child: Hero(
+                                  tag: serviceList[index].id!,
+                                  child: _ServiceLabel(
+                                    etiqueta: serviceList[index].code,
+                                    text: serviceList[index].description,
+                                    press: () {
+                                      final serviceDetailsProvider =
+                                          Provider.of<ServiceDetailsProvider>(
+                                              context,
+                                              listen: false);
+                                      serviceDetailsProvider.service =
+                                          serviceList[index];
+                                      Navigator.pushNamed(
+                                          context, 'serviceDetails',
+                                          arguments: ServiceArguments(
+                                              service: serviceList[index],
+                                              userSession: true,
+                                              isEditing: false));
+                                    },
+                                  ),
+                                ),
+                              );
+                            });
+                      })),
             ),
           ],
         ),
@@ -117,8 +128,10 @@ class _ServiceLabel extends StatelessWidget {
             ),
             SizedBox(width: 20),
             Expanded(
-                child:
-                    Text(text, style: Theme.of(context).textTheme.bodyText2)),
+                child: Text(text,
+                    style: Theme.of(context).textTheme.bodyText2,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis)),
             Icon(
               Icons.arrow_forward_ios,
               color: Color(0XFF283593),
