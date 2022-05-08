@@ -24,7 +24,7 @@ class AboutProfilePage extends StatelessWidget {
                 padding: EdgeInsets.all(20),
                 onPressed: () =>
                     //Navigator.pushReplacementNamed(context, 'homePage'),
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       PageTransition(
                           duration: Duration(milliseconds: 700),

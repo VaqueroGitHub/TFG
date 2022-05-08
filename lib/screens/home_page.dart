@@ -26,7 +26,6 @@ class HomePage extends StatelessWidget {
                     context,
                     PageTransition(
                       settings: RouteSettings(
-                        name: 'aboutProfile',
                         arguments: UserArguments(
                             user: userSessionProvider.user,
                             id: userSessionProvider.user.id!,
