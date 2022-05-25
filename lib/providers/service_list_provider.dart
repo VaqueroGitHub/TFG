@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/helpers/debouncer.dart';
 import 'package:flutter_application_tfg/models/service.dart';
 import 'package:flutter_application_tfg/models/service_message.dart';
-import 'package:flutter_application_tfg/services/message_service_database_service.dart';
-import 'package:flutter_application_tfg/services/service_database_service.dart';
+import 'package:flutter_application_tfg/services/message_service_service.dart';
+import 'package:flutter_application_tfg/services/service_service.dart';
+import 'package:get_it/get_it.dart';
 
 class ServiceListProvider extends ChangeNotifier {
   List<Service> listService = [];
@@ -20,16 +21,17 @@ class ServiceListProvider extends ChangeNotifier {
       this._suggestionStreamContoller.stream;
 
   Future<List<Service>> loadAllServiceList() async {
-    return listService = await ServiceDatabaseService().getAllServices();
+    return listService = await GetIt.I<ServiceService>().getAllServices();
   }
 
   Future<List<Service>> loadUserServiceList(String idUser) async {
-    return listService = await ServiceDatabaseService().getUserServices(idUser);
+    return listService =
+        await GetIt.I<ServiceService>().getUserServices(idUser);
   }
 
   Future<List<ServiceMessage>> loadMessagesServiceList(String idGroup) async {
     messageList =
-        await MessageServiceDatabaseService().getServiceMessages(idGroup);
+        await GetIt.I<MessageServiceService>().getServiceMessages(idGroup);
     notifyListeners();
     return messageList;
   }
@@ -38,7 +40,7 @@ class ServiceListProvider extends ChangeNotifier {
     debouncer.value = '';
     debouncer.onValue = (value) async {
       final results =
-          await ServiceDatabaseService().getServicesByQueryCode(value);
+          await GetIt.I<ServiceService>().getServicesByQueryCode(value);
       this._suggestionStreamContoller.add(results);
     };
 

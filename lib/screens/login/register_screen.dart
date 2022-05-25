@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/user_register_provider.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class RegisterScreen extends StatelessWidget {
@@ -112,8 +113,9 @@ class _RegisterBody extends StatelessWidget {
                                 // if (!userRegisterProvider.isValidForm()) return;
 
                                 userRegisterProvider.isLoading = true;
-                                final String? errorMessage = await AuthService()
-                                    .signUpUser(userRegisterProvider.user());
+                                final String? errorMessage =
+                                    await GetIt.I<AuthService>().signUpUser(
+                                        userRegisterProvider.user());
 
                                 if (errorMessage == null) {
                                   Navigator.pushNamedAndRemoveUntil(context,

@@ -3,7 +3,8 @@ import 'package:flutter_application_tfg/models/service.dart';
 import 'package:flutter_application_tfg/providers/service_form_provider.dart';
 import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
-import 'package:flutter_application_tfg/services/service_database_service.dart';
+import 'package:flutter_application_tfg/services/service_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class ManageServicesScreen extends StatelessWidget {
@@ -56,7 +57,7 @@ class ManageServicesScreen extends StatelessWidget {
                             IconButton(
                               icon: Icon(Icons.delete),
                               onPressed: () async {
-                                await ServiceDatabaseService()
+                                await GetIt.I<ServiceService>()
                                     .deleteService(serviceList[index].id!);
 
                                 Navigator.popAndPushNamed(

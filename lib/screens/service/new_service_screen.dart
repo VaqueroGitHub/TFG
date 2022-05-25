@@ -3,7 +3,8 @@ import 'package:flutter_application_tfg/providers/service_details_provider.dart'
 import 'package:flutter_application_tfg/providers/service_form_provider.dart';
 import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
-import 'package:flutter_application_tfg/services/service_database_service.dart';
+import 'package:flutter_application_tfg/services/service_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
 
@@ -159,7 +160,7 @@ class _NewServiceBody extends StatelessWidget {
                               ? (serviceFormProvider.idOwnerUser =
                                   userSessionProvider.user.id!)
                               : null;
-                          await ServiceDatabaseService().updateService(
+                          await GetIt.I<ServiceService>().updateService(
                               await serviceFormProvider.service(),
                               args.isEditing ? args.service!.id : null);
                           await serviceListProvider.loadUserServiceList(

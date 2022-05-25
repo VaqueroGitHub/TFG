@@ -6,9 +6,7 @@ import 'package:flutter_application_tfg/providers/group_details_provider.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
-import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/widgets/group_buttons.dart';
-import 'package:flutter_application_tfg/widgets/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:provider/provider.dart';
 
@@ -19,89 +17,61 @@ class GroupsMainPage extends StatelessWidget {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
     final groupDetailsProvider = Provider.of<GroupDetailsProvider>(context);
 
-    return
-        // Scaffold(
-        //   floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        //   floatingActionButton: FloatingActionButton(
-        //     backgroundColor: Colors.indigo,
-        //     onPressed: () => Navigator.pushReplacementNamed(
-        //       context,
-        //       'aboutProfile',
-        //       arguments: UserArguments(
-        //           user: userSessionProvider.user,
-        //           id: userSessionProvider.user.id!,
-        //           userSession: true),
-        //     ),
-        //     child: IconButton(
-        //       onPressed: () => Navigator.pushReplacementNamed(
-        //         context,
-        //         'aboutProfile',
-        //         arguments: UserArguments(
-        //             user: userSessionProvider.user,
-        //             id: userSessionProvider.user.id!,
-        //             userSession: true),
-        //       ),
-        //       icon: Icon(
-        //         Icons.home,
-        //         color: Colors.white,
-        //       ),
-        //     ),
-        //   ),
-        //   backgroundColor: Color(0xFFffffff),
-        //   body:
-        SafeArea(
-      child: Column(
-        children: [
-          SizedBox(height: height * 0.04),
-          Text(
-            'Mis grupos',
-            style: Theme.of(context).textTheme.headline3,
-          ),
-          GroupButtons(),
-          SizedBox(height: 10),
-          Container(
-            height: height * 0.6,
-            child: Consumer<GroupListProvider>(
-                builder: (context, providerData, _) =>
-                    FutureBuilder<List<Group>>(
-                        future: providerData
-                            .loadUserGroupList(userSessionProvider.user.id!),
-                        builder:
-                            (context, AsyncSnapshot<List<Group>> snapshot) {
-                          if (!snapshot.hasData) {
-                            return Center(child: Text("Loading..."));
-                          }
+    return Center(
+      child: SafeArea(
+        child: Column(
+          children: [
+            SizedBox(height: height * 0.04),
+            Text(
+              'Mis grupos',
+              style: Theme.of(context).textTheme.headline3,
+            ),
+            GroupButtons(),
+            SizedBox(height: 10),
+            Container(
+              height: height * 0.6,
+              child: Consumer<GroupListProvider>(
+                  builder: (context, providerData, _) =>
+                      FutureBuilder<List<Group>>(
+                          future: providerData
+                              .loadUserGroupList(userSessionProvider.user.id!),
+                          builder:
+                              (context, AsyncSnapshot<List<Group>> snapshot) {
+                            if (!snapshot.hasData) {
+                              return Center(child: Text("Loading..."));
+                            }
 
-                          List<Group> groupList = snapshot.data!;
+                            List<Group> groupList = snapshot.data!;
 
-                          return ListView.builder(
-                              shrinkWrap: true,
-                              scrollDirection: Axis.vertical,
-                              itemCount: groupList.length,
-                              itemBuilder: (context, index) {
-                                return Material(
-                                  child: Hero(
-                                    tag: groupList[index].asignatura,
-                                    child: _GroupLabel(
-                                      etiqueta: groupList[index].asignatura,
-                                      text: groupList[index].description,
-                                      press: () {
-                                        groupDetailsProvider.group =
-                                            groupList[index];
-                                        Navigator.pushNamed(
-                                            context, 'groupDetails',
-                                            arguments: GroupArguments(
-                                                group: groupList[index],
-                                                userSession: true,
-                                                isEditing: false));
-                                      },
+                            return ListView.builder(
+                                shrinkWrap: true,
+                                scrollDirection: Axis.vertical,
+                                itemCount: groupList.length,
+                                itemBuilder: (context, index) {
+                                  return Material(
+                                    child: Hero(
+                                      tag: groupList[index].asignatura,
+                                      child: _GroupLabel(
+                                        etiqueta: groupList[index].asignatura,
+                                        text: groupList[index].description,
+                                        press: () {
+                                          groupDetailsProvider.group =
+                                              groupList[index];
+                                          Navigator.pushNamed(
+                                              context, 'groupDetails',
+                                              arguments: GroupArguments(
+                                                  group: groupList[index],
+                                                  userSession: true,
+                                                  isEditing: false));
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                );
-                              });
-                        })),
-          ),
-        ],
+                                  );
+                                });
+                          })),
+            ),
+          ],
+        ),
       ),
     );
     //   bottomNavigationBar: navBar(),

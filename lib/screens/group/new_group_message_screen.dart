@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/providers/message_form_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
-import 'package:flutter_application_tfg/services/message_group_database_service.dart';
+import 'package:flutter_application_tfg/services/message_group_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
 
@@ -85,7 +86,7 @@ class _NewAnswerPage extends StatelessWidget {
                             messageFormProvider.idGroup = args.group!.id!;
                             messageFormProvider.idUser =
                                 userSessionProvider.user.id!;
-                            await MessageGroupDatabaseService()
+                            await GetIt.I<MessageGroupService>()
                                 .updateGroupMessage(
                                     messageFormProvider.groupMessage(), null);
                             await Provider.of<GroupListProvider>(context,

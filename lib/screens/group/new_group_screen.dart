@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/group_form_provider.dart';
 import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
+import 'package:flutter_application_tfg/services/group_service.dart';
 
 import '../../providers/user_session_provider.dart';
 
@@ -190,7 +191,7 @@ class _NewGroupPage extends StatelessWidget {
                         onPressed: () async {
                           if (!groupFormProvider.isValidForm()) return;
 
-                          await GroupDatabaseService().updateGroup(
+                          await GetIt.I<GroupService>().updateGroup(
                               groupFormProvider.group(userSessionProvider),
                               args.isEditing ? args.group!.id : null);
                           final groupListProvider =
@@ -202,7 +203,7 @@ class _NewGroupPage extends StatelessWidget {
                           Navigator.pop(
                               context,
                               args.isEditing
-                                  ? await GroupDatabaseService()
+                                  ? await GetIt.I<GroupService>()
                                       .getGroup(args.group!.id!)
                                   : null);
                         },

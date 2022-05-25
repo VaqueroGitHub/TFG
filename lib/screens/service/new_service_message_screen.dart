@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/message_form_provider.dart';
 import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
-import 'package:flutter_application_tfg/services/message_service_database_service.dart';
+import 'package:flutter_application_tfg/services/message_service_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
 
@@ -85,7 +86,7 @@ class _NewAnswerPage extends StatelessWidget {
                             messageFormProvider.idService = args.service!.id!;
                             messageFormProvider.idUser =
                                 userSessionProvider.user.id!;
-                            await MessageServiceDatabaseService()
+                            await GetIt.I<MessageServiceService>()
                                 .updateServiceMessage(
                                     messageFormProvider.serviceMessage(), null);
                             await Provider.of<ServiceListProvider>(context,

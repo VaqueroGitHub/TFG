@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/answer_form_provider.dart';
 import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
 import '../../services/answer_database_service.dart';
@@ -95,7 +96,7 @@ class _NewAnswerPage extends StatelessWidget {
                           answerFormProvider.idPost = args.post!.id!;
                           answerFormProvider.idUser =
                               userSessionProvider.user.id!;
-                          await AnswerDatabaseService()
+                          await GetIt.I<AnswerService>()
                               .updateAnswer(answerFormProvider.answer(), null);
                           final postMainProvider =
                               Provider.of<PostMainProvider>(context,

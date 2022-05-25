@@ -2,15 +2,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_tfg/models/service_message.dart';
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/user_database_service.dart';
+import 'package:flutter_application_tfg/repository/message_service_repository.dart';
+import 'package:flutter_application_tfg/services/user_service.dart';
+import 'package:get_it/get_it.dart';
 
-class MessageServiceDatabaseService {
+class MessageServiceService {
   Future<Map<String, dynamic?>?> getMessage(String uuid) async {
-    await Firebase.initializeApp();
-    final CollectionReference messageServiceCollection =
-        FirebaseFirestore.instance.collection("MessageGroup");
-
-    final resp = await messageServiceCollection.doc(uuid).get();
+    final resp = await GetIt.I<MessageServiceRepository>().getMessage(uuid);
     final data = resp.data();
     if (data == null) return null;
     final Map<String, dynamic?>? doc = data as Map<String, dynamic?>;
@@ -19,12 +17,8 @@ class MessageServiceDatabaseService {
 
   Future updateServiceMessage(
       ServiceMessage serviceMessage, String? uuid) async {
-    await Firebase.initializeApp();
-    final CollectionReference messageServiceCollection =
-        FirebaseFirestore.instance.collection("MessageService");
-
     if (uuid == null) {
-      return await messageServiceCollection.add({
+      return await GetIt.I<MessageServiceRepository>().createServiceMessage({
         'message': serviceMessage.message,
         'idService': serviceMessage.idService,
         'idUser': serviceMessage.idUser,
@@ -32,12 +26,12 @@ class MessageServiceDatabaseService {
       });
     }
 
-    return await messageServiceCollection.doc(uuid).set({
+    return await GetIt.I<MessageServiceRepository>().updateServiceMessage({
       'message': serviceMessage.message,
       'idService': serviceMessage.idService,
       'idUser': serviceMessage.idUser,
       'datetime': serviceMessage.datetime,
-    });
+    }, uuid);
   }
 
   Future deleteServiceMessage(String uuid) async {
@@ -62,7 +56,7 @@ class MessageServiceDatabaseService {
     for (var element in messageServiceCollection.docs) {
       Map<dynamic, dynamic> messageMap = element.data() as Map;
       User? user =
-          await UserDatabaseService(uuid: messageMap['idUser']).getUserData();
+          await GetIt.I<UserService>().getUserData(messageMap['idUser']);
       ServiceMessage serviceMessage = ServiceMessage(
         message: messageMap['message'],
         idService: messageMap['idService'],

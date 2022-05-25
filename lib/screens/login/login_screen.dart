@@ -3,6 +3,7 @@ import 'package:flutter_application_tfg/providers/user_login_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class LogInScreen extends StatelessWidget {
@@ -98,9 +99,11 @@ class _LoginForm extends StatelessWidget {
                         // if (!userLoginProvider.isValidForm()) return;
 
                         userLoginProvider.isLoading = true;
-                        final String? errorMessage = await AuthService()
-                            .signInUser(userLoginProvider.email,
-                                userLoginProvider.password, context);
+                        final String? errorMessage =
+                            await GetIt.I<AuthService>().signInUser(
+                                userLoginProvider.email,
+                                userLoginProvider.password,
+                                context);
 
                         if (errorMessage == null) {
                           final userSessionProvider =

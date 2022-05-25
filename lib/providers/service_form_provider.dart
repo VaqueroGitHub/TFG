@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_application_tfg/models/service.dart';
-import 'package:flutter_application_tfg/services/user_database_service.dart';
+import 'package:flutter_application_tfg/services/user_service.dart';
+import 'package:get_it/get_it.dart';
 
 class ServiceFormProvider extends ChangeNotifier {
   String code = '';
@@ -27,9 +28,9 @@ class ServiceFormProvider extends ChangeNotifier {
         idOwnerUser: idOwnerUser,
         idCustomerUser: idCustomerUser,
         userCustomer: idCustomerUser != null && idCustomerUser.isEmpty == false
-            ? await UserDatabaseService(uuid: idCustomerUser).getUserData()
+            ? await GetIt.I<UserService>().getUserData(idCustomerUser)
             : null,
-        userOwner: await UserDatabaseService(uuid: idOwnerUser).getUserData(),
+        userOwner: await GetIt.I<UserService>().getUserData(idOwnerUser),
         nCoins: nCoins,
         id: id);
   }

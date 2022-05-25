@@ -1,12 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_tfg/models/forum_section.dart';
+import 'package:flutter_application_tfg/repository/forum_repository.dart';
+import 'package:get_it/get_it.dart';
 
-class ForumDatabaseService {
+class ForumService {
   Future<List<ForumSection>> getForumSections() async {
-    await Firebase.initializeApp();
     final QuerySnapshot forumCollection =
-        await FirebaseFirestore.instance.collection("ForumSection").get();
+        await GetIt.I<ForumRepository>().getForumSections();
 
     List<ForumSection> listForumSections = [];
     for (var element in forumCollection.docs) {
@@ -23,11 +23,8 @@ class ForumDatabaseService {
   }
 
   Future<ForumSection?> getForumSection(String idForumSection) async {
-    await Firebase.initializeApp();
-    final resp = await FirebaseFirestore.instance
-        .collection("ForumSection")
-        .doc(idForumSection)
-        .get();
+    final resp =
+        await GetIt.I<ForumRepository>().getForumSection(idForumSection);
 
     Map<dynamic, dynamic> forumSectionMap =
         resp.data() as Map<dynamic, dynamic>;

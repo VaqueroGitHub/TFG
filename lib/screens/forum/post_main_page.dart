@@ -6,8 +6,9 @@ import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
-import 'package:flutter_application_tfg/services/post_database_service.dart';
+import 'package:flutter_application_tfg/services/post_service.dart';
 import 'package:flutter_application_tfg/widgets/answer_post.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:intl/intl.dart';
 
@@ -120,7 +121,7 @@ class _PostMainPageState extends State<PostMainPage> {
                     color: Colors.black,
                   ),
                   onPressed: () async {
-                    await PostDatabaseService().deletePost(args.post!.id!);
+                    await GetIt.I<PostService>().deletePost(args.post!.id!);
                     await forumListProvider.loadPostList(args.forumSection.id!);
                     forumListProvider.notifyListeners();
                     Navigator.pop(context);

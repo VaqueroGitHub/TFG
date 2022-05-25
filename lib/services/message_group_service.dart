@@ -1,16 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_application_tfg/models/group_message.dart';
 import 'package:flutter_application_tfg/models/user.dart';
-import 'package:flutter_application_tfg/services/user_database_service.dart';
+import 'package:flutter_application_tfg/repository/message_group_repository.dart';
+import 'package:flutter_application_tfg/services/user_service.dart';
+import 'package:get_it/get_it.dart';
 
-class MessageGroupDatabaseService {
+class MessageGroupService {
   Future<Map<String, dynamic?>?> getMessage(String uuid) async {
-    await Firebase.initializeApp();
-    final CollectionReference messageGroupCollection =
-        FirebaseFirestore.instance.collection("MessageGroup");
-
-    final resp = await messageGroupCollection.doc(uuid).get();
+    final resp = await GetIt.I<MessageGroupRepository>().getMessage(uuid);
     final data = resp.data();
     if (data == null) return null;
     final Map<String, dynamic?>? doc = data as Map<String, dynamic?>;
@@ -18,12 +15,8 @@ class MessageGroupDatabaseService {
   }
 
   Future updateGroupMessage(GroupMessage groupMessage, String? uuid) async {
-    await Firebase.initializeApp();
-    final CollectionReference messageGroupCollection =
-        FirebaseFirestore.instance.collection("MessageGroup");
-
     if (uuid == null) {
-      return await messageGroupCollection.add({
+      return await GetIt.I<MessageGroupRepository>().createGroupMessage({
         'message': groupMessage.message,
         'idGroup': groupMessage.idGroup,
         'idUser': groupMessage.idUser,
@@ -31,37 +24,27 @@ class MessageGroupDatabaseService {
       });
     }
 
-    return await messageGroupCollection.doc(uuid).set({
+    return await GetIt.I<MessageGroupRepository>().updateGroupMessage({
       'message': groupMessage.message,
       'idGroup': groupMessage.idGroup,
       'idUser': groupMessage.idUser,
       'datetime': groupMessage.datetime,
-    });
+    }, uuid);
   }
 
   Future deleteGroupMessage(String uuid) async {
-    await Firebase.initializeApp();
-    final CollectionReference messageGroupCollection =
-        FirebaseFirestore.instance.collection("MessageGroup");
-
-    DocumentReference post = await messageGroupCollection.doc(uuid);
-    await post.delete();
+    return await GetIt.I<MessageGroupRepository>().deleteGroupMessage(uuid);
   }
 
   Future<List<GroupMessage>> getGroupMessages(String idGroup) async {
-    await Firebase.initializeApp();
-    final QuerySnapshot messageGroupCollection = await FirebaseFirestore
-        .instance
-        .collection("MessageGroup")
-        .where('idGroup', isEqualTo: idGroup)
-        .orderBy("datetime", descending: true)
-        .get();
+    final QuerySnapshot messageGroupCollection =
+        await GetIt.I<MessageGroupRepository>().getGroupMessages(idGroup);
 
     List<GroupMessage> listMessages = [];
     for (var element in messageGroupCollection.docs) {
       Map<dynamic, dynamic> messageMap = element.data() as Map;
       User? user =
-          await UserDatabaseService(uuid: messageMap['idUser']).getUserData();
+          await GetIt.I<UserService>().getUserData(messageMap['idUser']);
       GroupMessage groupMessage = GroupMessage(
         message: messageMap['message'],
         idGroup: messageMap['idGroup'],

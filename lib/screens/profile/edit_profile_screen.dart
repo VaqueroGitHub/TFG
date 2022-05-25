@@ -6,8 +6,9 @@ import 'package:flutter_application_tfg/providers/email_pass_form_provider.dart'
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
-import 'package:flutter_application_tfg/services/user_database_service.dart';
+import 'package:flutter_application_tfg/services/user_service.dart';
 import 'package:flutter_application_tfg/widgets/widgets.dart';
+import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
@@ -57,11 +58,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               fileImage: localImage == null ? args.user.url : localImage,
               isEdit: true,
               onClicked: () async {
-                final picker = new ImagePicker();
-                final PickedFile? pickedFile = await picker.getImage(
-                    // source: ImageSource.gallery,
-                    source: ImageSource.camera,
-                    imageQuality: 100);
+                final picker = ImagePicker();
+                final XFile? pickedFile = await picker.pickImage(
+                    source: ImageSource.gallery, imageQuality: 100);
 
                 if (pickedFile == null) {
                   return;
@@ -151,10 +150,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         });
                       }
                     }
-                    UserDatabaseService(uuid: args.id)
-                        .updateUserData(args.user, true);
+                    GetIt.I<UserService>().updateUserData(args.user, true);
                     if (args.userSession) {
-                      // userSessionProvider.user.url = editUserProvider.imageL;
                       Navigator.pop(context); // pop current page
                     } else {
                       Navigator.pushNamedAndRemoveUntil(context,
@@ -242,8 +239,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     // Close the dialog
                     Navigator.of(context).pop();
 
-                    String? resp = await AuthService().changeEmailPassword(
-                        emailPassFormProvider, userSessionProvider);
+                    String? resp = await GetIt.I<AuthService>()
+                        .changeEmailPassword(
+                            emailPassFormProvider, userSessionProvider);
 
                     print(resp);
                     if (resp != null) {

@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/helpers/debouncer.dart';
 import 'package:flutter_application_tfg/models/group.dart';
 import 'package:flutter_application_tfg/models/group_message.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
-import 'package:flutter_application_tfg/services/message_group_database_service.dart';
+import 'package:flutter_application_tfg/services/group_service.dart';
+import 'package:flutter_application_tfg/services/message_group_service.dart';
+import 'package:get_it/get_it.dart';
 
 class GroupListProvider extends ChangeNotifier {
   List<Group> listGroup = [];
@@ -21,15 +22,16 @@ class GroupListProvider extends ChangeNotifier {
       this._suggestionStreamContoller.stream;
 
   Future<List<Group>> loadAllGroupList() async {
-    return listGroup = await GroupDatabaseService().getAllGroups();
+    return listGroup = await GetIt.I<GroupService>().getAllGroups();
   }
 
   Future<List<Group>> loadUserGroupList(String idUser) async {
-    return listGroup = await GroupDatabaseService().getUserGroups(idUser);
+    return listGroup = await GetIt.I<GroupService>().getUserGroups(idUser);
   }
 
   Future<List<GroupMessage>> loadMessagesGroupList(String idGroup) async {
-    messageList = await MessageGroupDatabaseService().getGroupMessages(idGroup);
+    messageList =
+        await GetIt.I<MessageGroupService>().getGroupMessages(idGroup);
     notifyListeners();
     return messageList;
   }
@@ -38,7 +40,7 @@ class GroupListProvider extends ChangeNotifier {
     debouncer.value = '';
     debouncer.onValue = (value) async {
       final results =
-          await GroupDatabaseService().getServicesByQueryAsignatura(value);
+          await GetIt.I<GroupService>().getServicesByQueryAsignatura(value);
       this._suggestionStreamContoller.add(results);
     };
 

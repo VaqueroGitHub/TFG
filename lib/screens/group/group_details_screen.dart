@@ -10,8 +10,9 @@ import 'package:flutter_application_tfg/providers/group_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
+import 'package:flutter_application_tfg/services/group_service.dart';
 import 'package:flutter_application_tfg/widgets/answer_post.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -69,11 +70,11 @@ class GroupDetailsScreen extends StatelessWidget {
                       color: Colors.black,
                     ),
                     onPressed: () async {
-                      await GroupDatabaseService()
+                      await GetIt.I<GroupService>()
                           .deleteGroup(groupDetailsProvider.group!.id!);
                       await groupListProvider
                           .loadUserGroupList(userSessionProvider.user.id!);
-                      Navigator.pushReplacementNamed(context, 'groupsMainPage');
+                      Navigator.pop(context);
                     },
                   )
                 : Container()
@@ -136,7 +137,7 @@ class GroupDetailsScreen extends StatelessWidget {
                                   groupDetailsProvider.group!.nMembersRequired)
                             return;
 
-                          await GroupDatabaseService().joinGroup(
+                          await GetIt.I<GroupService>().joinGroup(
                               groupDetailsProvider.group!,
                               userSessionProvider.user.id!);
 
@@ -169,7 +170,7 @@ class GroupDetailsScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          await GroupDatabaseService().exitGroup(
+                          await GetIt.I<GroupService>().exitGroup(
                               groupDetailsProvider.group!,
                               userSessionProvider.user.id!);
 

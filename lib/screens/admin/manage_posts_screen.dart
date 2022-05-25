@@ -4,7 +4,8 @@ import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/post_form_provider.dart';
 import 'package:flutter_application_tfg/providers/post_main_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
-import 'package:flutter_application_tfg/services/post_database_service.dart';
+import 'package:flutter_application_tfg/services/post_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class ManagePostsScreen extends StatefulWidget {
@@ -70,7 +71,7 @@ class _ManagePostsScreen extends State<ManagePostsScreen> {
                             IconButton(
                               icon: Icon(Icons.delete),
                               onPressed: () async {
-                                await PostDatabaseService()
+                                await GetIt.I<PostService>()
                                     .deletePost(postList[index].id!);
 
                                 Navigator.popAndPushNamed(

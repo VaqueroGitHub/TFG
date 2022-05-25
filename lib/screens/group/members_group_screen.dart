@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/user.dart';
 import 'package:flutter_application_tfg/screen_arguments/group_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
+import 'package:flutter_application_tfg/services/group_service.dart';
+import 'package:get_it/get_it.dart';
 
 class MembersGroupScreen extends StatelessWidget {
   const MembersGroupScreen({Key? key}) : super(key: key);
@@ -60,7 +61,7 @@ class MembersGroupScreen extends StatelessWidget {
 
   Future<List<User>> getUserList(idMembers) async {
     List<User> listUser =
-        await GroupDatabaseService().getMembersGroup(idMembers);
+        await GetIt.I<GroupService>().getMembersGroup(idMembers);
     return listUser;
   }
 }

@@ -6,8 +6,9 @@ import 'package:flutter_application_tfg/models/answer.dart';
 import 'package:flutter_application_tfg/models/forum_section.dart';
 import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/services/answer_database_service.dart';
-import 'package:flutter_application_tfg/services/forum_database_service.dart';
-import 'package:flutter_application_tfg/services/post_database_service.dart';
+import 'package:flutter_application_tfg/services/forum_service.dart';
+import 'package:flutter_application_tfg/services/post_service.dart';
+import 'package:get_it/get_it.dart';
 
 class ForumListProvider extends ChangeNotifier {
   List<ForumSection> listForumSection = [];
@@ -24,26 +25,26 @@ class ForumListProvider extends ChangeNotifier {
       this._suggestionStreamContoller.stream;
 
   Future<List<ForumSection>> loadForumSections() async {
-    return listForumSection = await ForumDatabaseService().getForumSections();
+    return listForumSection = await GetIt.I<ForumService>().getForumSections();
   }
 
   Future<List<Post>> loadPostList(String idForumSection) async {
-    listPosts = await PostDatabaseService().getPostsFromTopic(idForumSection);
+    listPosts = await GetIt.I<PostService>().getPostsFromTopic(idForumSection);
     return listPosts;
   }
 
   Future<List<Post>> loadAllPostList() async {
-    return listPosts = await PostDatabaseService().getAllPosts();
+    return listPosts = await GetIt.I<PostService>().getAllPosts();
   }
 
   Future<List<Answer>> loadAnswerList(String idPost) async {
-    return listAnswers = await AnswerDatabaseService().getAnswersPost(idPost);
+    return listAnswers = await GetIt.I<AnswerService>().getAnswersPost(idPost);
   }
 
   void getSuggestionsByQuery(String query) {
     debouncer.value = '';
     debouncer.onValue = (value) async {
-      final results = await PostDatabaseService().getServicesByQuery(value);
+      final results = await GetIt.I<PostService>().getServicesByQuery(value);
       this._suggestionStreamContoller.add(results);
     };
 

@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/models/group.dart';
 import 'package:flutter_application_tfg/models/post.dart';
 import 'package:flutter_application_tfg/models/service.dart';
-import 'package:flutter_application_tfg/services/group_database_service.dart';
-import 'package:flutter_application_tfg/services/post_database_service.dart';
-import 'package:flutter_application_tfg/services/service_database_service.dart';
+import 'package:flutter_application_tfg/services/group_service.dart';
+import 'package:flutter_application_tfg/services/post_service.dart';
+import 'package:flutter_application_tfg/services/service_service.dart';
+import 'package:get_it/get_it.dart';
 
 class NumbersWidget extends StatelessWidget {
   final String userId;
@@ -16,7 +17,7 @@ class NumbersWidget extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           FutureBuilder<List<Service>>(
-            future: ServiceDatabaseService().getUserServices(userId),
+            future: GetIt.I<ServiceService>().getUserServices(userId),
             initialData: [],
             builder: (context, AsyncSnapshot<List<Service>> snapshot) {
               if (snapshot.hasData) {
@@ -29,7 +30,7 @@ class NumbersWidget extends StatelessWidget {
           ),
           buildDivider(),
           FutureBuilder<List<Group>>(
-            future: GroupDatabaseService().getUserGroups(userId),
+            future: GetIt.I<GroupService>().getUserGroups(userId),
             initialData: [],
             builder: (context, AsyncSnapshot<List<Group>> snapshot) {
               if (snapshot.hasData) {
@@ -42,7 +43,7 @@ class NumbersWidget extends StatelessWidget {
           ),
           buildDivider(),
           FutureBuilder<List<Post>>(
-            future: PostDatabaseService().getUserPosts(userId),
+            future: GetIt.I<PostService>().getUserPosts(userId),
             initialData: [],
             builder: (context, AsyncSnapshot<List<Post>> snapshot) {
               if (snapshot.hasData) {

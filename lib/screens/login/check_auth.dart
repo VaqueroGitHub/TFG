@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class CheckAuthScreen extends StatelessWidget {
@@ -12,7 +13,7 @@ class CheckAuthScreen extends StatelessWidget {
     return Scaffold(
       body: Center(
           child: FutureBuilder(
-        future: AuthService().isAuth(),
+        future: GetIt.I<AuthService>().isAuth(),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) return Text('Cargando..');
 

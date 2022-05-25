@@ -5,6 +5,7 @@ import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -98,13 +99,13 @@ class ProfileScreen extends StatelessWidget {
                 icon: SvgPicture.asset("assets/icons/Log out.svg",
                     color: Color(0XFF283593)),
                 onPressed: () {
-                  AuthService().logout();
+                  GetIt.I<AuthService>().logout();
                   Navigator.pushNamedAndRemoveUntil(
                       context, 'home', (Route<dynamic> route) => false);
                 },
               ),
               press: () {
-                AuthService().logout();
+                GetIt.I<AuthService>().logout();
                 Navigator.pushNamedAndRemoveUntil(
                     context, 'home', (Route<dynamic> route) => false);
               },
@@ -132,7 +133,7 @@ class ProfileScreen extends StatelessWidget {
                     // Close the dialog
                     Navigator.of(context).pop();
 
-                    final resp = await AuthService()
+                    final resp = await GetIt.I<AuthService>()
                         .deleteAccount(userSessionProvider.user);
                     if (resp != null) {
                       ScaffoldMessenger.of(context).showSnackBar(

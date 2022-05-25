@@ -38,33 +38,6 @@ class AboutProfilePage extends StatelessWidget {
                   size: 35,
                 )),
           ),
-          //   floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-          //   floatingActionButton: FloatingActionButton(
-          //     backgroundColor: Colors.indigo,
-          //     onPressed: () => Navigator.pushReplacementNamed(
-          //       context,
-          //       'aboutProfile',
-          //       arguments: UserArguments(
-          //           user: userSessionProvider.user,
-          //           id: userSessionProvider.user.id!,
-          //           userSession: true),
-          //     ),
-          //     child: IconButton(
-          //       onPressed: () => Navigator.pushReplacementNamed(
-          //         context,
-          //         'aboutProfile',
-          //         arguments: UserArguments(
-          //             user: userSessionProvider.user,
-          //             id: userSessionProvider.user.id!,
-          //             userSession: true),
-          //       ),
-          //       icon: Icon(
-          //         Icons.home,
-          //         color: Colors.white,
-          //       ),
-          //     ),
-          //   ),
-          //   backgroundColor: Colors.white,
           body: ListView(
             physics: BouncingScrollPhysics(),
             children: [
@@ -80,9 +53,7 @@ class AboutProfilePage extends StatelessWidget {
               const SizedBox(height: 48),
               buildAbout(context, args.user),
             ],
-          )
-          //   bottomNavigationBar: navBar(),
-          ),
+          )),
     );
   }
 

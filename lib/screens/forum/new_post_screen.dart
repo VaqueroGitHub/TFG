@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_tfg/providers/forum_list_provider.dart';
 import 'package:flutter_application_tfg/providers/post_form_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/post_arguments.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import '../../providers/user_session_provider.dart';
-import '../../services/post_database_service.dart';
+import '../../services/post_service.dart';
 
 class NewPostPage extends StatelessWidget {
   @override
@@ -116,7 +117,7 @@ class _NewPostPage extends StatelessWidget {
                               args.forumSection.id!;
                           postFormProvider.idUser =
                               userSessionProvider.user.id!;
-                          PostDatabaseService().updatePost(
+                          GetIt.I<PostService>().updatePost(
                               args.isEditing
                                   ? postFormProvider.postWithId(args.post!.id!)
                                   : postFormProvider.post(),
@@ -131,7 +132,7 @@ class _NewPostPage extends StatelessWidget {
                           Navigator.pop(
                               context,
                               args.isEditing
-                                  ? await PostDatabaseService()
+                                  ? await GetIt.I<PostService>()
                                       .getPostData(args.post!.id!)
                                   : null);
                         },

@@ -10,8 +10,9 @@ import 'package:flutter_application_tfg/providers/service_list_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/service_arguments.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
-import 'package:flutter_application_tfg/services/service_database_service.dart';
+import 'package:flutter_application_tfg/services/service_service.dart';
 import 'package:flutter_application_tfg/widgets/answer_post.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -74,12 +75,11 @@ class ServiceDetailsScreen extends StatelessWidget {
                       color: Colors.black,
                     ),
                     onPressed: () async {
-                      await ServiceDatabaseService()
+                      await GetIt.I<ServiceService>()
                           .deleteService(serviceDetailsProvider.service!.id!);
                       await serviceListProvider
                           .loadUserServiceList(userSessionProvider.user.id!);
-                      Navigator.pushReplacementNamed(
-                          context, 'servicesMainPage');
+                      Navigator.pop(context);
                     },
                   )
                 : Container()
@@ -126,7 +126,7 @@ class ServiceDetailsScreen extends StatelessWidget {
                           style: TextStyle(color: Colors.white, fontSize: 20.0),
                         ),
                         onPressed: () async {
-                          await ServiceDatabaseService().obtainService(
+                          await GetIt.I<ServiceService>().obtainService(
                               serviceDetailsProvider.service!,
                               userSessionProvider.user.id!);
 
@@ -287,8 +287,8 @@ class _InfoLinks extends StatelessWidget {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-            '⭐ Coste del servicio: ${serviceDetailsProvider.service!.nCoins} coins'),
+        // Text(
+        //     '⭐ Coste del servicio: ${serviceDetailsProvider.service!.nCoins} coins'),
         SizedBox(height: 10),
         !serviceDetailsProvider.service!.conference.isEmpty &&
                 (serviceDetailsProvider.service!.idOwnerUser ==

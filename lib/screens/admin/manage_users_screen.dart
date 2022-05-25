@@ -4,7 +4,8 @@ import 'package:flutter_application_tfg/providers/edit_user_provider.dart';
 import 'package:flutter_application_tfg/providers/user_session_provider.dart';
 import 'package:flutter_application_tfg/screen_arguments/user_arguments.dart';
 import 'package:flutter_application_tfg/services/auth_service.dart';
-import 'package:flutter_application_tfg/services/user_database_service.dart';
+import 'package:flutter_application_tfg/services/user_service.dart';
+import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
 class ManageUsersScreen extends StatelessWidget {
@@ -42,7 +43,7 @@ class ManageUsersScreen extends StatelessWidget {
                         IconButton(
                           icon: Icon(Icons.delete),
                           onPressed: () async {
-                            final resp = await AuthService()
+                            final resp = await GetIt.I<AuthService>()
                                 .deleteAccount(listUser[index]);
                             if (resp != null) {
                               ScaffoldMessenger.of(context).showSnackBar(
@@ -69,9 +70,7 @@ class ManageUsersScreen extends StatelessWidget {
 
   Future<List<User>> getUserList(context) async {
     final userSessionProvider = Provider.of<UserSessionProvider>(context);
-    List<User> listUser =
-        await UserDatabaseService(uuid: userSessionProvider.user.id!)
-            .getAllUsersAdmin();
+    List<User> listUser = await GetIt.I<UserService>().getAllUsersAdmin();
     return listUser;
   }
 }

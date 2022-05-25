@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 ThemeData tfgTheme = ThemeData(
+  fontFamily: 'RobotoMono',
   backgroundColor: Color(0xFFffffff),
   primaryColor: Color(0xFF5F5FFF),
   highlightColor: Color(0XFFB7B7D2),
