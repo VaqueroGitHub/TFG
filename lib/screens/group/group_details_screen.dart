@@ -74,6 +74,7 @@ class GroupDetailsScreen extends StatelessWidget {
                           .deleteGroup(groupDetailsProvider.group!.id!);
                       await groupListProvider
                           .loadUserGroupList(userSessionProvider.user.id!);
+                      groupListProvider.notifyListeners();
                       Navigator.pop(context);
                     },
                   )

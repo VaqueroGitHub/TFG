@@ -82,26 +82,6 @@ class _NewServiceBody extends StatelessWidget {
                   ),
                   SizedBox(height: height * 0.04),
                   TextFormField(
-                    initialValue: serviceFormProvider.nCoins >= 0
-                        ? serviceFormProvider.nCoins.toString()
-                        : '',
-                    onChanged: (val) => val != ''
-                        ? serviceFormProvider.nCoins = int.parse(val)
-                        : serviceFormProvider.nCoins = -1,
-                    validator: (val) {
-                      return (val == null ||
-                              val.isEmpty ||
-                              int.tryParse(val) == null ||
-                              int.parse(val) < 0)
-                          ? 'Introduzca un coste de servicio válido'
-                          : null;
-                    },
-                    decoration: const InputDecoration(
-                        labelText: "Introduce el coste del servicio"),
-                    keyboardType: TextInputType.number,
-                  ),
-                  SizedBox(height: height * 0.04),
-                  TextFormField(
                     initialValue: serviceFormProvider.conference,
                     onChanged: (val) => serviceFormProvider.conference = val,
                     validator: (val) {

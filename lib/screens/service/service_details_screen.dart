@@ -79,7 +79,9 @@ class ServiceDetailsScreen extends StatelessWidget {
                           .deleteService(serviceDetailsProvider.service!.id!);
                       await serviceListProvider
                           .loadUserServiceList(userSessionProvider.user.id!);
-                      Navigator.pop(context);
+                      serviceListProvider.notifyListeners();
+                      await Future.delayed(Duration(milliseconds: 150),
+                          () => Navigator.pop(context));
                     },
                   )
                 : Container()
